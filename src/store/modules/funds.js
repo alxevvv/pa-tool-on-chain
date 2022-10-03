@@ -2,7 +2,8 @@ import { getFunds } from "../../graphql/queries/funds";
 
 // initial state
 const getDefaultState = () => ({
-  all: [],
+  fundsList: [],
+  selectedFund: null,
   isLoading: false,
 });
 
@@ -15,15 +16,18 @@ const getters = {};
 const actions = {
   async loadFunds(context) {
     context.commit("setIsLoading", true);
-    context.commit("setFunds", await getFunds());
+    context.commit("setFundsList", await getFunds());
     context.commit("setIsLoading", false);
   },
 };
 
 // mutations
 const mutations = {
-  setFunds(state, funds) {
-    state.all = funds;
+  setFundsList(state, funds) {
+    state.fundsList = funds;
+  },
+  setSelectedFund(state, fund) {
+    state.selectedFund = fund;
   },
   setIsLoading(state, isLoading) {
     state.isLoading = isLoading;

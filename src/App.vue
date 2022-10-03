@@ -16,6 +16,21 @@
           />
         </b-navbar-item>
       </template>
+      <template #start>
+        <b-navbar-dropdown label="Funds" v-if="$store.state.funds.fundsList.length">
+          <b-navbar-item
+            v-for="fund in $store.state.funds.fundsList"
+            :key="fund.fundHash"
+            :active="fund.fundHash === $store.state.funds.selectedFund.fundHash"
+            @click="selectFund(fund.fundHash)"
+          >
+            {{ fund.title }}
+          </b-navbar-item>
+        </b-navbar-dropdown>
+        <b-navbar-item v-else>
+          Loading funds...
+        </b-navbar-item>
+      </template>
       <template #end>
         <b-navbar-dropdown label="Proposals">
           <b-navbar-item @click="next">
@@ -103,8 +118,6 @@ import Counter from "@/components/Counter";
 export default {
   data() {
     return {
-      funds: [],
-      fundSelected: null,
       assessStartsUTC: this.$dayjs.utc("2022-06-30 11:00:00", "YYYY-MM-DD HH:mm:ss"),
       assessEndsUTC: this.$dayjs.utc("2022-07-14 11:00:00", "YYYY-MM-DD HH:mm:ss"),
       now: this.$dayjs()
@@ -120,6 +133,7 @@ export default {
   computed: {
     ...mapGetters("assessments", ["assessedCount"]),
     ...mapGetters("filters", ["totalProposals"]),
+    // ...mapGetters("funds", ["fundsList", "selectedFund"]),
     myAssessmentsLink() {
       return `My Assessments (${this.assessedCount}/${this.totalProposals})`;
     },
@@ -134,6 +148,12 @@ export default {
     },
   },
   methods: {
+    selectFund(fundHash) {
+      const fund = this.$store.state.funds.fundsList.find(fund => fund.fundHash === fundHash);
+      if (fund) {
+        this.$store.commit("funds/setSelectedFund", fund);
+      }
+    },
     getNow() {
       this.now = this.$dayjs()
         .utc()
