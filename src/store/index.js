@@ -1,24 +1,26 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import createPersist from 'vuex-localstorage'
-import filters from './modules/filters'
-import assessments from './modules/assessments'
+import Vue from "vue";
+import Vuex from "vuex";
+import createPersist from "vuex-localstorage";
+import filters from "./modules/filters";
+import funds from "./modules/funds";
+import assessments from "./modules/assessments";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
-const debug = process.env.NODE_ENV !== 'production'
+const debug = process.env.NODE_ENV !== "production";
 
 let localStorage = createPersist({
-    namespace: 'ca-tool-f9',
-    initialState: {},
-    expires: 90 * 24 * 60 * 60 * 1e3 // 90 days
-})
+  namespace: "ca-tool-f9",
+  initialState: {},
+  expires: 90 * 24 * 60 * 60 * 1e3, // 90 days
+});
 
 export default new Vuex.Store({
   modules: {
     filters,
-    assessments
+    funds,
+    assessments,
   },
   strict: debug,
-  plugins: [localStorage]
-})
+  plugins: [localStorage],
+});
