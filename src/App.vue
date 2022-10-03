@@ -27,7 +27,7 @@
             {{ fund.title }}
           </b-navbar-item>
         </b-navbar-dropdown>
-        <b-navbar-item v-else>
+        <b-navbar-item v-else-if="$store.state.funds.isLoading">
           Loading funds...
         </b-navbar-item>
       </template>
@@ -133,7 +133,6 @@ export default {
   computed: {
     ...mapGetters("assessments", ["assessedCount"]),
     ...mapGetters("filters", ["totalProposals"]),
-    // ...mapGetters("funds", ["fundsList", "selectedFund"]),
     myAssessmentsLink() {
       return `My Assessments (${this.assessedCount}/${this.totalProposals})`;
     },
