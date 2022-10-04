@@ -17,11 +17,37 @@
         </b-navbar-item>
       </template>
       <template #start>
+        <b-navbar-item v-if="!$store.state.wallet.availableWallets">
+          Detecting wallets...
+        </b-navbar-item>
+        <b-navbar-item v-else-if="!$store.state.wallet.availableWallets.length">
+          No wallets detected
+        </b-navbar-item>
+        <b-navbar-dropdown
+          label="Connect wallet"
+          v-else-if="!$store.state.wallet.walletApi && !$store.state.wallet.isConnecting"
+        >
+          <b-navbar-item
+            v-for="walletName in $store.state.wallet.availableWallets"
+            :key="walletName"
+            @click="$store.dispatch('wallet/connectWallet', walletName)"
+          >
+            {{ walletName }}
+          </b-navbar-item>
+        </b-navbar-dropdown>
+        <b-navbar-item v-else-if="$store.state.wallet.isConnecting">
+          Connecting wallet...
+        </b-navbar-item>
+        <b-navbar-item v-else-if="$store.state.wallet.walletApi">
+          Wallet connected ({{ $store.state.wallet.walletName }})
+        </b-navbar-item>
         <b-navbar-dropdown label="Funds" v-if="$store.state.funds.fundsList.length">
           <b-navbar-item
             v-for="fund in $store.state.funds.fundsList"
             :key="fund.fundHash"
-            :active="fund.fundHash === $store.state.funds.selectedFund.fundHash"
+            :active="
+              $store.state.funds.selectedFund && $store.state.funds.selectedFund.fundHash === fund.fundHash
+            "
             @click="selectFund(fund.fundHash)"
           >
             {{ fund.title }}
@@ -173,8 +199,12 @@ export default {
   },
   mounted() {
     this.$store.dispatch("funds/loadFunds");
+    setTimeout(() => {
+      this.$store.dispatch("wallet/findAvailableWallets");
+      this.$store.dispatch("wallet/reconnectWallet");
+    }, 200);
     if (window.localStorage) {
-      let oldKeys = ["ca-tool-default", "ca-tool-f8-default"];
+      let oldKeys = ["ca-tool-default", "ca-tool-f8-default", "ca-tool-f9-default"];
       oldKeys.forEach(k => {
         let oldKey = window.localStorage.getItem(k);
         if (oldKey) {
