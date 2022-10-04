@@ -41,7 +41,7 @@
         <b-navbar-item v-else-if="$store.state.wallet.walletApi">
           Wallet connected ({{ $store.state.wallet.walletName }})
         </b-navbar-item>
-        <b-navbar-dropdown label="Funds" v-if="$store.state.funds.fundsList.length">
+        <b-navbar-dropdown label="Select fund" v-if="$store.state.funds.fundsList.length">
           <b-navbar-item
             v-for="fund in $store.state.funds.fundsList"
             :key="fund.fundHash"
