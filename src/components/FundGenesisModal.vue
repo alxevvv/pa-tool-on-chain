@@ -5,7 +5,7 @@
       <button type="button" class="delete" @click="$emit('close')" />
     </header>
     <section class="modal-card-body">
-      <pre>{{ fund }}</pre>
+      <pre>{{ fund.json }}</pre>
     </section>
     <footer class="modal-card-foot">
       <b-button label="OK" @click="$emit('close')" />

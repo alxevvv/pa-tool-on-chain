@@ -10,8 +10,10 @@
           </header>
           <div class="card-content">
             <div class="content">
-              <strong>Title:</strong> {{ fund.title }}<br />
-              <strong>Fund Hash:</strong> {{ fund.fundHash }}
+              <strong>Title:</strong> {{ fund.json.title }}<br />
+              <strong>Fund Hash:</strong> {{ fund.json.fundHash }}<br />
+              <strong>PA Status:</strong>
+              {{ isRegisteredAsPA ? "Registered" : "Unregistered" }}
             </div>
           </div>
           <footer class="card-footer is-justify-content-end">
@@ -34,6 +36,7 @@
 <script>
 import {
   Address,
+  // BaseAddress,
   ByronAddress,
   TransactionUnspentOutput,
   TransactionUnspentOutputs,
@@ -52,6 +55,9 @@ import {
   AuxiliaryData,
 } from "@emurgo/cardano-serialization-lib-asmjs";
 import FundGenesisModal from "@/components/FundGenesisModal";
+import { fundPARegistrationList } from "@/cardanoDB/fundPARegistrationList";
+import { stakeAddressForOutputAddress } from "@/cardanoDB/stakeAddressForOutputAddress";
+import { txsOutputsList } from "@/cardanoDB/txsOutputsList";
 
 export default {
   data() {
@@ -60,6 +66,7 @@ export default {
       changeAddress: null,
       recipientAddress: null,
       submittedTxHash: null,
+      isRegisteredAsPA: null,
     };
   },
 
@@ -77,7 +84,15 @@ export default {
     },
 
     registerPAIsDisabled() {
-      return !this.walletApi;
+      return !this.walletApi || !!this.isRegisteredAsPA;
+    },
+
+    fundAndWallet() {
+      if (this.fund && this.$store.state.wallet.walletStakeAddressBech32) {
+        return [this.fund.json.fundHash, this.$store.state.wallet.walletStakeAddressBech32];
+      } else {
+        return null;
+      }
     },
   },
 
@@ -88,6 +103,24 @@ export default {
         component: FundGenesisModal,
         hasModalCard: true,
       });
+    },
+
+    async checkIsRegisteredAsPA() {
+      const walletStakeAddressBech32 = this.$store.state.wallet.walletStakeAddressBech32;
+      if (this.fund && walletStakeAddressBech32) {
+        const registrations = await fundPARegistrationList(this.fund.json.fundHash);
+        // console.log({ registrations });
+        if (registrations.length) {
+          const txsIds = registrations.map(({ tx_id }) => tx_id);
+          // console.log({ txsIds });
+          const txsOutputs = await txsOutputsList(txsIds);
+          // console.log({ txsOutputs });
+          const txsOutputsStakeAddresses = txsOutputs.map(({ stake_address: { view } }) => view);
+          // console.log({ txsOutputsStakeAddresses, walletStakeAddressBech32 });
+          return txsOutputsStakeAddresses.includes(walletStakeAddressBech32);
+        }
+      }
+      return false;
     },
 
     initTransactionBuilder() {
@@ -299,32 +332,31 @@ export default {
     },
 
     async registerPA() {
-      // const unusedAddresses = await this.walletApi.getUnusedAddresses();
-      // if (unusedAddresses.length > 0) {
-      //   const addressBech32 = Address.from_bytes(Buffer.from(unusedAddresses[0], "hex")).to_bech32();
-      //   console.log(addressBech32);
-      // }
-      // alert("register PA");
-
-      console.log("start sending test transaction");
-
       this.utxos = await this.getUtxos();
-      console.log(this.utxos);
-
       this.changeAddress = await this.getChangeAddress();
-      console.log(this.changeAddress);
-
       this.recipientAddress = await this.getRecipientAddress();
-      console.log(this.recipientAddress);
-
       this.submittedTxHash = await this.buildSendADATransaction({
         action: "registerPA",
-        fundHash: this.fund.fundHash,
+        fundHash: this.fund.json.fundHash,
       });
-      console.log(`sending test transaction finished, txHash = ${this.submittedTxHash}`);
     },
   },
 
-  mounted() {},
+  watch: {
+    async walletApi(walletApi) {
+      if (walletApi) {
+        const usedAddresses = await walletApi.getUsedAddresses();
+        if (usedAddresses.length > 0) {
+          const addressBech32 = Address.from_bytes(Buffer.from(usedAddresses[0], "hex")).to_bech32();
+          const stakeAddress = await stakeAddressForOutputAddress(addressBech32);
+          this.$store.commit("wallet/setWalletStakeAddressBech32", stakeAddress);
+        }
+      }
+    },
+
+    async fundAndWallet() {
+      this.isRegisteredAsPA = await this.checkIsRegisteredAsPA();
+    },
+  },
 };
 </script>

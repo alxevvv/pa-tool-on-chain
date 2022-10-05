@@ -1,22 +1,3 @@
-// import {
-// Address,
-// ByronAddress,
-// TransactionUnspentOutput,
-// TransactionUnspentOutputs,
-// TransactionOutput,
-// Value,
-// TransactionBuilder,
-// TransactionBuilderConfigBuilder,
-// TransactionInput,
-// TransactionHash,
-// LinearFee,
-// BigNum,
-// TransactionWitnessSet,
-// Transaction,
-// encode_json_str_to_metadatum,
-// GeneralTransactionMetadata,
-// AuxiliaryData,
-// } from "@emurgo/cardano-serialization-lib-asmjs";
 import { NotificationProgrammatic as Notification } from "buefy";
 
 // initial state
@@ -41,7 +22,7 @@ const getDefaultState = () => ({
   walletIcon: null,
   walletApiVersion: null,
   walletApi: null,
-  walletStakeAddress: null,
+  walletStakeAddressBech32: null,
   isConnecting: false,
 });
 
@@ -116,6 +97,7 @@ const actions = {
       walletIcon: null,
       walletApiVersion: null,
       walletApi: null,
+      walletStakeAddressBech32: null,
     });
   },
 };
@@ -130,14 +112,10 @@ const mutations = {
     state.walletIcon = walletIcon;
     state.walletApiVersion = walletApiVersion;
     state.walletApi = walletApi;
-    // const unusedAddresses = await walletApi.getUnusedAddresses();
-    // console.log(unusedAddresses);
-    // if (unusedAddresses.length > 0) {
-    //   const addressBech32 = Address.from_bytes(Buffer.from(unusedAddresses[0], "hex")).to_bech32();
-    //   console.log(addressBech32);
-    //   // state.walletStakeAddress = addressBech32;
-    // }
     state.isConnecting = false;
+  },
+  setWalletStakeAddressBech32(state, stakeAddress) {
+    state.walletStakeAddressBech32 = stakeAddress;
   },
   setIsConnecting(state, isConnecting) {
     state.isConnecting = isConnecting;

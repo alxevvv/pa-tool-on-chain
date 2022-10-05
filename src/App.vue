@@ -44,13 +44,14 @@
         <b-navbar-dropdown label="Select fund" v-if="$store.state.funds.fundsList.length">
           <b-navbar-item
             v-for="fund in $store.state.funds.fundsList"
-            :key="fund.fundHash"
+            :key="fund.json.fundHash"
             :active="
-              $store.state.funds.selectedFund && $store.state.funds.selectedFund.fundHash === fund.fundHash
+              $store.state.funds.selectedFund &&
+                $store.state.funds.selectedFund.json.fundHash === fund.json.fundHash
             "
-            @click="selectFund(fund.fundHash)"
+            @click="selectFund(fund.json.fundHash)"
           >
-            {{ fund.title }}
+            {{ fund.json.title }}
           </b-navbar-item>
         </b-navbar-dropdown>
         <b-navbar-item v-else-if="$store.state.funds.isLoading">
@@ -174,7 +175,7 @@ export default {
   },
   methods: {
     selectFund(fundHash) {
-      const fund = this.$store.state.funds.fundsList.find(fund => fund.fundHash === fundHash);
+      const fund = this.$store.state.funds.fundsList.find(fund => fund.json.fundHash === fundHash);
       if (fund) {
         this.$store.commit("funds/setSelectedFund", fund);
       }

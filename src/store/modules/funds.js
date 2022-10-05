@@ -1,4 +1,4 @@
-import { getFunds } from "../../graphql/queries/funds";
+import { fundsList } from "../../cardanoDB/fundsList";
 
 // initial state
 const getDefaultState = () => ({
@@ -16,7 +16,7 @@ const getters = {};
 const actions = {
   async loadFunds(context) {
     context.commit("setIsLoading", true);
-    context.commit("setFundsList", await getFunds());
+    context.commit("setFundsList", await fundsList());
     context.commit("setIsLoading", false);
   },
 };
