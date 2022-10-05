@@ -903,6 +903,11 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
+"@emurgo/cardano-serialization-lib-asmjs@^11.1.0":
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/@emurgo/cardano-serialization-lib-asmjs/-/cardano-serialization-lib-asmjs-11.1.0.tgz#cf55bd9de7759f117bfaa85442eff1c8c910ca05"
+  integrity sha512-wxF/Yle0HBCs19bDue+zpG8pRTP0iZk90TTNX3VfsAUmIRbP2GqheEN6Uwsd0kfCdwkRbOZCSEb7+QLJ6MOCPg==
+
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
