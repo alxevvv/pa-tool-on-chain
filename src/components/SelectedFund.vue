@@ -358,5 +358,9 @@ export default {
       this.isRegisteredAsPA = await this.checkIsRegisteredAsPA();
     },
   },
+
+  async mounted() {
+    this.isRegisteredAsPA = await this.checkIsRegisteredAsPA();
+  },
 };
 </script>
