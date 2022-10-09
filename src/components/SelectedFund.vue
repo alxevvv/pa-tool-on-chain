@@ -36,28 +36,25 @@
 <script>
 import {
   Address,
-  // BaseAddress,
+  AuxiliaryData,
+  BigNum,
   ByronAddress,
+  GeneralTransactionMetadata,
+  LinearFee,
   TransactionUnspentOutput,
   TransactionUnspentOutputs,
   TransactionOutput,
   Value,
+  Transaction,
   TransactionBuilder,
   TransactionBuilderConfigBuilder,
-  // TransactionInput,
-  // TransactionHash,
-  LinearFee,
-  BigNum,
   TransactionWitnessSet,
-  Transaction,
   encode_json_str_to_metadatum,
-  GeneralTransactionMetadata,
-  AuxiliaryData,
 } from "@emurgo/cardano-serialization-lib-asmjs";
 import FundGenesisModal from "@/components/FundGenesisModal";
 import { fundPARegistrationList } from "@/cardanoDB/fundPARegistrationList";
-import { stakeAddressForOutputAddress } from "@/cardanoDB/stakeAddressForOutputAddress";
 import { txsOutputsList } from "@/cardanoDB/txsOutputsList";
+import extractStakeAddress from "@/utils/extractStakeAddress";
 
 export default {
   data() {
@@ -348,7 +345,7 @@ export default {
         const usedAddresses = await walletApi.getUsedAddresses();
         if (usedAddresses.length > 0) {
           const addressBech32 = Address.from_bytes(Buffer.from(usedAddresses[0], "hex")).to_bech32();
-          const stakeAddress = await stakeAddressForOutputAddress(addressBech32);
+          const stakeAddress = extractStakeAddress(addressBech32, 0);
           this.$store.commit("wallet/setWalletStakeAddressBech32", stakeAddress);
         }
       }
