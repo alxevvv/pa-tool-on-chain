@@ -1,15 +1,11 @@
 <template>
   <div class="box assessment">
-    <b-button
-      v-if="!assessment"
-      @click="createAssessment"
-      icon-left="pencil"
-      type="is-primary is-medium">
+    <b-button v-if="!assessment" @click="createAssessment" icon-left="pencil" type="is-primary is-medium">
       Create Assessment
     </b-button>
     <div class="form-wrapper mb-4 content is-relative" v-if="assessment">
       <b-field class="saved-at">
-        <b-tag icon="content-save-outline">{{savedAt}}</b-tag>
+        <b-tag icon="content-save-outline">{{ savedAt }}</b-tag>
       </b-field>
       <div class="criterium mb-4 columns is-multiline">
         <div class="column is-12">
@@ -19,10 +15,7 @@
           <b-field :label="`Rating for ${criterium(1).title}:`">
             <b-rate v-model="rate1"></b-rate>
           </b-field>
-          <b-button
-            @click="getGuidingQuestions(1)"
-            icon-left="help"
-            type="is-dark is-small">
+          <b-button @click="getGuidingQuestions(1)" icon-left="help" type="is-dark is-small">
             Guiding Questions
           </b-button>
           <div class="is-full mt-4">
@@ -34,11 +27,12 @@
             <b-input type="textarea" v-model="debouncedNote1"></b-input>
           </b-field>
           <b-button
-            :disabled="(this.assessment.note_1.length === 0)"
+            :disabled="this.assessment.note_1.length === 0"
             class="absolute-button"
             @click="copyText('note_1')"
             icon-left="content-copy"
-            type="is-primary is-small">
+            type="is-primary is-small"
+          >
           </b-button>
         </div>
       </div>
@@ -50,10 +44,7 @@
           <b-field :label="`Rating for ${criterium(2).title}:`">
             <b-rate v-model="rate2"></b-rate>
           </b-field>
-          <b-button
-            @click="getGuidingQuestions(2)"
-            icon-left="help"
-            type="is-dark is-small">
+          <b-button @click="getGuidingQuestions(2)" icon-left="help" type="is-dark is-small">
             Guiding Questions
           </b-button>
           <div class="is-full mt-4">
@@ -65,11 +56,12 @@
             <b-input type="textarea" v-model="debouncedNote2"></b-input>
           </b-field>
           <b-button
-            :disabled="(this.assessment.note_2.length === 0)"
+            :disabled="this.assessment.note_2.length === 0"
             class="absolute-button"
             @click="copyText('note_2')"
             icon-left="content-copy"
-            type="is-primary is-small">
+            type="is-primary is-small"
+          >
           </b-button>
         </div>
       </div>
@@ -81,10 +73,7 @@
           <b-field :label="`Rating for ${criterium(3).title}:`">
             <b-rate v-model="rate3"></b-rate>
           </b-field>
-          <b-button
-            @click="getGuidingQuestions(3)"
-            icon-left="help"
-            type="is-dark is-small">
+          <b-button @click="getGuidingQuestions(3)" icon-left="help" type="is-dark is-small">
             Guiding Questions
           </b-button>
           <div class="is-full mt-4">
@@ -96,36 +85,47 @@
             <b-input type="textarea" v-model="debouncedNote3"></b-input>
           </b-field>
           <b-button
-            :disabled="(this.assessment.note_3.length === 0)"
+            :disabled="this.assessment.note_3.length === 0"
             class="absolute-button"
             @click="copyText('note_3')"
             icon-left="content-copy"
-            type="is-primary is-small">
+            type="is-primary is-small"
+          >
           </b-button>
         </div>
       </div>
-      <b-field>
+      <!-- <b-field>
         <b-tooltip multilined type="is-primary is-light" class="mr-4" :active="completed !== 100">
           <b-checkbox
             class="mb-4 has-text-weight-bold is-size-5"
             :disabled="completed !== 100"
             v-model="submitted"
-            v-if="assessment">
-            Confirm that you submitted the Assessment to IdeaScale.<br />I have copied any content created here into Ideascale.
+            v-if="assessment"
+          >
+            Confirm that you submitted the Assessment to IdeaScale.<br />I have copied any content created
+            here into Ideascale.
           </b-checkbox>
           <template v-slot:content>
-            You have to complete the assessment (fill all the ratings and all the rationales) before confirming that you submitted it to IdeaScale
+            You have to complete the assessment (fill all the ratings and all the rationales) before
+            confirming that you submitted it to IdeaScale
           </template>
         </b-tooltip>
-      </b-field>
+      </b-field> -->
     </div>
-    <b-button
-      v-if="assessment"
-      @click="deleteAssessment"
-      icon-left="delete"
-      type="is-danger">
-      Delete Assessment
-    </b-button>
+    <div class="buttons">
+      <b-button
+        v-if="assessment"
+        :disabled="completed !== 100"
+        @click="submitAssessment"
+        icon-left="upload"
+        type="is-primary"
+      >
+        Submit Assessment
+      </b-button>
+      <b-button v-if="assessment" @click="deleteAssessment" icon-left="delete" type="is-danger">
+        Delete Assessment
+      </b-button>
+    </div>
     <b-modal
       v-for="qid in [1, 2, 3]"
       v-model="modalActive[qid]"
@@ -135,116 +135,118 @@
       :destroy-on-hide="true"
       aria-role="dialog"
       aria-label="Self Checklist"
-      aria-modal>
+      aria-modal
+    >
       <template #default="props">
         <checklist
-        :assessment="assessment"
-        v-bind="{criterium: criterium(qid)}"
-        @self-evaluated="selfEvaluated(qid, $event)"
-        @close="props.close" />
+          :assessment="assessment"
+          v-bind="{ criterium: criterium(qid) }"
+          @self-evaluated="selfEvaluated(qid, $event)"
+          @close="props.close"
+        />
       </template>
     </b-modal>
   </div>
 </template>
 
 <script>
-
+import sjcl from "sjcl";
 import { mapGetters } from "vuex";
-import debounce from 'lodash.debounce';
-import criteria from '@/assets/data/criteria.json'
-import Checklist from '@/components/Checklist'
+import debounce from "lodash.debounce";
+import criteria from "@/assets/data/criteria.json";
+import Checklist from "@/components/Checklist";
 
 export default {
-  props: ['proposal'],
+  props: ["proposal"],
   data() {
     return {
       criteria: criteria,
       modalActive: {
         1: false,
         2: false,
-        3: false
+        3: false,
       },
-      savedAt: 'Loading...',
-      interval: false
-    }
+      savedAt: "Loading...",
+      interval: false,
+    };
   },
   components: {
-    Checklist
+    Checklist,
   },
   computed: {
     ...mapGetters("assessments", ["getById"]),
     assessment() {
-      return this.getById(this.proposal.id)
+      return this.getById(this.proposal.id);
     },
     rate1: {
       get() {
-        return this.assessment.rate_1
+        return this.assessment.rate_1;
       },
       set(val) {
-        this.setValue('rate_1', val)
-      }
+        this.setValue("rate_1", val);
+      },
     },
     debouncedNote1: {
       get() {
         return this.assessment.note_1;
       },
       set: debounce(function(val) {
-        this.setValue('note_1', val)
-      }, 500)
+        this.setValue("note_1", val);
+      }, 500),
     },
     rate2: {
       get() {
-        return this.assessment.rate_2
+        return this.assessment.rate_2;
       },
       set(val) {
-        this.setValue('rate_2', val)
-      }
+        this.setValue("rate_2", val);
+      },
     },
     debouncedNote2: {
       get() {
         return this.assessment.note_2;
       },
       set: debounce(function(val) {
-        this.setValue('note_2', val)
-      }, 500)
+        this.setValue("note_2", val);
+      }, 500),
     },
     rate3: {
       get() {
-        return this.assessment.rate_3
+        return this.assessment.rate_3;
       },
       set(val) {
-        this.setValue('rate_3', val)
-      }
+        this.setValue("rate_3", val);
+      },
     },
     debouncedNote3: {
       get() {
         return this.assessment.note_3;
       },
       set: debounce(function(val) {
-        this.setValue('note_3', val)
-      }, 500)
+        this.setValue("note_3", val);
+      }, 500),
     },
     submitted: {
       get() {
         return this.assessment.submitted;
       },
       set: debounce(function(val) {
-        this.setValue('submitted', val)
-      }, 500)
+        this.setValue("submitted", val);
+      }, 500),
     },
     completed() {
       if (this.assessment) {
         const reducer = (previousValue, currentValue) => previousValue + currentValue;
-        let texts = ['note_1', 'note_2', 'note_3']
-          .map((el) => (this.assessment[el].length > 0) ? 1 : 0 )
-          .reduce(reducer)
-        let ratings = ['rate_1', 'rate_2', 'rate_3']
-          .map((el) => (this.assessment[el] > 0) ? 1 : 0 )
-          .reduce(reducer)
-        return parseInt((100 * (texts + ratings)) / 6)
+        let texts = ["note_1", "note_2", "note_3"]
+          .map(el => (this.assessment[el].length > 0 ? 1 : 0))
+          .reduce(reducer);
+        let ratings = ["rate_1", "rate_2", "rate_3"]
+          .map(el => (this.assessment[el] > 0 ? 1 : 0))
+          .reduce(reducer);
+        return parseInt((100 * (texts + ratings)) / 6);
       }
-      return 0
-    }
+      return 0;
+    },
   },
   methods: {
     createAssessment() {
@@ -252,89 +254,105 @@ export default {
         message: `I confirm that this tool is only to be used for compiling purposes. I understand that the assessments MUST be submitted through IdeaScale AND that this interface is saved locally on the browser meaning that data will be lost if the cache is cleared (it is possible to export and download the assessments in the pa-tool using the "Export" button in the "My assessments" page).`,
         trapFocus: true,
         onConfirm: () => {
-          this.$store.commit('assessments/addAssessment', this.proposal.id)
-        }
-      })
+          this.$store.commit("assessments/addAssessment", this.proposal.id);
+        },
+      });
     },
     deleteAssessment() {
       this.$buefy.dialog.confirm({
         message: `Are you sure? After deleting your assessment can't be recovered.`,
         trapFocus: true,
         onConfirm: () => {
-          this.$store.commit('assessments/deleteAssessment', this.proposal.id)
-        }
-      })
+          this.$store.commit("assessments/deleteAssessment", this.proposal.id);
+        },
+      });
+    },
+    submitAssessment() {
+      const assessmentsString = JSON.stringify(this.assessment);
+      const assessmentsBitArray = sjcl.hash.sha256.hash(assessmentsString);
+      const assessmentsHash = sjcl.codec.hex.fromBits(assessmentsBitArray);
+      const submissionPayload = {
+        fundHash: this.$store.state.funds.selectedFund.json.fundHash,
+        hashAlg: "sha256",
+        assessmentsHash,
+      };
+      console.log("submitAssessment", submissionPayload);
     },
     setValue(field, val) {
-      this.$store.commit('assessments/setValue', {
+      this.$store.commit("assessments/setValue", {
         id: this.proposal.id,
         field: field,
-        value: val
+        value: val,
       });
-      this.updateSavedAt()
+      this.updateSavedAt();
     },
     criterium(id) {
-      let fCriteria = this.criteria.filter((c) => (c.c_id === id) && (c.challenges.indexOf(this.proposal.category) > -1))
+      let fCriteria = this.criteria.filter(
+        c => c.c_id === id && c.challenges.indexOf(this.proposal.category) > -1,
+      );
       if (fCriteria.length > 0) {
-        let selected = fCriteria[0]
+        let selected = fCriteria[0];
         const questions = {
-          questions: fCriteria.map((c) => c.questions).reduce((acc, val) => acc.concat(val), [])
-        }
-        return {...selected, ...questions}
+          questions: fCriteria.map(c => c.questions).reduce((acc, val) => acc.concat(val), []),
+        };
+        return { ...selected, ...questions };
       }
-      return false
+      return false;
     },
     getGuidingQuestions(criteriumId) {
-      this.modalActive[criteriumId] = true
+      this.modalActive[criteriumId] = true;
     },
     selfEvaluated(id, val) {
-      this.setValue(`self_ev_${id}`, val)
+      this.setValue(`self_ev_${id}`, val);
     },
     copyText(field) {
-      this.$clipboard(this.assessment[field])
+      this.$clipboard(this.assessment[field]);
       this.$buefy.notification.open({
-        message: 'Rationale copied to clipboard. Paste it in IdeaScale!',
-        type: 'is-primary',
-        position: 'is-bottom-right'
-      })
+        message: "Rationale copied to clipboard. Paste it in IdeaScale!",
+        type: "is-primary",
+        position: "is-bottom-right",
+      });
     },
     updateSavedAt() {
       if (this.assessment) {
         if (this.assessment.last_update === 0) {
-          this.savedAt = 'Not saved'
+          this.savedAt = "Not saved";
         } else {
-          let diff = this.assessment.last_update - this.$dayjs().utc().unix()
-          let duration = this.$dayjs.duration(diff, "seconds").humanize(true)
-          this.savedAt = `Saved ${duration}`
+          let diff =
+            this.assessment.last_update -
+            this.$dayjs()
+              .utc()
+              .unix();
+          let duration = this.$dayjs.duration(diff, "seconds").humanize(true);
+          this.savedAt = `Saved ${duration}`;
         }
       }
-    }
+    },
   },
   mounted() {
-    setTimeout(() => this.updateSavedAt(), 500)
+    setTimeout(() => this.updateSavedAt(), 500);
     this.interval = setInterval(() => {
-      this.updateSavedAt()
-    }, 15 * 1000)
+      this.updateSavedAt();
+    }, 15 * 1000);
   },
   beforeDestroy() {
-    clearInterval(this.interval)
-  }
-}
-
+    clearInterval(this.interval);
+  },
+};
 </script>
 
 <style lang="scss">
-  textarea {
-    padding-right: 40px !important;
-  }
-  .absolute-button {
-    position: absolute !important;
-    bottom: 30px;
-    right: 34px !important;
-  }
-  .saved-at {
-    position: absolute !important;
-    top: 0;
-    right: 0;
-  }
+textarea {
+  padding-right: 40px !important;
+}
+.absolute-button {
+  position: absolute !important;
+  bottom: 30px;
+  right: 34px !important;
+}
+.saved-at {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+}
 </style>
