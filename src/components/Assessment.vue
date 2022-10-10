@@ -113,7 +113,7 @@
       </b-field> -->
     </div>
     <div class="buttons">
-      <b-button
+      <!-- <b-button
         v-if="assessment"
         :disabled="completed !== 100"
         @click="submitAssessment"
@@ -121,7 +121,7 @@
         type="is-primary"
       >
         Submit Assessment
-      </b-button>
+      </b-button> -->
       <b-button v-if="assessment" @click="deleteAssessment" icon-left="delete" type="is-danger">
         Delete Assessment
       </b-button>
@@ -275,6 +275,8 @@ export default {
         fundHash: this.$store.state.funds.selectedFund.json.fundHash,
         hashAlg: "sha256",
         assessmentsHash,
+        action: "assessmentsSubmission",
+        proposalsId: [this.proposal.id],
       };
       console.log("submitAssessment", submissionPayload);
     },

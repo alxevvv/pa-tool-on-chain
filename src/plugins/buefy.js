@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue from "vue";
 import {
   Button,
   Navbar,
@@ -17,7 +17,8 @@ import {
   Dialog,
   Collapse,
   Upload,
-  Notification
+  Notification,
+  Table,
 } from "buefy";
 // import { Buefy } from "buefy"
 
@@ -41,4 +42,5 @@ Vue.use(Dialog);
 Vue.use(Collapse);
 Vue.use(Upload);
 Vue.use(Notification);
+Vue.use(Table);
 //Vue.use(Buefy);

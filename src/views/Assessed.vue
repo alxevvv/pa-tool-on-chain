@@ -2,9 +2,9 @@
   <div class="your-assessments">
     <div class="content">
       <p class="title">
-        {{headerText}}
+        {{ headerText }}
       </p>
-      <p class="subtitle">
+      <!-- <p class="subtitle">
         {{subheaderText}} <span class="is-size-6">[Including blanks]</span>
       </p>
       <b-message>
@@ -12,7 +12,7 @@
         Remember that you have to <b>copy-paste</b> each assessment in <b>IdeaScale</b> to officially submit them.<br /><br />
         This tool uses localStorage and cookies to store the progress of your work.<br />
         If you're using a setup where cookies are cleared at every browser launch, be careful because you may lose your work! You should export (download) the file, and re-import it every time or add a exception to your browser's settings.<br />
-      </b-message>
+      </b-message> -->
     </div>
     <div class="content" v-if="assessedProposals.length === 0">
       <p class="subtitle">
@@ -31,38 +31,91 @@
         </b-upload>
       </b-field>
     </div>
-    <div class="list content">
-      <assessment-preview
-        :key="proposal.id"
-        v-for="proposal in assessedProposals"
-        :proposal="proposal"
-      />
+    <div class="content" v-else>
+      <b-table
+        ref="assessmentsTable"
+        :data="tableData"
+        detailed
+        checkable
+        :checked-rows.sync="checkedRows"
+        :is-row-checkable="row => row.completion === 100"
+      >
+        <b-table-column label="Title" v-slot="props">
+          <b-button tag="a" type="is-ghost" @click="openAssessment(props.row)">
+            {{ props.row.title }}
+          </b-button>
+        </b-table-column>
+        <b-table-column label="Completion" v-slot="props">
+          <b-progress
+            type="is-info"
+            class="complete-progress mt-2"
+            :value="props.row.completion"
+            size="is-small"
+            show-value
+          >
+          </b-progress>
+        </b-table-column>
+        <b-table-column label="Submitted" v-slot="props">
+          <b-tag :type="props.row.submitted ? 'is-success' : 'is-danger'">
+            {{ props.row.submitted ? "Yes" : "No" }}
+          </b-tag>
+        </b-table-column>
+        <b-table-column label="Published" v-slot="props">
+          <b-tag :type="props.row.published ? 'is-success' : 'is-danger'">
+            {{ props.row.published ? "Yes" : "No" }}
+          </b-tag>
+        </b-table-column>
+        <template #detail="props">
+          <assessment :proposal="assessedProposals.find(({ id }) => id === props.row.id)" />
+        </template>
+      </b-table>
     </div>
     <div class="content">
+      <b-button
+        icon-left="upload"
+        type="is-primary"
+        :disabled="!checkedRows.length"
+        @click="submitCheckedAssessments"
+        >Submit checked</b-button
+      >
+    </div>
+    <!-- <div class="list content">
+      <assessment-preview :key="proposal.id" v-for="proposal in assessedProposals" :proposal="proposal" />
+    </div> -->
+    <div class="content">
       <b-message class="buttons" v-if="assessedProposals.length > 0">
-        <b-button icon-left="download" type="is-primary is-light" @click="exportAssessments">Export assessments</b-button>
-        <b-button
-          icon-left="delete" type="is-danger is-light"
-          @click="confirmClear">Clear local database</b-button>
+        <b-button icon-left="download" type="is-primary is-light" @click="exportAssessments"
+          >Export assessments</b-button
+        >
+        <b-button icon-left="delete" type="is-danger is-light" @click="confirmClear"
+          >Clear local database</b-button
+        >
       </b-message>
     </div>
   </div>
 </template>
 
 <script>
-
+import sjcl from "sjcl";
 import { mapGetters } from "vuex";
-import proposals from '@/assets/data/f9/proposals.json'
+import proposals from "@/assets/data/f9/proposals.json";
 import csvHeaders from "@/assets/data/import-csv-headers.json";
 
 import downloadCsv from "@/utils/export-csv";
 import pick from "@/utils/pick";
-import AssessmentPreview from '@/components/AssessmentPreview'
+import Assessment from "@/components/Assessment";
+
+function getAssessmentCompletion(proposal) {
+  const reducer = (previousValue, currentValue) => previousValue + currentValue;
+  let texts = ["note_1", "note_2", "note_3"].map(el => (proposal[el].length > 0 ? 1 : 0)).reduce(reducer);
+  let ratings = ["rate_1", "rate_2", "rate_3"].map(el => (proposal[el] > 0 ? 1 : 0)).reduce(reducer);
+  return parseInt((100 * (texts + ratings)) / 6);
+}
 
 export default {
-  name: 'Assessed',
+  name: "Assessed",
   components: {
-    AssessmentPreview
+    Assessment,
   },
   data() {
     return {
@@ -70,24 +123,38 @@ export default {
       assessed: [],
       csv: null,
       csvHeaders: csvHeaders,
-      goalAssPerProposal: 5
-    }
+      goalAssPerProposal: 5,
+      checkedRows: [],
+    };
   },
   computed: {
     ...mapGetters("assessments", ["ids", "indexed", "assessedCount"]),
     ...mapGetters("filters", ["totalCount", "totalProposals"]),
     assessedProposals() {
-      return this.proposals.filter(p => (this.ids.indexOf(p.id) > -1))
-        .map((p) => {
-          return {...p, ...this.indexed[p.id]}
-        })
+      return this.proposals
+        .filter(p => this.ids.indexOf(p.id) > -1)
+        .map(p => {
+          return { ...p, ...this.indexed[p.id] };
+        });
     },
     headerText() {
-      return `My Assessments (${this.assessedCount}/${this.totalProposals})`
+      return `My Assessments (${this.assessedCount}/${this.totalProposals})`;
     },
     subheaderText() {
-      return `Total assessments submitted in IdeaScale (${this.totalCount}/${this.proposals.length * this.goalAssPerProposal})`
-    }
+      return `Total assessments submitted in IdeaScale (${this.totalCount}/${this.proposals.length *
+        this.goalAssPerProposal})`;
+    },
+    tableData() {
+      return this.assessedProposals.map(proposal => {
+        return {
+          id: proposal.id,
+          title: proposal.title,
+          completion: getAssessmentCompletion(proposal),
+          submitted: true,
+          published: false,
+        };
+      });
+    },
   },
   methods: {
     importCsv() {
@@ -103,74 +170,100 @@ export default {
         complete: this.onComplete,
         transform: this.transformData,
         transformHeader: this.transformHeader,
-        skipEmptyLines: true
+        skipEmptyLines: true,
       });
     },
     onComplete(results) {
-      results.data = results.data.map((el) => {
-        return pick(el, Object.keys(this.csvHeaders))
-      })
+      results.data = results.data.map(el => {
+        return pick(el, Object.keys(this.csvHeaders));
+      });
       this.csv = results;
-      this.importCsv()
+      this.importCsv();
     },
     transformData(value, col) {
       if (this.csvHeaders[col]) {
-        if (this.csvHeaders[col].type === 'integer') {
-          return parseInt(value)
+        if (this.csvHeaders[col].type === "integer") {
+          return parseInt(value);
         }
-        if (this.csvHeaders[col].type === 'boolean') {
-          return (parseInt(value) > 0)
+        if (this.csvHeaders[col].type === "boolean") {
+          return parseInt(value) > 0;
         }
-        if (this.csvHeaders[col].type === 'array') {
-          return value.split(',')
+        if (this.csvHeaders[col].type === "array") {
+          return value.split(",");
         }
-        if (this.csvHeaders[col].type === 'string') {
-          return value
+        if (this.csvHeaders[col].type === "string") {
+          return value;
         }
       } else {
-        return value
+        return value;
       }
     },
     transformHeader(header) {
-      const newHeaders = {}
-      Object.keys(this.csvHeaders).forEach((h) => {
-        newHeaders[this.csvHeaders[h].label] = h
-      })
+      const newHeaders = {};
+      Object.keys(this.csvHeaders).forEach(h => {
+        newHeaders[this.csvHeaders[h].label] = h;
+      });
       if (newHeaders[header]) {
-        return newHeaders[header]
+        return newHeaders[header];
       }
-      return header
+      return header;
     },
     clear() {
       this.$store.commit("assessments/resetState");
     },
     confirmClear() {
       this.$buefy.dialog.confirm({
-        title: 'Clear database',
-        message: 'Are you sure you want to <b>clear</b> the local database? This action cannot be undone and you will lose your work.',
-        confirmText: 'Clear Database',
-        type: 'is-danger',
+        title: "Clear database",
+        message:
+          "Are you sure you want to <b>clear</b> the local database? This action cannot be undone and you will lose your work.",
+        confirmText: "Clear Database",
+        type: "is-danger",
         hasIcon: true,
         onConfirm: () => {
           this.clear();
           this.$buefy.notification.open({
-            message: 'Database cleared!',
-            type: 'is-primary',
-            position: 'is-bottom-right'
-          })
-        }
-      })
+            message: "Database cleared!",
+            type: "is-primary",
+            position: "is-bottom-right",
+          });
+        },
+      });
     },
     exportAssessments() {
-      const localAssessments = this.assessedProposals
-      downloadCsv(localAssessments)
-    }
+      const localAssessments = this.assessedProposals;
+      downloadCsv(localAssessments);
+    },
+    openAssessment(row) {
+      this.$refs.assessmentsTable.toggleDetails(row);
+    },
+    submitCheckedAssessments() {
+      const submittingAssessments = this.checkedRows.map(row => {
+        const assessment = this.indexed[row.id];
+        return {
+          proposal_id: assessment.id,
+          note_1: assessment.note_1,
+          note_2: assessment.note_2,
+          note_3: assessment.note_3,
+          rate_1: assessment.rate_1,
+          rate_2: assessment.rate_2,
+          rate_3: assessment.rate_3,
+        };
+      });
+      const submittingAssessmentsString = JSON.stringify(submittingAssessments);
+      const submittingAssessmentsBitArray = sjcl.hash.sha256.hash(submittingAssessmentsString);
+      const submittingAssessmentsHash = sjcl.codec.hex.fromBits(submittingAssessmentsBitArray);
+      const submissionPayload = {
+        action: "assessmentsSubmission",
+        fundHash: this.$store.state.funds.selectedFund.json.fundHash,
+        hashAlg: "sha256",
+        assessmentsHash: submittingAssessmentsHash,
+        proposalsId: submittingAssessments.map(({ proposal_id }) => proposal_id),
+      };
+      console.log("submit assessments", submittingAssessments, submissionPayload);
+    },
   },
-  mounted() {
-  }
-}
+  mounted() {},
+};
 </script>
 
-
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>
