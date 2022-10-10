@@ -75,6 +75,7 @@
         icon-left="upload"
         type="is-primary"
         :disabled="!checkedRows.length"
+        :loading="$store.state.wallet.isSendingTx"
         @click="submitCheckedAssessments"
         >Submit checked</b-button
       >
@@ -236,7 +237,8 @@ export default {
     openAssessment(row) {
       this.$refs.assessmentsTable.toggleDetails(row);
     },
-    submitCheckedAssessments() {
+    async submitCheckedAssessments() {
+      // create assessments submission array
       const submittingAssessments = this.checkedRows.map(row => {
         const assessment = this.indexed[row.id];
         return {
@@ -249,9 +251,13 @@ export default {
           rate_3: assessment.rate_3,
         };
       });
+
+      // encode assessments submission array
       const submittingAssessmentsString = JSON.stringify(submittingAssessments);
       const submittingAssessmentsBitArray = sjcl.hash.sha256.hash(submittingAssessmentsString);
       const submittingAssessmentsHash = sjcl.codec.hex.fromBits(submittingAssessmentsBitArray);
+
+      // create submission payload
       const submissionPayload = {
         action: "assessmentsSubmission",
         fundHash: this.$store.state.funds.selectedFund.json.fundHash,
@@ -259,7 +265,23 @@ export default {
         assessmentsHash: submittingAssessmentsHash,
         proposalsId: submittingAssessments.map(({ proposal_id }) => proposal_id),
       };
-      console.log("submit assessments", submittingAssessments, submissionPayload);
+
+      // send transaction
+      const txSendingResult = await this.$store.dispatch("wallet/sendTxMetadata", {
+        metadataKey: process.env.VUE_APP_METADATA_KEY,
+        metadataValue: submissionPayload,
+      });
+
+      // uncheck table rows
+      this.checkedRows = [];
+
+      // show success notification
+      this.$buefy.notification.open({
+        message: `Transaction sent. Hash: ${txSendingResult}`,
+        type: "is-success",
+        position: "is-top",
+        duration: 7500,
+      });
     },
   },
   mounted() {},
