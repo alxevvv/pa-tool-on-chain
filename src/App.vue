@@ -138,9 +138,11 @@
 </template>
 
 <script>
+import { Address } from "@emurgo/cardano-serialization-lib-asmjs";
 import { mapGetters } from "vuex";
 import Landing from "@/views/Landing";
 import Counter from "@/components/Counter";
+import extractStakeAddress from "@/utils/extractStakeAddress";
 
 export default {
   data() {
@@ -172,6 +174,9 @@ export default {
     toEndAssess() {
       return this.getDuration(this.secsToEndAssess);
     },
+    walletApi() {
+      return this.$store.state.wallet.walletApi;
+    },
   },
   methods: {
     selectFund(fundHash) {
@@ -196,6 +201,21 @@ export default {
     },
     next() {
       this.$store.dispatch("filters/getNext", false);
+    },
+  },
+  watch: {
+    async walletApi(walletApi) {
+      if (walletApi) {
+        const usedAddresses = await walletApi.getUsedAddresses();
+        if (usedAddresses.length > 0) {
+          const addressBech32 = Address.from_bytes(Buffer.from(usedAddresses[0], "hex")).to_bech32();
+          const stakeAddress = extractStakeAddress(
+            addressBech32,
+            parseInt(process.env.VUE_APP_CARDANO_NETWORK_ID, 10),
+          );
+          this.$store.commit("wallet/setWalletStakeAddressBech32", stakeAddress);
+        }
+      }
     },
   },
   mounted() {
