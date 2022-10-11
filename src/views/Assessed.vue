@@ -35,13 +35,12 @@
       <b-table
         ref="assessmentsTable"
         :data="tableData"
-        detailed
         checkable
         :checked-rows.sync="checkedRows"
         :is-row-checkable="row => row.completion === 100"
       >
         <b-table-column label="Title" v-slot="props">
-          <b-button tag="a" type="is-ghost" @click="openAssessment(props.row)">
+          <b-button tag="router-link" type="is-ghost" :to="`/proposal/${props.row.id}`">
             {{ props.row.title }}
           </b-button>
         </b-table-column>
@@ -65,9 +64,6 @@
             {{ props.row.published ? "Yes" : "No" }}
           </b-tag>
         </b-table-column>
-        <template #detail="props">
-          <assessment :proposal="assessedProposals.find(({ id }) => id === props.row.id)" />
-        </template>
       </b-table>
     </div>
     <div class="content">
@@ -80,9 +76,6 @@
         >Submit checked</b-button
       >
     </div>
-    <!-- <div class="list content">
-      <assessment-preview :key="proposal.id" v-for="proposal in assessedProposals" :proposal="proposal" />
-    </div> -->
     <div class="content">
       <b-message class="buttons" v-if="assessedProposals.length > 0">
         <b-button icon-left="download" type="is-primary is-light" @click="exportAssessments"
@@ -104,7 +97,6 @@ import csvHeaders from "@/assets/data/import-csv-headers.json";
 
 import downloadCsv from "@/utils/export-csv";
 import pick from "@/utils/pick";
-import Assessment from "@/components/Assessment";
 
 function getAssessmentCompletion(proposal) {
   const reducer = (previousValue, currentValue) => previousValue + currentValue;
@@ -115,9 +107,7 @@ function getAssessmentCompletion(proposal) {
 
 export default {
   name: "Assessed",
-  components: {
-    Assessment,
-  },
+  components: {},
   data() {
     return {
       proposals: proposals,
@@ -151,7 +141,7 @@ export default {
           id: proposal.id,
           title: proposal.title,
           completion: getAssessmentCompletion(proposal),
-          submitted: true,
+          submitted: this.$store.state.assessments.assessedSubmittedProposalsId.includes(proposal.id),
           published: false,
         };
       });
@@ -234,12 +224,25 @@ export default {
       const localAssessments = this.assessedProposals;
       downloadCsv(localAssessments);
     },
-    openAssessment(row) {
-      this.$refs.assessmentsTable.toggleDetails(row);
-    },
     async submitCheckedAssessments() {
+      // filter out already submitted assessments
+      const rowsToSubmit = this.checkedRows.filter(row => {
+        return !this.$store.state.assessments.assessedSubmittedProposalsId.includes(row.id);
+      });
+
+      // return if there are no assessments to submit
+      if (!rowsToSubmit.length) {
+        this.$buefy.notification.open({
+          message: "All selected assessments have already been sent",
+          type: "is-warning",
+          position: "is-top",
+          duration: 4000,
+        });
+        return;
+      }
+
       // create assessments submission array
-      const submittingAssessments = this.checkedRows.map(row => {
+      const submittingAssessments = rowsToSubmit.map(row => {
         const assessment = this.indexed[row.id];
         return {
           proposal_id: assessment.id,
@@ -256,6 +259,7 @@ export default {
       const submittingAssessmentsString = JSON.stringify(submittingAssessments);
       const submittingAssessmentsBitArray = sjcl.hash.sha256.hash(submittingAssessmentsString);
       const submittingAssessmentsHash = sjcl.codec.hex.fromBits(submittingAssessmentsBitArray);
+      const submittingAssessmentsProposalsId = submittingAssessments.map(({ proposal_id }) => proposal_id);
 
       // create submission payload
       const submissionPayload = {
@@ -263,25 +267,38 @@ export default {
         fundHash: this.$store.state.funds.selectedFund.json.fundHash,
         hashAlg: "sha256",
         assessmentsHash: submittingAssessmentsHash,
-        proposalsId: submittingAssessments.map(({ proposal_id }) => proposal_id),
+        proposalsId: submittingAssessmentsProposalsId,
       };
 
-      // send transaction
-      const txSendingResult = await this.$store.dispatch("wallet/sendTxMetadata", {
-        metadataKey: process.env.VUE_APP_METADATA_KEY,
-        metadataValue: submissionPayload,
-      });
+      try {
+        // send transaction
+        const txSendingResult = await this.$store.dispatch("wallet/sendTxMetadata", {
+          metadataKey: process.env.VUE_APP_METADATA_KEY,
+          metadataValue: submissionPayload,
+        });
 
-      // uncheck table rows
-      this.checkedRows = [];
+        // uncheck table rows
+        this.checkedRows = [];
 
-      // show success notification
-      this.$buefy.notification.open({
-        message: `Transaction sent. Hash: ${txSendingResult}`,
-        type: "is-success",
-        position: "is-top",
-        duration: 7500,
-      });
+        // add ids of assessed proposals
+        this.$store.commit("assessments/addAssessedSubmittedProposalsId", submittingAssessmentsProposalsId);
+
+        // show success notification
+        this.$buefy.notification.open({
+          message: `Transaction sent. Hash: ${txSendingResult}`,
+          type: "is-success",
+          position: "is-top",
+          duration: 7500,
+        });
+      } catch (err) {
+        // show notification on error
+        this.$buefy.notification.open({
+          message: `Transaction sending error: ${err}`,
+          type: "is-danger",
+          position: "is-top",
+          duration: 7500,
+        });
+      }
     },
   },
   mounted() {},

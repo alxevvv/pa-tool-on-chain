@@ -4,6 +4,9 @@
       Create Assessment
     </b-button>
     <div class="form-wrapper mb-4 content is-relative" v-if="assessment">
+      <b-message type="is-info" v-if="submitted">
+        Since this assessment have been submitted, it is read only.
+      </b-message>
       <b-field class="saved-at">
         <b-tag icon="content-save-outline">{{ savedAt }}</b-tag>
       </b-field>
@@ -13,9 +16,14 @@
         </div>
         <div class="column is-2">
           <b-field :label="`Rating for ${criterium(1).title}:`">
-            <b-rate v-model="rate1"></b-rate>
+            <b-rate :disabled="submitted" v-model="rate1"></b-rate>
           </b-field>
-          <b-button @click="getGuidingQuestions(1)" icon-left="help" type="is-dark is-small">
+          <b-button
+            :disabled="submitted"
+            @click="getGuidingQuestions(1)"
+            icon-left="help"
+            type="is-dark is-small"
+          >
             Guiding Questions
           </b-button>
           <div class="is-full mt-4">
@@ -24,7 +32,7 @@
         </div>
         <div class="column is-10 is-relative">
           <b-field :label="`Rationale for ${criterium(1).title}:`">
-            <b-input type="textarea" v-model="debouncedNote1"></b-input>
+            <b-input :disabled="submitted" type="textarea" v-model="debouncedNote1"></b-input>
           </b-field>
           <b-button
             :disabled="this.assessment.note_1.length === 0"
@@ -42,9 +50,14 @@
         </div>
         <div class="column is-2">
           <b-field :label="`Rating for ${criterium(2).title}:`">
-            <b-rate v-model="rate2"></b-rate>
+            <b-rate :disabled="submitted" v-model="rate2"></b-rate>
           </b-field>
-          <b-button @click="getGuidingQuestions(2)" icon-left="help" type="is-dark is-small">
+          <b-button
+            :disabled="submitted"
+            @click="getGuidingQuestions(2)"
+            icon-left="help"
+            type="is-dark is-small"
+          >
             Guiding Questions
           </b-button>
           <div class="is-full mt-4">
@@ -53,7 +66,7 @@
         </div>
         <div class="column is-10 is-relative">
           <b-field :label="`Rationale for ${criterium(2).title}:`">
-            <b-input type="textarea" v-model="debouncedNote2"></b-input>
+            <b-input :disabled="submitted" type="textarea" v-model="debouncedNote2"></b-input>
           </b-field>
           <b-button
             :disabled="this.assessment.note_2.length === 0"
@@ -71,9 +84,14 @@
         </div>
         <div class="column is-2">
           <b-field :label="`Rating for ${criterium(3).title}:`">
-            <b-rate v-model="rate3"></b-rate>
+            <b-rate :disabled="submitted" v-model="rate3"></b-rate>
           </b-field>
-          <b-button @click="getGuidingQuestions(3)" icon-left="help" type="is-dark is-small">
+          <b-button
+            :disabled="submitted"
+            @click="getGuidingQuestions(3)"
+            icon-left="help"
+            type="is-dark is-small"
+          >
             Guiding Questions
           </b-button>
           <div class="is-full mt-4">
@@ -82,7 +100,7 @@
         </div>
         <div class="column is-10 is-relative">
           <b-field :label="`Rationale for ${criterium(3).title}:`">
-            <b-input type="textarea" v-model="debouncedNote3"></b-input>
+            <b-input :disabled="submitted" type="textarea" v-model="debouncedNote3"></b-input>
           </b-field>
           <b-button
             :disabled="this.assessment.note_3.length === 0"
@@ -113,16 +131,13 @@
       </b-field> -->
     </div>
     <div class="buttons">
-      <!-- <b-button
+      <b-button
         v-if="assessment"
-        :disabled="completed !== 100"
-        @click="submitAssessment"
-        icon-left="upload"
-        type="is-primary"
+        :disabled="submitted"
+        @click="deleteAssessment"
+        icon-left="delete"
+        type="is-danger"
       >
-        Submit Assessment
-      </b-button> -->
-      <b-button v-if="assessment" @click="deleteAssessment" icon-left="delete" type="is-danger">
         Delete Assessment
       </b-button>
     </div>
@@ -150,7 +165,6 @@
 </template>
 
 <script>
-import sjcl from "sjcl";
 import { mapGetters } from "vuex";
 import debounce from "lodash.debounce";
 import criteria from "@/assets/data/criteria.json";
@@ -226,14 +240,14 @@ export default {
         this.setValue("note_3", val);
       }, 500),
     },
-    submitted: {
-      get() {
-        return this.assessment.submitted;
-      },
-      set: debounce(function(val) {
-        this.setValue("submitted", val);
-      }, 500),
-    },
+    // submitted: {
+    //   get() {
+    //     return this.assessment.submitted;
+    //   },
+    //   set: debounce(function(val) {
+    //     this.setValue("submitted", val);
+    //   }, 500),
+    // },
     completed() {
       if (this.assessment) {
         const reducer = (previousValue, currentValue) => previousValue + currentValue;
@@ -246,6 +260,9 @@ export default {
         return parseInt((100 * (texts + ratings)) / 6);
       }
       return 0;
+    },
+    submitted() {
+      return this.$store.state.assessments.assessedSubmittedProposalsId.includes(this.proposal.id);
     },
   },
   methods: {
@@ -266,19 +283,6 @@ export default {
           this.$store.commit("assessments/deleteAssessment", this.proposal.id);
         },
       });
-    },
-    submitAssessment() {
-      const assessmentsString = JSON.stringify(this.assessment);
-      const assessmentsBitArray = sjcl.hash.sha256.hash(assessmentsString);
-      const assessmentsHash = sjcl.codec.hex.fromBits(assessmentsBitArray);
-      const submissionPayload = {
-        fundHash: this.$store.state.funds.selectedFund.json.fundHash,
-        hashAlg: "sha256",
-        assessmentsHash,
-        action: "assessmentsSubmission",
-        proposalsId: [this.proposal.id],
-      };
-      console.log("submitAssessment", submissionPayload);
     },
     setValue(field, val) {
       this.$store.commit("assessments/setValue", {

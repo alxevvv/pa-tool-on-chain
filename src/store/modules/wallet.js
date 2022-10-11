@@ -19,20 +19,6 @@ import initTxBuilder from "@/utils/initTxBuilder";
 const getDefaultState = () => ({
   compatibleWallets: ["eternl", "flint", "gerowallet", "nami", "nufi"],
   availableWallets: null,
-  protocolParams: {
-    linearFee: {
-      minFeeA: "44",
-      minFeeB: "155381",
-    },
-    minUtxo: "34482",
-    poolDeposit: "500000000",
-    keyDeposit: "2000000",
-    maxValSize: 5000,
-    maxTxSize: 16384,
-    priceMem: 0.0577,
-    priceStep: 0.0000721,
-    coinsPerUtxoWord: "34482",
-  },
   walletName: null,
   walletIcon: null,
   walletApiVersion: null,
@@ -47,7 +33,10 @@ const state = getDefaultState();
 // getters
 const getters = {
   async utxos(state) {
-    let Utxos = [];
+    if (!state.walletApi) {
+      return null;
+    }
+    const utxos = [];
     try {
       const rawUtxos = await state.walletApi.getUtxos();
       for (const rawUtxo of rawUtxos) {
@@ -96,15 +85,19 @@ const getters = {
           multiAssetStr: multiAssetStr,
           TransactionUnspentOutput: utxo,
         };
-        Utxos.push(obj);
+        utxos.push(obj);
         // console.log(`utxo: ${str}`)
       }
-      return Utxos;
+      return utxos;
     } catch (err) {
       console.log(err);
     }
   },
   async txUnspentOutputs(_, getters) {
+    if (!state.walletApi) {
+      return null;
+    }
+
     const txOutputs = TransactionUnspentOutputs.new();
     for (const utxo of await getters.utxos) {
       txOutputs.add(utxo.TransactionUnspentOutput);
@@ -112,6 +105,9 @@ const getters = {
     return txOutputs;
   },
   async changeAddress(state) {
+    if (!state.walletApi) {
+      return null;
+    }
     try {
       const raw = await state.walletApi.getChangeAddress();
       const changeAddress = Address.from_bytes(Buffer.from(raw, "hex")).to_bech32();
@@ -121,6 +117,10 @@ const getters = {
     }
   },
   async recipientAddress(state) {
+    if (!state.walletApi) {
+      return null;
+    }
+
     let unusedAddress = false;
     let address = false;
 
@@ -272,11 +272,14 @@ const actions = {
   },
   async sendTxMetadata(context, { metadataKey, metadataValue }) {
     context.commit("setIsSendingTx", true);
-    const submittedTxHash = await context.state.walletApi.submitTx(
-      await context.dispatch("buildTransaction", { metadataKey, metadataValue }),
-    );
-    context.commit("setIsSendingTx", false);
-    return submittedTxHash;
+    try {
+      const submittedTxHash = await context.state.walletApi.submitTx(
+        await context.dispatch("buildTransaction", { metadataKey, metadataValue }),
+      );
+      return submittedTxHash;
+    } finally {
+      context.commit("setIsSendingTx", false);
+    }
   },
 };
 

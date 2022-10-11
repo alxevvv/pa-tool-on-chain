@@ -214,16 +214,19 @@ export default {
             parseInt(process.env.VUE_APP_CARDANO_NETWORK_ID, 10),
           );
           this.$store.commit("wallet/setWalletStakeAddressBech32", stakeAddress);
+          await this.$store.dispatch("assessments/loadSubmitted");
         }
       }
     },
   },
   mounted() {
     this.$store.dispatch("funds/loadFunds");
+
     setTimeout(() => {
       this.$store.dispatch("wallet/findAvailableWallets");
       this.$store.dispatch("wallet/reconnectWallet");
     }, 200);
+
     if (window.localStorage) {
       let oldKeys = ["ca-tool-default", "ca-tool-f8-default", "ca-tool-f9-default"];
       oldKeys.forEach(k => {
@@ -233,6 +236,7 @@ export default {
         }
       });
     }
+
     this.interval = setInterval(() => {
       this.getNow();
     }, 1000);
