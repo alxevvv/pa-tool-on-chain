@@ -4,6 +4,7 @@ export async function assessmentsPublicationList(fundHash) {
     key: `eq.${process.env.VUE_APP_METADATA_KEY}`,
     "json->>action": "eq.assessmentsPublication",
     "json->>fundHash": `eq.${fundHash}`,
+    select: "*,tx(hash,block(time))",
   });
   const response = await fetch(`${url}?${params}`);
   const data = await response.json();

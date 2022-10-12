@@ -3,6 +3,7 @@ export async function fundsList() {
   const params = new URLSearchParams({
     key: `eq.${process.env.VUE_APP_METADATA_KEY}`,
     "json->>action": "eq.fundGenesis",
+    select: "*,tx(hash,block(time))",
   });
   const response = await fetch(`${url}?${params}`);
   const data = await response.json();
