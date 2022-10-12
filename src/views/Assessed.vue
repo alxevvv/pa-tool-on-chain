@@ -79,15 +79,14 @@
               aria-role="listitem"
               :disabled="!props.row.submitted"
               @click="showSubmissionInfoModal(props.row.id)"
-              >Submission Info</b-dropdown-item
+              >Submission</b-dropdown-item
             >
             <b-dropdown-item
               aria-role="listitem"
               :disabled="!props.row.published"
               @click="showPublicationInfoModal(props.row.id)"
-              >Publication Info</b-dropdown-item
+              >Publication</b-dropdown-item
             >
-            <b-dropdown-item aria-role="listitem">Something else</b-dropdown-item>
           </b-dropdown>
         </b-table-column>
       </b-table>

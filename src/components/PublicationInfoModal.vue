@@ -14,6 +14,10 @@
         ><br /><br />
         <h4 class="title is-4">Publication JSON</h4>
         <pre>{{ publication.json }}</pre>
+        <br />
+        <b-button tag="a" type="is-info" target="_blank" :href="ipfsPath" icon-left="open-in-new"
+          >Open assessment at IPFS</b-button
+        >
       </div>
     </section>
     <footer class="modal-card-foot">
@@ -41,6 +45,16 @@ export default {
       fundHash: this.$store.state.funds.selectedFund.json.fundHash,
       walletStakeAddressBech32: this.$store.state.wallet.walletStakeAddressBech32,
     };
+  },
+
+  computed: {
+    ipfsPath() {
+      if (this.publication) {
+        return `https://ipfs.io/ipfs/${this.publication.json.assessmentsCID}`;
+      } else {
+        return "";
+      }
+    },
   },
 
   methods: {
