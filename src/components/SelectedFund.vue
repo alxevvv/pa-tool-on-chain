@@ -10,13 +10,18 @@
           </header>
           <div class="card-content">
             <div class="content">
-              <strong>Title:</strong> {{ fund.json.title }}<br />
+              <h3 class="title is-3">{{ fund.json.title }}</h3>
+              <strong>PA Status:</strong>&nbsp;
+              <b-tag :type="registrationTx ? 'is-success' : 'is-danger'" size="is-middle">{{
+                registeredMessage
+              }}</b-tag
+              ><br />
+              <strong v-if="registrationTx">PA Registration Tx Hash:</strong>
+              <code>{{ registrationTx.tx.hash.slice(2) }}</code
+              ><br /><br />
               <strong>Fund Hash:</strong> <code>{{ fund.json.fundHash }}</code
               ><br />
-              <strong>Fund Genesis Tx Hash:</strong> <code>{{ fund.tx.hash.slice(2) }}</code
-              ><br />
-              <strong>PA Status:</strong>
-              {{ registeredMessage }}<br />
+              <strong>Fund Genesis Tx Hash:</strong> <code>{{ fund.tx.hash.slice(2) }}</code>
             </div>
           </div>
           <footer class="card-footer is-justify-content-end">
@@ -48,7 +53,7 @@ import { txsOutputsList } from "@/cardanoDB/txsOutputsList";
 export default {
   data() {
     return {
-      isRegisteredAsPA: null,
+      registrationTx: null,
     };
   },
 
@@ -58,12 +63,12 @@ export default {
     },
 
     registerPAIsDisabled() {
-      return !this.$store.state.wallet.walletApi || !!this.isRegisteredAsPA;
+      return !this.$store.state.wallet.walletApi || !!this.registrationTx;
     },
 
     registeredMessage() {
-      return this.isRegisteredAsPA
-        ? `Registered at ${this.$dayjs(this.fund.tx.block.time).format("DD.MM.YYYY, HH:mm")}`
+      return this.registrationTx
+        ? `Registered at ${this.$dayjs(this.registrationTx.tx.block.time).format("DD.MM.YYYY, HH:mm")}`
         : "Unregistered";
     },
 
@@ -92,8 +97,11 @@ export default {
         if (registrations.length) {
           const txsIds = registrations.map(({ tx_id }) => tx_id);
           const txsOutputs = await txsOutputsList(txsIds);
-          const txsOutputsStakeAddresses = txsOutputs.map(({ stake_address: { view } }) => view);
-          return txsOutputsStakeAddresses.includes(walletStakeAddressBech32);
+          const myTxIds = txsOutputs
+            .filter(output => output.stake_address.view === walletStakeAddressBech32)
+            .map(({ tx_id }) => tx_id);
+          const myRegistration = registrations.find(registration => myTxIds.includes(registration.tx_id));
+          this.registrationTx = myRegistration;
         }
       }
       return false;
@@ -121,12 +129,12 @@ export default {
 
   watch: {
     async fundAndWallet() {
-      this.isRegisteredAsPA = await this.checkIsRegisteredAsPA();
+      await this.checkIsRegisteredAsPA();
     },
   },
 
   async mounted() {
-    this.isRegisteredAsPA = await this.checkIsRegisteredAsPA();
+    await this.checkIsRegisteredAsPA();
   },
 };
 </script>
