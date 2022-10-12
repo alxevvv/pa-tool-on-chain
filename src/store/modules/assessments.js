@@ -1,11 +1,13 @@
 import dayjs from "dayjs";
 import { txsOutputsList } from "@/cardanoDB/txsOutputsList";
 import { assessmentsSubmissionList } from "@/cardanoDB/assessmentsSubmissionList";
+import { assessmentsPublicationList } from "@/cardanoDB/assessmentsPublicationList";
 
 // initial state
 const getDefaultState = () => ({
   all: [],
   assessedSubmittedProposalsId: [],
+  assessedPublishedProposalsId: [],
 });
 const state = getDefaultState();
 
@@ -58,7 +60,13 @@ const actions = {
       throw new Error("Wallet stake address missed");
     }
 
-    const assessmentsSubmissions = await assessmentsSubmissionList();
+    if (!context.rootState.funds.selectedFund) {
+      throw new Error("Fund is not selected");
+    }
+
+    const fundHash = context.rootState.funds.selectedFund.json.fundHash;
+
+    const assessmentsSubmissions = await assessmentsSubmissionList(fundHash);
     const assessmentsSubmissionsTxsId = assessmentsSubmissions.map(({ tx_id }) => tx_id);
 
     const txsOutputs = await txsOutputsList(assessmentsSubmissionsTxsId);
@@ -83,6 +91,43 @@ const actions = {
 
     context.commit("addAssessedSubmittedProposalsId", assessedAndSubmittedProposalIds);
   },
+  async loadPublished(context) {
+    const walletStakeAddress = context.rootState.wallet.walletStakeAddressBech32;
+    if (!walletStakeAddress) {
+      throw new Error("Wallet stake address missed");
+    }
+
+    if (!context.rootState.funds.selectedFund) {
+      throw new Error("Fund is not selected");
+    }
+
+    const fundHash = context.rootState.funds.selectedFund.json.fundHash;
+
+    const assessmentsPublications = await assessmentsPublicationList(fundHash);
+    const assessmentsPublicationsTxsId = assessmentsPublications.map(({ tx_id }) => tx_id);
+
+    const txsOutputs = await txsOutputsList(assessmentsPublicationsTxsId);
+    const myTxIds = Array.from(
+      new Set(
+        txsOutputs.reduce((acc, cur) => {
+          if (cur.stake_address.view === walletStakeAddress) {
+            acc.push(cur.tx_id);
+          }
+          return acc;
+        }, []),
+      ),
+    );
+
+    const myAssessmentsPublications = assessmentsPublications.filter(({ tx_id }) => {
+      return myTxIds.includes(tx_id);
+    });
+
+    const assessedAndSubmittedProposalIds = myAssessmentsPublications.reduce((acc, cur) => {
+      return acc.concat(cur.json.proposalsId);
+    }, []);
+
+    context.commit("addAssessedPublishedProposalsId", assessedAndSubmittedProposalIds);
+  },
 };
 
 // mutations
@@ -94,6 +139,17 @@ const mutations = {
     state.assessedSubmittedProposalsId = Array.from(
       new Set(state.assessedSubmittedProposalsId.concat(assessedSubmittedProposalsId)),
     );
+  },
+  clearAssessedSubmittedProposalsId(state) {
+    state.assessedSubmittedProposalsId = [];
+  },
+  addAssessedPublishedProposalsId(state, assessedPublishedProposalsId) {
+    state.assessedPublishedProposalsId = Array.from(
+      new Set((state.assessedPublishedProposalsId || []).concat(assessedPublishedProposalsId)),
+    );
+  },
+  clearAssessedPublishedProposalsId(state) {
+    state.assessedPublishedProposalsId = [];
   },
   addAssessment(state, proposalId) {
     let assessment = defaultAssessment(proposalId);

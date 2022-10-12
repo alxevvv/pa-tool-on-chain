@@ -66,7 +66,7 @@
         </b-table-column>
       </b-table>
     </div>
-    <div class="content">
+    <div class="content buttons">
       <b-button
         icon-left="upload"
         type="is-primary"
@@ -74,6 +74,14 @@
         :loading="$store.state.wallet.isSendingTx"
         @click="submitCheckedAssessments"
         >Submit checked</b-button
+      >
+      <b-button
+        icon-left="publish"
+        type="is-primary"
+        :disabled="!unpublishedAssessments.length"
+        :loading="$store.state.wallet.isSendingTx"
+        @click="publishAssessments"
+        >Publish</b-button
       >
     </div>
     <div class="content">
@@ -95,6 +103,9 @@ import { mapGetters } from "vuex";
 import proposals from "@/assets/data/f9/proposals.json";
 import csvHeaders from "@/assets/data/import-csv-headers.json";
 
+import { assessmentsSubmissionList } from "@/cardanoDB/assessmentsSubmissionList";
+import { txsOutputsList } from "@/cardanoDB/txsOutputsList";
+import uploadToIPFS from "@/ipfs/addFiles";
 import downloadCsv from "@/utils/export-csv";
 import pick from "@/utils/pick";
 
@@ -142,9 +153,14 @@ export default {
           title: proposal.title,
           completion: getAssessmentCompletion(proposal),
           submitted: this.$store.state.assessments.assessedSubmittedProposalsId.includes(proposal.id),
-          published: false,
+          published: this.$store.state.assessments.assessedPublishedProposalsId.includes(proposal.id),
         };
       });
+    },
+    unpublishedAssessments() {
+      const submittedAssessments = this.$store.state.assessments.assessedSubmittedProposalsId;
+      const publishedAssessments = this.$store.state.assessments.assessedPublishedProposalsId;
+      return submittedAssessments.filter(proposalId => !publishedAssessments.includes(proposalId));
     },
   },
   methods: {
@@ -233,7 +249,7 @@ export default {
       // return if there are no assessments to submit
       if (!rowsToSubmit.length) {
         this.$buefy.notification.open({
-          message: "All selected assessments have already been sent",
+          message: "All selected assessments have already been submitted",
           type: "is-warning",
           position: "is-top",
           duration: 4000,
@@ -298,6 +314,95 @@ export default {
           position: "is-top",
           duration: 7500,
         });
+      }
+    },
+    async publishAssessments() {
+      const unpublishedAssessments = this.unpublishedAssessments;
+
+      const walletStakeAddress = this.$store.state.wallet.walletStakeAddressBech32;
+      const fundHash = this.$store.state.funds.selectedFund.json.fundHash;
+
+      const assessmentsSubmissions = await assessmentsSubmissionList(fundHash);
+      const assessmentsSubmissionsTxsId = assessmentsSubmissions.map(({ tx_id }) => tx_id);
+
+      const txsOutputs = await txsOutputsList(assessmentsSubmissionsTxsId);
+      const myTxIds = Array.from(
+        new Set(
+          txsOutputs.reduce((acc, cur) => {
+            if (cur.stake_address.view === walletStakeAddress) {
+              acc.push(cur.tx_id);
+            }
+            return acc;
+          }, []),
+        ),
+      );
+
+      const myAssessmentsSubmissions = assessmentsSubmissions.filter(({ tx_id }) => {
+        return myTxIds.includes(tx_id);
+      });
+
+      const assessedAndSubmittedProposalGroups = myAssessmentsSubmissions.reduce((acc, cur) => {
+        if (cur.json.proposalsId.every(id => unpublishedAssessments.includes(id))) {
+          acc.push(cur.json);
+        }
+        return acc;
+      }, []);
+
+      for (const submitToPublish of assessedAndSubmittedProposalGroups) {
+        const assessments = submitToPublish.proposalsId.map(id => {
+          const assessment = this.indexed[id];
+          return {
+            proposal_id: assessment.id,
+            note_1: assessment.note_1,
+            note_2: assessment.note_2,
+            note_3: assessment.note_3,
+            rate_1: assessment.rate_1,
+            rate_2: assessment.rate_2,
+            rate_3: assessment.rate_3,
+          };
+        });
+
+        const assessmentsFiles = assessments.map(json => {
+          const blob = new Blob([JSON.stringify(json)], { type: "application/json" });
+          return new File([blob], `${json.proposal_id}.json`);
+        });
+
+        const publicationCID = await uploadToIPFS(assessmentsFiles, true);
+
+        const publicationPayload = {
+          action: "assessmentsPublication",
+          fundHash: submitToPublish.fundHash,
+          proposalsId: submitToPublish.proposalsId,
+          assessmentsHash: submitToPublish.assessmentsHash,
+          assessmentsCID: publicationCID,
+        };
+
+        try {
+          // send transaction
+          const txSendingResult = await this.$store.dispatch("wallet/sendTxMetadata", {
+            metadataKey: process.env.VUE_APP_METADATA_KEY,
+            metadataValue: publicationPayload,
+          });
+
+          // add ids of assessed proposals
+          this.$store.commit("assessments/addAssessedPublishedProposalsId", publicationPayload.proposalsId);
+
+          // show success notification
+          this.$buefy.notification.open({
+            message: `Transaction sent. Hash: ${txSendingResult}`,
+            type: "is-success",
+            position: "is-top",
+            duration: 7500,
+          });
+        } catch (err) {
+          // show notification on error
+          this.$buefy.notification.open({
+            message: `Transaction sending error: ${err}`,
+            type: "is-danger",
+            position: "is-top",
+            duration: 7500,
+          });
+        }
       }
     },
   },

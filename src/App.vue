@@ -177,6 +177,12 @@ export default {
     walletApi() {
       return this.$store.state.wallet.walletApi;
     },
+    fundAndWalletStakeAddress() {
+      return [
+        this.$store.state.wallet.walletStakeAddressBech32,
+        this.$store.state.funds.selectedFund?.json.fundHash,
+      ];
+    },
   },
   methods: {
     selectFund(fundHash) {
@@ -214,8 +220,15 @@ export default {
             parseInt(process.env.VUE_APP_CARDANO_NETWORK_ID, 10),
           );
           this.$store.commit("wallet/setWalletStakeAddressBech32", stakeAddress);
-          await this.$store.dispatch("assessments/loadSubmitted");
         }
+      }
+    },
+    async fundAndWalletStakeAddress([stakeAddress, fundHash]) {
+      if (stakeAddress && fundHash) {
+        this.$store.commit("assessments/clearAssessedSubmittedProposalsId");
+        this.$store.commit("assessments/clearAssessedPublishedProposalsId");
+        await this.$store.dispatch("assessments/loadSubmitted");
+        await this.$store.dispatch("assessments/loadPublished");
       }
     },
   },
