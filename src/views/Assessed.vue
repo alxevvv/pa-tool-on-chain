@@ -81,7 +81,12 @@
               @click="showSubmissionInfoModal(props.row.id)"
               >Submission Info</b-dropdown-item
             >
-            <b-dropdown-item aria-role="listitem">Another action</b-dropdown-item>
+            <b-dropdown-item
+              aria-role="listitem"
+              :disabled="!props.row.published"
+              @click="showPublicationInfoModal(props.row.id)"
+              >Publication Info</b-dropdown-item
+            >
             <b-dropdown-item aria-role="listitem">Something else</b-dropdown-item>
           </b-dropdown>
         </b-table-column>
@@ -124,6 +129,7 @@ import { mapGetters } from "vuex";
 import proposals from "@/assets/data/f9/proposals.json";
 import csvHeaders from "@/assets/data/import-csv-headers.json";
 import SubmissionInfoModal from "@/components/SubmissionInfoModal";
+import PublicationInfoModal from "@/components/PublicationInfoModal";
 import { assessmentsSubmissionList } from "@/cardanoDB/assessmentsSubmissionList";
 import { txsOutputsList } from "@/cardanoDB/txsOutputsList";
 import uploadToIPFS from "@/ipfs/addFiles";
@@ -428,6 +434,16 @@ export default {
       this.$buefy.modal.open({
         parent: this,
         component: SubmissionInfoModal,
+        hasModalCard: true,
+        props: {
+          proposalId,
+        },
+      });
+    },
+    showPublicationInfoModal(proposalId) {
+      this.$buefy.modal.open({
+        parent: this,
+        component: PublicationInfoModal,
         hasModalCard: true,
         props: {
           proposalId,
