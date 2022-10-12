@@ -21,6 +21,7 @@ import {
   Table,
   Dropdown,
   Loading,
+  Skeleton,
 } from "buefy";
 // import { Buefy } from "buefy"
 
@@ -47,4 +48,5 @@ Vue.use(Notification);
 Vue.use(Table);
 Vue.use(Dropdown);
 Vue.use(Loading);
+Vue.use(Skeleton);
 //Vue.use(Buefy);

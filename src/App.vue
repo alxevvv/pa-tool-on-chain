@@ -67,12 +67,17 @@
             List
           </b-navbar-item>
         </b-navbar-dropdown>
-        <b-navbar-item tag="router-link" :to="{ name: 'ExampleAssessments' }">
-          Example Assessments
-        </b-navbar-item>
-        <b-navbar-item tag="router-link" :to="{ name: 'Assessed' }">
-          {{ myAssessmentsLink }}
-        </b-navbar-item>
+        <b-navbar-dropdown label="Assessments">
+          <b-navbar-item tag="router-link" :to="{ name: 'ExampleAssessments' }">
+            Example Assessments
+          </b-navbar-item>
+          <b-navbar-item tag="router-link" :to="{ name: 'Assessed' }">
+            {{ myAssessmentsLink }}
+          </b-navbar-item>
+          <b-navbar-item tag="router-link" :to="{ name: 'PublishedAssessments' }">
+            Published Assessments
+          </b-navbar-item>
+        </b-navbar-dropdown>
         <b-navbar-dropdown right label="PA Resources">
           <b-navbar-item
             tag="a"

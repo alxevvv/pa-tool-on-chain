@@ -40,9 +40,9 @@
         :is-row-checkable="row => row.completion === 100"
       >
         <b-table-column label="Title" v-slot="props">
-          <b-button tag="router-link" type="is-ghost" :to="`/proposal/${props.row.id}`">
+          <router-link :to="`/proposal/${props.row.id}`">
             {{ props.row.title }}
-          </b-button>
+          </router-link>
         </b-table-column>
         <b-table-column label="Completion" v-slot="props">
           <b-progress
