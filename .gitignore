@@ -25,3 +25,5 @@ dumps
 
 #script outputs
 /scripts/*.json
+
+.env.*.local
