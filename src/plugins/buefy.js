@@ -19,6 +19,8 @@ import {
   Upload,
   Notification,
   Table,
+  Dropdown,
+  Loading,
 } from "buefy";
 // import { Buefy } from "buefy"
 
@@ -43,4 +45,6 @@ Vue.use(Collapse);
 Vue.use(Upload);
 Vue.use(Notification);
 Vue.use(Table);
+Vue.use(Dropdown);
+Vue.use(Loading);
 //Vue.use(Buefy);

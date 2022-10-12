@@ -64,6 +64,27 @@
             {{ props.row.published ? "Yes" : "No" }}
           </b-tag>
         </b-table-column>
+        <b-table-column label="" v-slot="props" width="100">
+          <b-dropdown aria-role="list" position="is-bottom-left">
+            <template #trigger="{ active }">
+              <b-button
+                label="Info"
+                type="is-info is-light"
+                size="is-small"
+                :disabled="!props.row.submitted && !props.row.published"
+                :icon-right="active ? 'menu-up' : 'menu-down'"
+              />
+            </template>
+            <b-dropdown-item
+              aria-role="listitem"
+              :disabled="!props.row.submitted"
+              @click="showSubmissionInfoModal(props.row.id)"
+              >Submission Info</b-dropdown-item
+            >
+            <b-dropdown-item aria-role="listitem">Another action</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem">Something else</b-dropdown-item>
+          </b-dropdown>
+        </b-table-column>
       </b-table>
     </div>
     <div class="content buttons">
@@ -102,7 +123,7 @@ import sjcl from "sjcl";
 import { mapGetters } from "vuex";
 import proposals from "@/assets/data/f9/proposals.json";
 import csvHeaders from "@/assets/data/import-csv-headers.json";
-
+import SubmissionInfoModal from "@/components/SubmissionInfoModal";
 import { assessmentsSubmissionList } from "@/cardanoDB/assessmentsSubmissionList";
 import { txsOutputsList } from "@/cardanoDB/txsOutputsList";
 import uploadToIPFS from "@/ipfs/addFiles";
@@ -402,6 +423,16 @@ export default {
           });
         }
       }
+    },
+    showSubmissionInfoModal(proposalId) {
+      this.$buefy.modal.open({
+        parent: this,
+        component: SubmissionInfoModal,
+        hasModalCard: true,
+        props: {
+          proposalId,
+        },
+      });
     },
   },
   mounted() {},
