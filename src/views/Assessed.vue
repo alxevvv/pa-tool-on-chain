@@ -362,12 +362,10 @@ export default {
           };
         });
 
-        const assessmentsFiles = assessments.map(json => {
-          const blob = new Blob([JSON.stringify(json)], { type: "application/json" });
-          return new File([blob], `${json.proposal_id}.json`);
-        });
+        const assessmentsBlob = new Blob([JSON.stringify(assessments)], { type: "application/json" });
+        const assessmentsFile = new File([assessmentsBlob], "assessments.json");
 
-        const publicationCID = await uploadToIPFS(assessmentsFiles, true);
+        const publicationCID = await uploadToIPFS([assessmentsFile]);
 
         const publicationPayload = {
           action: "assessmentsPublication",
