@@ -11,9 +11,12 @@
           <div class="card-content">
             <div class="content">
               <strong>Title:</strong> {{ fund.json.title }}<br />
-              <strong>Fund Hash:</strong> {{ fund.json.fundHash }}<br />
+              <strong>Fund Hash:</strong> <code>{{ fund.json.fundHash }}</code
+              ><br />
+              <strong>Fund Genesis Tx Hash:</strong> <code>{{ fund.tx.hash.slice(2) }}</code
+              ><br />
               <strong>PA Status:</strong>
-              {{ isRegisteredAsPA ? "Registered" : "Unregistered" }}
+              {{ registeredMessage }}<br />
             </div>
           </div>
           <footer class="card-footer is-justify-content-end">
@@ -56,6 +59,12 @@ export default {
 
     registerPAIsDisabled() {
       return !this.$store.state.wallet.walletApi || !!this.isRegisteredAsPA;
+    },
+
+    registeredMessage() {
+      return this.isRegisteredAsPA
+        ? `Registered at ${this.$dayjs(this.fund.tx.block.time).format("DD.MM.YYYY, HH:mm")}`
+        : "Unregistered";
     },
 
     fundAndWallet() {
