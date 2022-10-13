@@ -22,6 +22,7 @@ import {
   Dropdown,
   Loading,
   Skeleton,
+  Select,
 } from "buefy";
 // import { Buefy } from "buefy"
 
@@ -49,4 +50,5 @@ Vue.use(Table);
 Vue.use(Dropdown);
 Vue.use(Loading);
 Vue.use(Skeleton);
+Vue.use(Select);
 //Vue.use(Buefy);
