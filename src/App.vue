@@ -232,8 +232,14 @@ export default {
       if (stakeAddress && fundHash) {
         this.$store.commit("assessments/clearAssessedSubmittedProposalsId");
         this.$store.commit("assessments/clearAssessedPublishedProposalsId");
-        await this.$store.dispatch("assessments/loadSubmitted");
-        await this.$store.dispatch("assessments/loadPublished");
+        this.$store.commit("reviews/clearAssessmentsReviewSubmitted");
+        this.$store.commit("reviews/clearAssessmentsReviewPublished");
+        Promise.all([
+          this.$store.dispatch("assessments/loadSubmitted"),
+          this.$store.dispatch("assessments/loadPublished"),
+          this.$store.dispatch("reviews/loadSubmitted"),
+          this.$store.dispatch("reviews/loadPublished"),
+        ]);
       }
     },
   },
