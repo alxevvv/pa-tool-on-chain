@@ -6,6 +6,7 @@ import Assessed from "../views/Assessed.vue";
 import Proposals from "../views/Proposals.vue";
 import ExampleAssessments from "../views/ExampleAssessments.vue";
 import PublishedAssessments from "../views/PublishedAssessments.vue";
+import PublishedReviews from "../views/PublishedReviews.vue";
 
 Vue.use(VueRouter);
 
@@ -29,6 +30,11 @@ const routes = [
     path: "/published-assessments",
     name: "PublishedAssessments",
     component: PublishedAssessments,
+  },
+  {
+    path: "/published-reviews",
+    name: "PublishedReviews",
+    component: PublishedReviews,
   },
   {
     path: "/proposals",

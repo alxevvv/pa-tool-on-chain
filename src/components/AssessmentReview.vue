@@ -18,6 +18,7 @@
     <b-field label="Feedback (optional)">
       <b-input type="textarea" v-model="feedback" :disabled="submitted"></b-input>
     </b-field>
+    <br />
     <div class="buttons">
       <b-button @click="deleteReview" icon-left="delete" type="is-danger" v-if="!submitted">
         Delete Review

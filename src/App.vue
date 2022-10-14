@@ -77,6 +77,9 @@
           <b-navbar-item tag="router-link" :to="{ name: 'PublishedAssessments' }">
             Published Assessments
           </b-navbar-item>
+          <b-navbar-item tag="router-link" :to="{ name: 'PublishedReviews' }">
+            Published Reviews
+          </b-navbar-item>
         </b-navbar-dropdown>
         <b-navbar-dropdown right label="PA Resources">
           <b-navbar-item
