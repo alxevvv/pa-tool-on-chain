@@ -60,10 +60,16 @@
                 :icon-right="active ? 'menu-up' : 'menu-down'"
               />
             </template>
-            <b-dropdown-item aria-role="listitem" :disabled="!props.row.submitted"
+            <b-dropdown-item
+              aria-role="listitem"
+              :disabled="!props.row.submitted"
+              @click="showSubmissionInfoModal(`${props.row.id}.${props.row.assessment.id}`)"
               >Submission</b-dropdown-item
             >
-            <b-dropdown-item aria-role="listitem" :disabled="!props.row.published"
+            <b-dropdown-item
+              aria-role="listitem"
+              :disabled="!props.row.published"
+              @click="showPublicationInfoModal(`${props.row.id}.${props.row.assessment.id}`)"
               >Publication</b-dropdown-item
             >
           </b-dropdown>
@@ -92,6 +98,7 @@
             v-else
             :proposalId="props.row.id"
             :assessmentTxId="props.row.assessment.id"
+            :ipfsCid="props.row.ipfsCid"
           ></assessment-review>
         </template>
       </b-table>
@@ -123,10 +130,13 @@ import { mapGetters } from "vuex";
 import staticProposals from "@/assets/data/f9/proposals.json";
 import { assessmentsPublicationList } from "@/cardanoDB/assessmentsPublicationList";
 import { reviewsSubmissionList } from "@/cardanoDB/reviewsSubmissionList";
+import { reviewsPublicationList } from "@/cardanoDB/reviewsPublicationList";
 import { txsOutputsList } from "@/cardanoDB/txsOutputsList";
 import uploadToIPFS from "@/ipfs/addFiles";
 import ProposalAssessmentRetreive from "@/components/ProposalAssessmentRetreive";
 import AssessmentReview from "@/components/AssessmentReview";
+import ReviewSubmissionInfoModal from "@/components/ReviewSubmissionInfoModal";
+import ReviewPublicationInfoModal from "@/components/ReviewPublicationInfoModal";
 
 export default {
   name: "PublishedAssessments",
@@ -134,6 +144,7 @@ export default {
   data() {
     return {
       assessments: [],
+      publishedReviews: [],
       checkedRows: [],
       categorizationOptions: [
         { id: 1, title: "Excellent" },
@@ -166,12 +177,16 @@ export default {
         );
         for (const assessment of proposalAssessments) {
           const assessmentId = `${cur.id}.${assessment.id}`;
+          const publishedReview = this.publishedReviews.find(review =>
+            review.json.assessmentsId.includes(assessmentId),
+          );
           acc.push({
             ...cur,
             assessment,
             review: this.reviewByAssessmentId(assessmentId),
             submitted: this.isSubmitted(assessmentId),
             published: this.isPublished(assessmentId),
+            ipfsCid: publishedReview?.json.reviewsCID,
           });
         }
         return acc;
@@ -191,8 +206,30 @@ export default {
     },
 
     async load() {
-      const assessments = await assessmentsPublicationList(this.selectedFund.json.fundHash);
+      const fundHash = this.selectedFund.json.fundHash;
+      const walletStakeAddress = this.$store.state.wallet.walletStakeAddressBech32;
+
+      const assessments = await assessmentsPublicationList(fundHash);
       this.assessments = assessments.filter(({ json }) => !!json.proposalsId);
+
+      const reviewsPublications = await reviewsPublicationList(fundHash);
+      const reviewsPublicationsTxsId = reviewsPublications.map(({ tx_id }) => tx_id);
+
+      const txsOutputs = await txsOutputsList(reviewsPublicationsTxsId);
+      const myTxIds = Array.from(
+        new Set(
+          txsOutputs.reduce((acc, cur) => {
+            if (cur.stake_address.view === walletStakeAddress) {
+              acc.push(cur.tx_id);
+            }
+            return acc;
+          }, []),
+        ),
+      );
+
+      this.publishedReviews = reviewsPublications.filter(({ tx_id }) => {
+        return myTxIds.includes(tx_id);
+      });
     },
 
     createReview(assessmentId) {
@@ -357,6 +394,28 @@ export default {
           });
         }
       }
+    },
+
+    showSubmissionInfoModal(assessmentId) {
+      this.$buefy.modal.open({
+        parent: this,
+        component: ReviewSubmissionInfoModal,
+        hasModalCard: true,
+        props: {
+          assessmentId,
+        },
+      });
+    },
+
+    showPublicationInfoModal(assessmentId) {
+      this.$buefy.modal.open({
+        parent: this,
+        component: ReviewPublicationInfoModal,
+        hasModalCard: true,
+        props: {
+          assessmentId,
+        },
+      });
     },
   },
 
