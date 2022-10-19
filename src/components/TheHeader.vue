@@ -1,8 +1,18 @@
 <template>
-  <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+  <nav
+    class="navbar is-primary"
+    role="navigation"
+    aria-label="main navigation"
+  >
     <div class="navbar-brand">
-      <RouterLink :to="{ name: 'Home' }" class="navbar-item">
-        <img src="../assets/images/catalyst.png" alt="Project Catalyst" />
+      <RouterLink
+        :to="{ name: 'Home' }"
+        class="navbar-item"
+      >
+        <img
+          src="../assets/images/catalyst.png"
+          alt="Project Catalyst"
+        >
       </RouterLink>
 
       <a
@@ -12,39 +22,62 @@
         aria-expanded="false"
         data-target="navbarBasicExample"
       >
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
       </a>
     </div>
 
-    <div id="navbarBasicExample" class="navbar-menu">
+    <div
+      id="navbarBasicExample"
+      class="navbar-menu"
+    >
       <div class="navbar-start">
-        <RouterLink :to="{ name: 'Home' }" :class="linkClasses('Home')">Home</RouterLink>
-        <RouterLink :to="{ name: 'PAStatus' }" :class="linkClasses('PAStatus')">PA Status</RouterLink>
-
-        <!-- <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link"> More </a>
-
-          <div class="navbar-dropdown">
-            <a class="navbar-item"> About </a>
-            <a class="navbar-item"> Jobs </a>
-            <a class="navbar-item"> Contact </a>
-            <hr class="navbar-divider" />
-            <a class="navbar-item"> Report an issue </a>
-          </div>
-        </div> -->
+        <span class="navbar-item">
+          <button class="button">Connect Cardano wallet</button>
+        </span>
       </div>
 
       <div class="navbar-end">
-        <!-- <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-primary">
-              <strong>Sign up</strong>
-            </a>
-            <a class="button is-light"> Log in </a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <span class="navbar-link">On-chain Details</span>
+          <div class="navbar-dropdown is-right is-boxed">
+            <RouterLink
+              :to="{ name: 'FundGenesis' }"
+              :class="navbarItemClasses('FundGenesis')"
+            >
+              Fund Genesis JSON
+            </RouterLink>
+            <RouterLink
+              :to="{ name: 'PAStatus' }"
+              :class="navbarItemClasses('PAStatus')"
+            >
+              PA Status
+            </RouterLink>
           </div>
-        </div> -->
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <span class="navbar-link">PA Resources</span>
+          <div class="navbar-dropdown is-right is-boxed">
+            <a
+              class="navbar-item"
+              target="_blank"
+              href="https://www.youtube.com/playlist?list=PLDLKmC_jWczVff7Gv6J5nmKLl52mVCT9q"
+            >Catalyst School workshops
+              for PAs</a>
+            <a
+              class="navbar-item"
+              target="_blank"
+              href="https://docs.google.com/document/d/1g-iZhDlKhUBZkui1uv8NVNfJC4oVD3JtR-P6Fue7XPU"
+            >PA Guide</a>
+            <a
+              class="navbar-item"
+              target="_blank"
+              href="https://t.me/CatalystCommunityAdvisors"
+            >Telegram PAs chat</a>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -55,7 +88,7 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 
-function linkClasses(routeName) {
+function navbarItemClasses(routeName) {
   return `navbar-item${route.name === routeName ? " is-active" : ""}`;
 }
 </script>
