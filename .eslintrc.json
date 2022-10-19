@@ -26,6 +26,10 @@
     "no-console": "warn",
     "no-debugger": "warn",
     "no-unused-vars": "warn",
+    "object-curly-spacing": [
+      "warn",
+      "always"
+    ],
     "quotes": [
       "warn",
       "double"
