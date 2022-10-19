@@ -18,6 +18,7 @@ import HelloWorld from "./components/HelloWorld.vue";
 </template>
 
 <style scoped>
+@import "bulma/css/bulma.min.css";
 .logo {
   height: 6em;
   padding: 1.5em;
