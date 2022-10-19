@@ -1,11 +1,12 @@
 <template>
-  <div id="nav">
-    <RouterLink :to="{ name: 'Home' }">Home</RouterLink> |
-    <RouterLink :to="{ name: 'PAStatus' }">PA Status</RouterLink>
-  </div>
+  <TheHeader />
   <RouterView />
 </template>
 
-<style scoped>
+<script setup>
+import TheHeader from "./components/TheHeader.vue";
+</script>
+
+<style>
 @import "bulma/css/bulma.min.css";
 </style>
