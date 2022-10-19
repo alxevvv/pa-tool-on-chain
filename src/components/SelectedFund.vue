@@ -17,7 +17,7 @@
               }}</b-tag
               ><br />
               <strong v-if="registrationTx">PA Registration Tx Hash:</strong>
-              <code>{{ registrationTx.tx.hash.slice(2) }}</code
+              <code v-if="registrationTx">{{ registrationTx.tx.hash.slice(2) }}</code
               ><br /><br />
               <strong>Fund Hash:</strong> <code>{{ fund.json.fundHash }}</code
               ><br />

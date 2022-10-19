@@ -16,6 +16,7 @@
           />
         </b-navbar-item>
       </template>
+
       <template #start>
         <b-navbar-item v-if="!$store.state.wallet.availableWallets">
           Detecting wallets...
@@ -23,24 +24,54 @@
         <b-navbar-item v-else-if="!$store.state.wallet.availableWallets.length">
           No wallets detected
         </b-navbar-item>
-        <b-navbar-dropdown
-          label="Connect wallet"
-          v-else-if="!$store.state.wallet.walletApi && !$store.state.wallet.isConnecting"
+
+        <b-navbar-item
+          tag="div"
+          v-else-if="$store.state.wallet.availableWallets.length === 1 && !$store.state.wallet.walletApi"
         >
-          <b-navbar-item
-            v-for="walletName in $store.state.wallet.availableWallets"
-            :key="walletName"
-            @click="$store.dispatch('wallet/connectWallet', walletName)"
+          <b-button
+            type="is-warning"
+            @click="$store.dispatch('wallet/connectWallet', $store.state.wallet.availableWallets[0])"
+            :loading="$store.state.wallet.isConnecting"
           >
-            {{ walletName }}
-          </b-navbar-item>
-        </b-navbar-dropdown>
-        <b-navbar-item v-else-if="$store.state.wallet.isConnecting">
-          Connecting wallet...
+            {{ $store.state.wallet.isConnecting ? "Connecting" : "Connect" }} Cardano wallet
+          </b-button>
         </b-navbar-item>
-        <b-navbar-item v-else-if="$store.state.wallet.walletApi">
-          Wallet connected ({{ $store.state.wallet.walletName }})
+
+        <b-navbar-item
+          tag="div"
+          v-else-if="$store.state.wallet.availableWallets.length > 1 && !$store.state.wallet.walletApi"
+        >
+          <b-dropdown aria-role="list">
+            <template #trigger="{ active }">
+              <b-button
+                :label="`${$store.state.wallet.isConnecting ? 'Connecting' : 'Connect'} Cardano wallet`"
+                :loading="$store.state.wallet.isConnecting"
+                :icon-right="active ? 'menu-up' : 'menu-down'"
+                type="is-warning"
+              />
+            </template>
+
+            <b-dropdown-item
+              v-for="walletName in $store.state.wallet.availableWallets"
+              aria-role="listitem"
+              :key="walletName"
+              @click="$store.dispatch('wallet/connectWallet', walletName)"
+            >
+              {{ walletName }}
+            </b-dropdown-item>
+          </b-dropdown>
         </b-navbar-item>
+
+        <b-navbar-item
+          tag="div"
+          v-else-if="$store.state.wallet.walletApi && !$store.state.wallet.isConnecting"
+        >
+          <b-button type="is-success" @click="$store.dispatch('wallet/disconnectWallet')">
+            Cardano wallet connected ({{ $store.state.wallet.walletName }})
+          </b-button>
+        </b-navbar-item>
+
         <b-navbar-dropdown label="Select fund" v-if="$store.state.funds.fundsList.length">
           <b-navbar-item
             v-for="fund in $store.state.funds.fundsList"
@@ -58,6 +89,7 @@
           Loading funds...
         </b-navbar-item>
       </template>
+
       <template #end>
         <b-navbar-dropdown label="Proposals">
           <b-navbar-item @click="next">
