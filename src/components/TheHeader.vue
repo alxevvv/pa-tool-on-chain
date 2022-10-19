@@ -34,7 +34,7 @@
     >
       <div class="navbar-start">
         <span class="navbar-item">
-          <button class="button">Connect Cardano wallet</button>
+          <WalletConnectButton />
         </span>
       </div>
 
@@ -85,6 +85,7 @@
 
 <script setup>
 import { useRoute } from "vue-router";
+import WalletConnectButton from "../components/WalletConnectButton.vue";
 
 const route = useRoute();
 
