@@ -34,7 +34,7 @@
     >
       <div class="navbar-start">
         <span class="navbar-item">
-          <WalletConnectButton />
+          <WalletConnectButton is-light />
         </span>
       </div>
 

@@ -62,7 +62,7 @@
   >
     <div class="dropdown-trigger">
       <button
-        class="button is-success is-light"
+        :class="buttonClasses"
         aria-haspopup="true"
         aria-controls="dropdown-menu4"
       >
@@ -96,10 +96,24 @@
 import { computed } from "vue";
 import { useWalletStore } from "../stores/walletStore";
 
+const props = defineProps({
+  size: {
+    type: String,
+    default: "is-normal",
+  },
+  isLight: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const walletStore = useWalletStore();
 
 const buttonClasses = computed(() => {
-  const classes = ["button", "is-light"];
+  const classes = ["button", props.size];
+  if (props.isLight) {
+    classes.push("is-light");
+  }
   if (walletStore.isConnecting) {
     classes.push("is-loading");
   }
