@@ -85,7 +85,7 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-import WalletConnectButton from "../components/WalletConnectButton.vue";
+import WalletConnectButton from "@/components/WalletConnectButton.vue";
 
 const route = useRoute();
 

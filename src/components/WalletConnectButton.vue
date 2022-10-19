@@ -94,7 +94,7 @@
 
 <script setup>
 import { computed } from "vue";
-import { useWalletStore } from "../stores/walletStore";
+import { useWalletStore } from "@/stores/walletStore";
 
 const props = defineProps({
   size: {

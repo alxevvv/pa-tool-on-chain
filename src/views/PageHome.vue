@@ -48,5 +48,5 @@
 </template>
 
 <script setup>
-import ActionButton from "../components/ActionButton.vue";
+import ActionButton from "@/components/ActionButton.vue";
 </script>

@@ -12,8 +12,8 @@
 </template>
 
 <script setup>
-import { useWalletStore } from "../stores/walletStore";
-import WalletConnectButton from "./WalletConnectButton.vue";
+import { useWalletStore } from "@/stores/walletStore";
+import WalletConnectButton from "@/components/WalletConnectButton.vue";
 
 const walletStore = useWalletStore();
 </script>

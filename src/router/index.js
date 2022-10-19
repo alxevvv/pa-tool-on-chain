@@ -1,8 +1,8 @@
 import { createWebHashHistory, createRouter } from "vue-router";
-import PageHome from "../views/PageHome.vue";
-import PagePAStatus from "../views/PagePAStatus.vue";
-import PageFundGenesis from "../views/PageFundGenesis.vue";
-import PageNotFound from "../views/PageNotFound.vue";
+import PageHome from "@/views/PageHome.vue";
+import PagePAStatus from "@/views/PagePAStatus.vue";
+import PageFundGenesis from "@/views/PageFundGenesis.vue";
+import PageNotFound from "@/views/PageNotFound.vue";
 
 const routes = [
   {
