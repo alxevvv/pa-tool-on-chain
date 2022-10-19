@@ -1,6 +1,8 @@
 <template>
   <TheHeader />
-  <RouterView />
+  <div class="section container">
+    <RouterView />
+  </div>
 </template>
 
 <script setup>
