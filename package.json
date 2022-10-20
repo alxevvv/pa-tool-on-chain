@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emurgo/cardano-serialization-lib-asmjs": "^11.1.0",
     "@fortawesome/fontawesome-free": "^5.0.0",
+    "buffer": "^6.0.3",
     "bulma": "^0.9.4",
     "lodash": "^4.17.21",
     "pinia": "^2.0.23",

@@ -114,10 +114,13 @@
           >
         </figure>
         <p>
-          <b>Network ID</b>: {{ walletStore.walletProps.networkId }}
+          <b>API version</b>: {{ walletStore.walletProps.apiVersion }}
         </p>
         <p>
-          <b>API version</b>: {{ walletStore.walletProps.apiVersion }}
+          <b>Network ID</b>: {{ walletStore.walletProps.networkId }}
+        </p>
+        <p v-if="walletStore.walletProps.stakeAddress">
+          <b>Stake address</b>: <code>{{ walletStore.walletProps.stakeAddress }}</code>
         </p>
       </div>
       <template #footer>

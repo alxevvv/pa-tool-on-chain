@@ -1,12 +1,15 @@
+import { Address } from "@emurgo/cardano-serialization-lib-asmjs";
+import { Buffer } from "buffer";
 import pick from "lodash/pick";
 import { defineStore } from "pinia";
 import { ref, readonly, watch } from "vue";
 import {
+  extractStakeAddress,
   getAvailableWallets,
   getCompatibleWallets,
   getWalletApi,
   getWalletObject,
-} from "../utils/walletUtils";
+} from "@/utils/walletUtils";
 
 export const useWalletStore = defineStore(
   "wallet",
@@ -41,12 +44,29 @@ export const useWalletStore = defineStore(
       isConnecting.value = true;
       connectionError.value = "";
       try {
+        // try to get wallet object from window.cardano
         const walletObject = getWalletObject(walletKey);
+
+        // enable wallet
         walletApi = await getWalletApi(walletObject);
+
+        // get wallet props
+        const networkId = await walletApi.getNetworkId();
         walletProps.value = {
           ...pick(walletObject, ["name", "icon", "apiVersion"]),
-          networkId: await walletApi.getNetworkId(),
+          networkId,
         };
+
+        // get wallet stake address and add it to wallet props
+        const unusedAddresses = await walletApi.getUnusedAddresses();
+        if (unusedAddresses.length) {
+          const unusedAddress = Address.from_bytes(Buffer.from(unusedAddresses[0], "hex")).to_bech32();
+          walletProps.value.stakeAddress = extractStakeAddress(unusedAddress, networkId);
+        } else {
+          walletProps.value.stakeAddress = "";
+        }
+
+        // OK
         isConnected.value = true;
       } catch (err) {
         connectionError.value = err.toString();
