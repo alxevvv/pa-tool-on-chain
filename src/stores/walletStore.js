@@ -22,7 +22,22 @@ export const useWalletStore = defineStore(
     */
 
     const compatibleWallets = getCompatibleWallets();
-    const availableWallets = getAvailableWallets();
+    let availableWallets = [];
+
+    try {
+      availableWallets = getAvailableWallets();
+    } catch (err) {
+      const errorMessage = err.toString();
+      if (errorMessage.endsWith("No available wallets found")) {
+        notificationsStore.add({
+          text: `${errorMessage}.\nInstall one of compatible wallets: ${compatibleWallets.join(", ")}`,
+          type: "is-warning",
+          duration: 5000,
+        });
+      } else {
+        throw err;
+      }
+    }
 
     /*
       connect/disconnect wallet
