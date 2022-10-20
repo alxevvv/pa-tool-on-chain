@@ -3,6 +3,7 @@ import { Buffer } from "buffer";
 import pick from "lodash/pick";
 import { defineStore } from "pinia";
 import { ref, readonly, watch } from "vue";
+import { useNotificationsStore } from "@/stores/notificationsStore";
 import {
   extractStakeAddress,
   getAvailableWallets,
@@ -14,6 +15,8 @@ import {
 export const useWalletStore = defineStore(
   "wallet",
   () => {
+    const notificationsStore = useNotificationsStore();
+
     /*
       wallets availability
     */
@@ -69,7 +72,13 @@ export const useWalletStore = defineStore(
         // OK
         isConnected.value = true;
       } catch (err) {
-        connectionError.value = err.toString();
+        const errorMessage = err.toString();
+        connectionError.value = errorMessage;
+        notificationsStore.add({
+          text: `Wallet connection failed: ${errorMessage}`,
+          type: "is-danger",
+          duration: 5000,
+        });
         selectedWalletKey.value = "";
       } finally {
         isConnecting.value = false;
