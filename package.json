@@ -16,10 +16,12 @@
     "lodash": "^4.17.21",
     "pinia": "^2.0.23",
     "pinia-plugin-persistedstate": "^2.3.0",
+    "uuid": "^9.0.0",
     "vue": "^3.2.37",
     "vue-router": "^4.0.13"
   },
   "devDependencies": {
+    "@types/uuid": "^8.3.4",
     "@vitejs/plugin-vue": "^3.1.0",
     "eslint": "^8.25.0",
     "eslint-plugin-vue": "^9.6.0",
