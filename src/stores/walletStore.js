@@ -73,7 +73,7 @@ export const useWalletStore = defineStore(
       }
     }
 
-    watch(selectedWalletKey, updateWalletConnection);
+    watch(selectedWalletKey, updateWalletConnection, { immediate: true });
 
     /*  */
 
@@ -93,9 +93,6 @@ export const useWalletStore = defineStore(
   {
     persist: {
       paths: ["selectedWalletKey"],
-      afterRestore: ({ store }) => {
-        store.updateWalletConnection(store.selectedWalletKey);
-      },
     },
   },
 );
