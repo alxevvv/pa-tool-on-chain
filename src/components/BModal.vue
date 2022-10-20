@@ -1,40 +1,42 @@
 <template>
-  <div :class="containerClasses">
-    <div
-      class="modal-background"
-      @click="$emit('close')"
-    />
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">
-          {{ props.title }}
-        </p>
-        <button
-          class="delete"
-          aria-label="close"
-          @click="$emit('close')"
-        />
-      </header>
-      <section class="modal-card-body">
-        <slot />
-      </section>
-      <footer class="modal-card-foot">
-        <slot name="footer">
+  <Teleport to="#modals">
+    <div :class="containerClasses">
+      <div
+        class="modal-background"
+        @click="$emit('close')"
+      />
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+            {{ props.title }}
+          </p>
           <button
-            class="button is-primary"
+            class="delete"
+            aria-label="close"
             @click="$emit('close')"
-          >
-            OK
-          </button>
-        </slot>
-      </footer>
+          />
+        </header>
+        <section class="modal-card-body">
+          <slot />
+        </section>
+        <footer class="modal-card-foot">
+          <slot name="footer">
+            <button
+              class="button is-primary"
+              @click="$emit('close')"
+            >
+              OK
+            </button>
+          </slot>
+        </footer>
+      </div>
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="$emit('close')"
+      />
     </div>
-    <button
-      class="modal-close is-large"
-      aria-label="close"
-      @click="$emit('close')"
-    />
-  </div>
+  </Teleport>
 </template>
 
 <script setup>

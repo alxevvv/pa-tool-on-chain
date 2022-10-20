@@ -96,49 +96,48 @@
     </div>
   </div>
 
-  <Teleport to="#modals">
-    <BModal
-      title="Connected wallet info"
-      :is-active="walletInfoModalIsActive"
-      @close="walletInfoModalIsActive = false"
-    >
-      <div class="wallet-info-modal has-text-centered">
-        <h4 class="is-size-5">
-          {{ walletStore.walletProps.name }}
-        </h4>
-        <figure>
-          <img
-            :src="walletStore.walletProps.icon"
-            alt="Wallet icon"
-            width="100"
-          >
-        </figure>
-        <p>
-          <b>API version</b>: {{ walletStore.walletProps.apiVersion }}
-        </p>
-        <p>
-          <b>Network ID</b>: {{ walletStore.walletProps.networkId }}
-        </p>
-        <p v-if="walletStore.walletProps.stakeAddress">
-          <b>Stake address</b>: <code>{{ walletStore.walletProps.stakeAddress }}</code>
-        </p>
-      </div>
-      <template #footer>
-        <button
-          class="button is-primary"
-          @click="walletInfoModalIsActive = false"
+
+  <BModal
+    title="Connected wallet info"
+    :is-active="walletInfoModalIsActive"
+    @close="walletInfoModalIsActive = false"
+  >
+    <div class="wallet-info-modal has-text-centered">
+      <h4 class="is-size-5">
+        {{ walletStore.walletProps.name }}
+      </h4>
+      <figure>
+        <img
+          :src="walletStore.walletProps.icon"
+          alt="Wallet icon"
+          width="100"
         >
-          OK
-        </button>
-        <button
-          class="button is-danger is-outlined"
-          @click="disconnectWallet"
-        >
-          Disconnect
-        </button>
-      </template>
-    </BModal>
-  </Teleport>
+      </figure>
+      <p>
+        <b>API version</b>: {{ walletStore.walletProps.apiVersion }}
+      </p>
+      <p>
+        <b>Network ID</b>: {{ walletStore.walletProps.networkId }}
+      </p>
+      <p v-if="walletStore.walletProps.stakeAddress">
+        <b>Stake address</b>: <code>{{ walletStore.walletProps.stakeAddress }}</code>
+      </p>
+    </div>
+    <template #footer>
+      <button
+        class="button is-primary"
+        @click="walletInfoModalIsActive = false"
+      >
+        OK
+      </button>
+      <button
+        class="button is-danger is-outlined"
+        @click="disconnectWallet"
+      >
+        Disconnect
+      </button>
+    </template>
+  </BModal>
 </template>
 
 <script setup>
