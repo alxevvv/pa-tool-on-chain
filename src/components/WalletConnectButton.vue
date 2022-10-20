@@ -80,7 +80,12 @@
       role="menu"
     >
       <div class="dropdown-content">
-        <!-- TODO: Connected wallet info -->
+        <a
+          class="dropdown-item"
+          @click="walletInfoModalIsActive = true"
+        >
+          Wallet info
+        </a>
         <a
           class="dropdown-item"
           @click="walletStore.selectWallet('')"
@@ -90,11 +95,53 @@
       </div>
     </div>
   </div>
+
+  <Teleport to="#modals">
+    <BModal
+      title="Connected wallet info"
+      :is-active="walletInfoModalIsActive"
+      @close="walletInfoModalIsActive = false"
+    >
+      <div class="wallet-info-modal has-text-centered">
+        <h4 class="is-size-5">
+          {{ walletStore.walletProps.name }}
+        </h4>
+        <figure>
+          <img
+            :src="walletStore.walletProps.icon"
+            alt="Wallet icon"
+            width="100"
+          >
+        </figure>
+        <p>
+          <b>Network ID</b>: {{ walletStore.walletProps.networkId }}
+        </p>
+        <p>
+          <b>API version</b>: {{ walletStore.walletProps.apiVersion }}
+        </p>
+      </div>
+      <template #footer>
+        <button
+          class="button is-primary"
+          @click="walletInfoModalIsActive = false"
+        >
+          OK
+        </button>
+        <button
+          class="button is-danger is-outlined"
+          @click="disconnectWallet"
+        >
+          Disconnect
+        </button>
+      </template>
+    </BModal>
+  </Teleport>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useWalletStore } from "@/stores/walletStore";
+import BModal from "@/components/BModal.vue";
 
 const props = defineProps({
   size: {
@@ -134,4 +181,11 @@ const buttonText = computed(() => {
     ? `Cardano wallet connected (${walletStore.selectedWalletKey})`
     : "Connect Cardano wallet";
 });
+
+const walletInfoModalIsActive = ref(false);
+
+function disconnectWallet() {
+  walletInfoModalIsActive.value = false;
+  walletStore.selectWallet("");
+}
 </script>
