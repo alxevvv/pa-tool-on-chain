@@ -2,12 +2,23 @@ import { ref, watch } from "vue";
 import { useRequestsStore } from "@/stores/requestsStore";
 import { useNotificationsStore } from "@/stores/notificationsStore";
 
-export default function useRequest(rq, ...args) {
+const defaultOptions = {
+  requestArguments: [],
+  onSuccess: () => {},
+  onError: () => {},
+};
+
+export default function useRequest(rq, options = {}) {
+  const opts = {
+    ...defaultOptions,
+    ...options,
+  };
+
   const requestsStore = useRequestsStore();
   const notificationsStore = useNotificationsStore();
 
   const request = ref(null);
-  const url = ref(rq(...args));
+  const url = ref(rq(...opts.requestArguments));
 
   watch(
     () => requestsStore.requests[url.value]?.isLoading,
@@ -16,10 +27,14 @@ export default function useRequest(rq, ...args) {
       if (storedRequest) {
         request.value = storedRequest;
         if (request.value.isFailed) {
+          opts.onError(request.value.error);
           notificationsStore.add({
             type: "is-danger",
             text: `Request error: ${request.value.error?.data?.message}` || "Unknown request error",
           });
+        }
+        if (request.value.isSuccess) {
+          opts.onSuccess(request.value.data);
         }
       }
     },
