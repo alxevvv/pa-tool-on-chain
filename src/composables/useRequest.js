@@ -1,4 +1,4 @@
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useRequestsStore } from "@/stores/requestsStore";
 import { useNotificationsStore } from "@/stores/notificationsStore";
 
@@ -6,8 +6,8 @@ export default function useRequest(rq, ...args) {
   const requestsStore = useRequestsStore();
   const notificationsStore = useNotificationsStore();
 
-  const url = ref("");
   const request = ref(null);
+  const url = ref(rq(...args));
 
   watch(
     () => requestsStore.requests[url.value]?.isLoading,
@@ -27,8 +27,6 @@ export default function useRequest(rq, ...args) {
       immediate: true,
     },
   );
-
-  onMounted(() => (url.value = rq(...args)));
 
   return request;
 }
