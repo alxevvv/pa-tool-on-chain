@@ -43,10 +43,10 @@
           <span class="navbar-link">On-chain Details</span>
           <div class="navbar-dropdown is-right is-boxed">
             <RouterLink
-              :to="{ name: 'FundGenesis' }"
-              :class="navbarItemClasses('FundGenesis')"
+              :to="{ name: 'Funds' }"
+              :class="navbarItemClasses('Funds')"
             >
-              Fund Genesis JSON
+              Funds
             </RouterLink>
             <RouterLink
               :to="{ name: 'PAStatus' }"
