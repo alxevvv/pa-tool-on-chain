@@ -33,9 +33,7 @@
       class="progress is-small is-primary"
       max="100"
     />
-    <pre v-else>
-      {{ fund }}
-    </pre>
+    <pre v-else>{{ fund }}</pre>
   </div>
 </template>
 

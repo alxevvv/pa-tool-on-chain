@@ -1,112 +1,6 @@
 [
   {
-    "bytes": "\\x0c5fc61a56e5b1146a16f6e6b667537469600647666e",
-
-    "id": 75968,
-    "key": 810949,
-
-    "json": {
-      "action": "fundGenesis",
-      "version": "0.1.0",
-      "creator": "stake_test1ur3mnryuf6s73cjhd5fjp0pa5w4n8kh4jv7t9sfg0fzuvzskgwls9",
-
-      "payload": {
-        "title": "The Ending Soon Fund",
-        "startDate": "2022-08-01T12:00:00",
-        "endDate": "2022-10-31T23:59:59",
-        "fundHash": "63b6666f5c64b11669066577efc",
-
-        "challenges": {
-          "id": 1,
-          "title": "Test Challenge 1",
-          "description": "String|link",
-          "fundsCurrency": "ADA",
-          "ratingFormula": "avg(assessments.rating)",
-          "fundsAvailable": 1000000,
-          "descriptionHash": "...",
-
-          "reviewsCriteria": [
-            {
-              "id": 1,
-              "title": "Excellent"
-            },
-            {
-              "id": 2,
-              "title": "Good"
-            },
-            {
-              "id": 3,
-              "title": "Filtered Out"
-            }
-          ],
-
-          "assessmentsCriteria": [
-            {
-              "id": 1,
-              "title": "Impact",
-              "maxRating": 5,
-              "minRating": 1,
-              "stepRating": 1,
-              "description": "String|link",
-              "descriptionHash": "..."
-            },
-            {
-              "id": 2,
-              "title": "Feasibility",
-              "maxRating": 5,
-              "minRating": 1,
-              "stepRating": 1,
-              "description": "String|link",
-              "descriptionHash": "..."
-            },
-            {
-              "id": 3,
-              "title": "Clarity/Auditability",
-              "maxRating": 5,
-              "minRating": 1,
-              "stepRating": 1,
-              "description": "String|link",
-              "descriptionHash": "..."
-            }
-          ]
-        },
-
-        "communityQualityAssuranceStage": "True",
-
-        "proposalSubmissionStartDate": "2022-08-01T12:00:00",
-        "proposalSubmissionEndDate": "2022-08-20T12:00:00",
-
-        "paRegistrationStartDate": "2022-08-10T12:00:01",
-        "paRegistrationEndDate": "2022-08-30T12:00:00",
-
-        "assessmentSubmissionStartDate": "2022-08-20T12:00:01",
-        "assessmentSubmissionEndDate": "2022-09-10T12:00:00",
-
-        "assessmentPublicationStartDate": "2022-09-10T12:00:01",
-        "assessmentPublicationEndDate": "2022-09-24T12:00:00",
-
-        "assessmentReviewSubmissionStartDate": "2022-09-24T12:00:01",
-        "assessmentReviewSubmissionEndDate": "2022-10-05T12:00:00",
-
-        "assessmentReviewPublicationStartDate": "2022-10-05T12:00:01",
-        "assessmentReviewPublicationEndDate": "2022-10-15T12:00:00",
-
-        "votingStartDate": "2022-10-15T12:00:01",
-        "votingEndDate": "2022-10-25T12:00:00"
-      }
-    },
-
-    "tx_id": 106897,
-    "tx": {
-      "hash": "\\xc4216c139b738777a569be5b72d281d8560036ac795d",
-      "block": {
-        "time": "2022-07-20T06:20:41"
-      }
-    }
-  },
-
-  {
-    "bytes": "\\xa11a000c5fc5b166616374696f6e6b66756e6447656e",
+    "bytes": "\\xa174611a0163eee6b6c5b644765696f600c5f5667666",
 
     "id": 80025,
     "key": 810949,
@@ -117,9 +11,9 @@
       "creator": "stake_test1u3cjhdur3mnry5fjpkhf6s74jv7t9sfg0fzuvzskgwls90w4pa5n8",
 
       "payload": {
-        "title": "The Fund",
-        "startDate": "2022-09-01T12:00:00",
-        "endDate": "2022-11-30T23:59:59",
+        "title": "Past Fund",
+        "startDate": "2022-07-01T12:00:00",
+        "endDate": "2022-10-01T00:00:00",
         "fundHash": "6690c566f66fc5163b6677e64b1",
 
         "challenges": {
@@ -177,28 +71,249 @@
           ]
         },
 
-        "communityQualityAssuranceStage": "True",
+        "communityQualityAssuranceStage": false,
+
+        "proposalSubmissionStartDate": "2022-07-01T12:00:00",
+        "proposalSubmissionEndDate": "2022-09-15T12:00:00",
+
+        "proposalPublishingStartDate": "2022-09-15T12:00:00",
+        "proposalPublishingEndDate": "2022-10-01T00:00:00",
+
+        "qaRegistrationStartDate": null,
+        "qaRegistrationEndDate": null,
+
+        "assessmentSubmissionStartDate": null,
+        "assessmentSubmissionEndDate": null,
+
+        "assessmentPublishingStartDate": null,
+        "assessmentPublishingEndDate": null,
+
+        "assessmentReviewSubmissionStartDate": null,
+        "assessmentReviewSubmissionEndDate": null,
+
+        "assessmentReviewPublishingStartDate": null,
+        "assessmentReviewPublishingEndDate": null,
+
+        "votingStartDate": null,
+        "votingEndDate": null
+      }
+    },
+
+    "tx_id": 126879,
+    "tx": {
+      "hash": "\\xd281d85673877e5c569b6c14216003ac795d7a39bb72",
+      "block": {
+        "time": "2022-08-15T13:56:03"
+      }
+    }
+  },
+
+  {
+    "bytes": "\\x0c5fc61a56e5b1146a16f6e6b667537469600647666e",
+
+    "id": 75968,
+    "key": 810949,
+
+    "json": {
+      "action": "fundGenesis",
+      "version": "0.1.0",
+      "creator": "stake_test1ur3mnryuf6s73cjhd5fjp0pa5w4n8kh4jv7t9sfg0fzuvzskgwls9",
+
+      "payload": {
+        "title": "The Ending Soon Fund",
+        "startDate": "2022-08-01T12:00:00",
+        "endDate": "2022-11-01T00:00:00",
+        "fundHash": "63b6666f5c64b11669066577efc",
+
+        "challenges": {
+          "id": 1,
+          "title": "Test Challenge 1",
+          "description": "String|link",
+          "fundsCurrency": "ADA",
+          "ratingFormula": "avg(assessments.rating)",
+          "fundsAvailable": 1000000,
+          "descriptionHash": "...",
+
+          "reviewsCriteria": [
+            {
+              "id": 1,
+              "title": "Excellent"
+            },
+            {
+              "id": 2,
+              "title": "Good"
+            },
+            {
+              "id": 3,
+              "title": "Filtered Out"
+            }
+          ],
+
+          "assessmentsCriteria": [
+            {
+              "id": 1,
+              "title": "Impact",
+              "maxRating": 5,
+              "minRating": 1,
+              "stepRating": 1,
+              "description": "String|link",
+              "descriptionHash": "..."
+            },
+            {
+              "id": 2,
+              "title": "Feasibility",
+              "maxRating": 5,
+              "minRating": 1,
+              "stepRating": 1,
+              "description": "String|link",
+              "descriptionHash": "..."
+            },
+            {
+              "id": 3,
+              "title": "Clarity/Auditability",
+              "maxRating": 5,
+              "minRating": 1,
+              "stepRating": 1,
+              "description": "String|link",
+              "descriptionHash": "..."
+            }
+          ]
+        },
+
+        "communityQualityAssuranceStage": true,
+
+        "proposalSubmissionStartDate": "2022-08-01T12:00:00",
+        "proposalSubmissionEndDate": "2022-08-10T12:00:00",
+
+        "proposalPublishingStartDate": "2022-08-10T12:00:00",
+        "proposalPublishingEndDate": "2022-08-20T12:00:00",
+
+        "qaRegistrationStartDate": "2022-08-20T12:00:00",
+        "qaRegistrationEndDate": "2022-08-31T12:00:00",
+
+        "assessmentSubmissionStartDate": "2022-08-31T12:00:00",
+        "assessmentSubmissionEndDate": "2022-09-10T12:00:00",
+
+        "assessmentPublishingStartDate": "2022-09-10T12:00:00",
+        "assessmentPublishingEndDate": "2022-09-24T12:00:00",
+
+        "assessmentReviewSubmissionStartDate": "2022-09-24T12:00:00",
+        "assessmentReviewSubmissionEndDate": "2022-10-05T12:00:00",
+
+        "assessmentReviewPublishingStartDate": "2022-10-05T12:00:00",
+        "assessmentReviewPublishingEndDate": "2022-10-15T12:00:00",
+
+        "votingStartDate": "2022-10-15T12:00:00",
+        "votingEndDate": "2022-11-01T00:00:00"
+      }
+    },
+
+    "tx_id": 106897,
+    "tx": {
+      "hash": "\\xc4216c139b738777a569be5b72d281d8560036ac795d",
+      "block": {
+        "time": "2022-07-20T06:20:41"
+      }
+    }
+  },
+
+  {
+    "bytes": "\\xa11a000c5fc5b166616374696f6e6b66756e6447656e",
+
+    "id": 80025,
+    "key": 810949,
+
+    "json": {
+      "action": "fundGenesis",
+      "version": "0.1.0",
+      "creator": "stake_test1u3cjhdur3mnry5fjpkhf6s74jv7t9sfg0fzuvzskgwls90w4pa5n8",
+
+      "payload": {
+        "title": "The No-QA Fund",
+        "startDate": "2022-09-01T12:00:00",
+        "endDate": "2022-12-01T00:00:00",
+        "fundHash": "6690c566f66fc5163b6677e64b1",
+
+        "challenges": {
+          "id": 1,
+          "title": "Test Challenge 1",
+          "description": "String|link",
+          "fundsCurrency": "ADA",
+          "ratingFormula": "avg(assessments.rating)",
+          "fundsAvailable": 1000000,
+          "descriptionHash": "...",
+
+          "reviewsCriteria": [
+            {
+              "id": 1,
+              "title": "Excellent"
+            },
+            {
+              "id": 2,
+              "title": "Good"
+            },
+            {
+              "id": 3,
+              "title": "Filtered Out"
+            }
+          ],
+
+          "assessmentsCriteria": [
+            {
+              "id": 1,
+              "title": "Impact",
+              "maxRating": 5,
+              "minRating": 1,
+              "stepRating": 1,
+              "description": "String|link",
+              "descriptionHash": "..."
+            },
+            {
+              "id": 2,
+              "title": "Feasibility",
+              "maxRating": 5,
+              "minRating": 1,
+              "stepRating": 1,
+              "description": "String|link",
+              "descriptionHash": "..."
+            },
+            {
+              "id": 3,
+              "title": "Clarity/Auditability",
+              "maxRating": 5,
+              "minRating": 1,
+              "stepRating": 1,
+              "description": "String|link",
+              "descriptionHash": "..."
+            }
+          ]
+        },
+
+        "communityQualityAssuranceStage": false,
 
         "proposalSubmissionStartDate": "2022-09-01T12:00:00",
-        "proposalSubmissionEndDate": "2022-09-20T12:00:00",
+        "proposalSubmissionEndDate": "2022-10-01T12:00:00",
 
-        "paRegistrationStartDate": "2022-09-10T12:00:01",
-        "paRegistrationEndDate": "2022-09-30T12:00:00",
+        "proposalPublishingStartDate": "2022-10-01T12:00:00",
+        "proposalPublishingEndDate": "2022-12-01T00:00:00",
 
-        "assessmentSubmissionStartDate": "2022-09-20T12:00:01",
-        "assessmentSubmissionEndDate": "2022-10-10T12:00:00",
+        "qaRegistrationStartDate": null,
+        "qaRegistrationEndDate": null,
 
-        "assessmentPublicationStartDate": "2022-10-10T12:00:01",
-        "assessmentPublicationEndDate": "2022-10-24T12:00:00",
+        "assessmentSubmissionStartDate": null,
+        "assessmentSubmissionEndDate": null,
 
-        "assessmentReviewSubmissionStartDate": "2022-10-24T12:00:01",
-        "assessmentReviewSubmissionEndDate": "2022-11-05T12:00:00",
+        "assessmentPublishingStartDate": null,
+        "assessmentPublishingEndDate": null,
 
-        "assessmentReviewPublicationStartDate": "2022-11-05T12:00:01",
-        "assessmentReviewPublicationEndDate": "2022-11-15T12:00:00",
+        "assessmentReviewSubmissionStartDate": null,
+        "assessmentReviewSubmissionEndDate": null,
 
-        "votingStartDate": "2022-11-15T12:00:01",
-        "votingEndDate": "2022-11-25T12:00:00"
+        "assessmentReviewPublishingStartDate": null,
+        "assessmentReviewPublishingEndDate": null,
+
+        "votingStartDate": null,
+        "votingEndDate": null
       }
     },
 
@@ -225,7 +340,7 @@
       "payload": {
         "title": "Project Catalyst Fund 10 - test",
         "startDate": "2022-10-01T12:00:00",
-        "endDate": "2022-12-31T23:59:59",
+        "endDate": "2023-01-01T00:00:00",
         "fundHash": "0c5fc5b166616374696f6e6b667",
 
         "challenges": {
@@ -283,28 +398,31 @@
           ]
         },
 
-        "communityQualityAssuranceStage": "True",
+        "communityQualityAssuranceStage": true,
 
         "proposalSubmissionStartDate": "2022-10-01T12:00:00",
-        "proposalSubmissionEndDate": "2022-10-20T12:00:00",
+        "proposalSubmissionEndDate": "2022-10-10T12:00:00",
 
-        "paRegistrationStartDate": "2022-10-10T12:00:01",
-        "paRegistrationEndDate": "2022-10-31T12:00:00",
+        "proposalPublishingStartDate": "2022-10-10T12:00:00",
+        "proposalPublishingEndDate": "2022-10-20T12:00:00",
 
-        "assessmentSubmissionStartDate": "2022-10-20T12:00:01",
+        "qaRegistrationStartDate": "2022-10-20T12:00:00",
+        "qaRegistrationEndDate": "2022-10-31T12:00:00",
+
+        "assessmentSubmissionStartDate": "2022-10-31T12:00:00",
         "assessmentSubmissionEndDate": "2022-11-10T12:00:00",
 
-        "assessmentPublicationStartDate": "2022-11-10T12:00:01",
-        "assessmentPublicationEndDate": "2022-11-24T12:00:00",
+        "assessmentPublishingStartDate": "2022-11-10T12:00:00",
+        "assessmentPublishingEndDate": "2022-11-24T12:00:00",
 
-        "assessmentReviewSubmissionStartDate": "2022-11-24T12:00:01",
+        "assessmentReviewSubmissionStartDate": "2022-11-24T12:00:00",
         "assessmentReviewSubmissionEndDate": "2022-12-05T12:00:00",
 
-        "assessmentReviewPublicationStartDate": "2022-12-05T12:00:01",
-        "assessmentReviewPublicationEndDate": "2022-12-15T12:00:00",
+        "assessmentReviewPublishingStartDate": "2022-12-05T12:00:00",
+        "assessmentReviewPublishingEndDate": "2022-12-15T12:00:00",
 
-        "votingStartDate": "2022-12-15T12:00:01",
-        "votingEndDate": "2022-12-25T12:00:00"
+        "votingStartDate": "2022-12-15T12:00:00",
+        "votingEndDate": "2023-01-01T00:00:00"
       }
     },
 
@@ -331,7 +449,7 @@
       "payload": {
         "title": "Project Catalyst Fund 11",
         "startDate": "2022-11-01T12:00:00",
-        "endDate": "2023-01-31T23:59:59",
+        "endDate": "2023-02-01T00:00:00",
         "fundHash": "1fc566b74666b6617696e306fc5",
 
         "challenges": {
@@ -389,28 +507,31 @@
           ]
         },
 
-        "communityQualityAssuranceStage": "True",
+        "communityQualityAssuranceStage": true,
 
         "proposalSubmissionStartDate": "2022-11-01T12:00:00",
-        "proposalSubmissionEndDate": "2022-11-20T12:00:00",
+        "proposalSubmissionEndDate": "2022-11-10T12:00:00",
 
-        "paRegistrationStartDate": "2022-11-10T12:00:01",
-        "paRegistrationEndDate": "2022-11-30T12:00:00",
+        "proposalPublishingStartDate": "2022-11-10T12:00:00",
+        "proposalPublishingEndDate": "2022-11-20T12:00:00",
 
-        "assessmentSubmissionStartDate": "2022-11-20T12:00:01",
+        "qaRegistrationStartDate": "2022-11-20T12:00:00",
+        "qaRegistrationEndDate": "2022-11-30T12:00:00",
+
+        "assessmentSubmissionStartDate": "2022-11-30T12:00:00",
         "assessmentSubmissionEndDate": "2022-12-10T12:00:00",
 
-        "assessmentPublicationStartDate": "2022-12-10T12:00:01",
-        "assessmentPublicationEndDate": "2022-12-24T12:00:00",
+        "assessmentPublishingStartDate": "2022-12-10T12:00:00",
+        "assessmentPublishingEndDate": "2022-12-24T12:00:00",
 
-        "assessmentReviewSubmissionStartDate": "2022-12-24T12:00:01",
+        "assessmentReviewSubmissionStartDate": "2022-12-24T12:00:00",
         "assessmentReviewSubmissionEndDate": "2023-01-05T12:00:00",
 
-        "assessmentReviewPublicationStartDate": "2023-01-05T12:00:01",
-        "assessmentReviewPublicationEndDate": "2023-01-15T12:00:00",
+        "assessmentReviewPublishingStartDate": "2023-01-05T12:00:00",
+        "assessmentReviewPublishingEndDate": "2023-01-15T12:00:00",
 
-        "votingStartDate": "2023-01-15T12:00:01",
-        "votingEndDate": "2023-01-25T12:00:00"
+        "votingStartDate": "2023-01-15T12:00:00",
+        "votingEndDate": "2023-02-01T00:00:00"
       }
     },
 

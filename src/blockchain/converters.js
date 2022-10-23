@@ -1,4 +1,5 @@
 import compactString from "@/utils/compactString";
+import { fundActivityPeriod, fundCurrentStages } from "@/utils/fundsUtils";
 
 export function fundFromBlockchain(fundJson) {
   return {
@@ -10,6 +11,9 @@ export function fundFromBlockchain(fundJson) {
     txHash: fundJson.tx.hash,
     txHashCompact: compactString(fundJson.tx.hash),
     fundHashCompact: compactString(fundJson.json.payload.fundHash),
+    activityPeriod: fundActivityPeriod(fundJson.json.payload),
+    currentStages: fundCurrentStages(fundJson.json.payload),
+    qaStageVerbose: fundJson.json.payload.communityQualityAssuranceStage ? "yes" : "no",
     ...fundJson.json.payload,
   };
 }

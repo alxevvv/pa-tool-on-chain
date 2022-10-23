@@ -19,29 +19,35 @@
             <tr>
               <th>Hash</th>
               <th>Title</th>
-              <th>Status</th>
-              <th>Current Stages</th>
+              <th>Activity</th>
+              <th>QA</th>
+              <th>Stage(s)</th>
               <th>PA Status</th>
             </tr>
           </thead>
           <tbody>
             <tr
-              v-for="row in tableRows"
-              :key="row.fundHash"
+              v-for="fund in fundsStore.all"
+              :key="fund.fundHash"
             >
               <td>
-                <RouterLink :to="{name: 'FundGenesis', params: {hash: row.fundHash}}">
-                  {{ row.fundHashCompact }}
+                <RouterLink :to="{name: 'FundGenesis', params: {hash: fund.fundHash}}">
+                  {{ fund.fundHashCompact }}
                 </RouterLink>
               </td>
               <td>
-                {{ row.title }}
+                {{ fund.title }}
               </td>
-              <td>{{ row.status }}</td>
+              <td>{{ fund.activityPeriod }}</td>
               <td>
-                <template v-if="row.actions.length">
+                <span class="tag is-light">
+                  {{ fund.qaStageVerbose }}
+                </span>
+              </td>
+              <td>
+                <template v-if="fund.currentStages.length">
                   <span
-                    v-for="action in row.actions"
+                    v-for="action in fund.currentStages"
                     :key="action"
                     class="tag is-primary is-light mr-1"
                   >{{ action }}</span>
@@ -67,29 +73,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
 import { useFundsStore } from "@/stores/fundsStore";
-import { fundStatus, fundCurrentStages } from "@/utils/fundsUtils";
 
 const fundsStore = useFundsStore();
-
-const tableRows = ref([]);
-
-function fundsToTableRows() {
-  return fundsStore.all.map((fund) => {
-    return {
-      fundHash: fund.fundHash,
-      fundHashCompact: fund.fundHashCompact,
-      title: fund.title,
-      status: fundStatus(fund),
-      actions: fundCurrentStages(fund),
-    };
-  });
-}
-
-watch(
-  () => fundsStore.all,
-  () => tableRows.value = fundsToTableRows(),
-  { immediate: true },
-);
 </script>
