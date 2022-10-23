@@ -1,5 +1,6 @@
 import { reactive, readonly } from "vue";
 import { defineStore } from "pinia";
+import testFundsSet from "@/assets/testData/testFundsSet.json";
 
 export const useRequestsStore = defineStore(
   "requests",
@@ -46,29 +47,37 @@ export const useRequestsStore = defineStore(
 
       onBeforeRequest(url);
 
-      try {
-        response = await fetch(url);
-      } catch (err) {
-        error = createError(null, { message: `Data fetching error: ${err.toString()}` });
-      }
+      // TODO: setup testing instead making this condition
+      if (
+        url ===
+        "http://localhost:5434/tx_metadata?key=eq.810949&json-%3E%3Eaction=eq.fundGenesis&select=*%2Ctx%28hash%2Cblock%28time%29%29"
+      ) {
+        data = testFundsSet;
+      } else {
+        try {
+          response = await fetch(url);
+        } catch (err) {
+          error = createError(null, { message: `Data fetching error: ${err.toString()}` });
+        }
 
-      if (!error) {
-        if (!response.ok) {
-          const errorResponse = {
-            statusCode: response.status,
-            statusText: response.statusText,
-          };
-          try {
-            const errorDetails = await processResponse(response);
-            error = createError(errorResponse, errorDetails);
-          } catch {
-            error = createError(errorResponse, { message: "Could not get error details" });
-          }
-        } else {
-          try {
-            data = await processResponse(response);
-          } catch (err) {
-            error = createError(null, { message: `Response processing error: ${err.toString()}` });
+        if (!error) {
+          if (!response.ok) {
+            const errorResponse = {
+              statusCode: response.status,
+              statusText: response.statusText,
+            };
+            try {
+              const errorDetails = await processResponse(response);
+              error = createError(errorResponse, errorDetails);
+            } catch {
+              error = createError(errorResponse, { message: "Could not get error details" });
+            }
+          } else {
+            try {
+              data = await processResponse(response);
+            } catch (err) {
+              error = createError(null, { message: `Response processing error: ${err.toString()}` });
+            }
           }
         }
       }
