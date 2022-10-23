@@ -16,7 +16,7 @@ const ACTIONS = {
 
 const POSTGREST_API_URL = import.meta.env.VITE_CARDANO_POSTGREST_API_URL;
 const TX_METADATA_KEY = import.meta.env.VITE_CARDANO_TX_METADATA_KEY;
-// const TX_METADATA_VERSION = import.meta.env.VITE_CARDANO_TX_METADATA_VERSION;
+const TX_METADATA_VERSION = import.meta.env.VITE_CARDANO_TX_METADATA_VERSION;
 
 function apiRequestUrl(path, params = {}) {
   return `${POSTGREST_API_URL}/${path}?${new URLSearchParams(params)}`;
@@ -25,7 +25,7 @@ function apiRequestUrl(path, params = {}) {
 function apiSelectMetadataUrl(action, params = {}) {
   return apiRequestUrl(URLS.metadata, {
     key: `eq.${TX_METADATA_KEY}`,
-    // version: `eq.${TX_METADATA_VERSION}`,
+    "json->>version": `eq.${TX_METADATA_VERSION}`,
     "json->>action": `eq.${action}`,
     select: "*,tx(hash,block(time))",
     ...params,
