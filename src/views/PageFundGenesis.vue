@@ -18,11 +18,11 @@
             href="#"
             aria-current="page"
           >
-            <span v-if="!fund">
+            <span v-if="!fundGenesis">
               Fund&nbsp;<span class="has-text-grey">{{ fundHash }}</span>
             </span>
             <span v-else>
-              {{ fund.title }}
+              {{ fundGenesis.title }}
             </span>
           </a>
         </li>
@@ -33,7 +33,7 @@
       class="progress is-small is-primary"
       max="100"
     />
-    <pre v-else>{{ fund }}</pre>
+    <pre v-else>{{ fundGenesis }}</pre>
   </div>
 </template>
 
@@ -46,11 +46,11 @@ const route = useRoute();
 const fundsStore = useFundsStore();
 const fundHash = route.params.hash;
 
-const fund = ref(null);
+const fundGenesis = ref(null);
 
 watch(
   () => fundsStore.all,
-  () => fund.value = fundsStore.getByHash(fundHash),
+  () => fundGenesis.value = fundsStore.getByHash(fundHash)?.genesis,
   { immediate: true },
 );
 </script>

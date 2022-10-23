@@ -14,6 +14,7 @@ export function fundFromBlockchain(fundJson) {
     activityPeriod: fundActivityPeriod(fundJson.json.payload),
     currentStages: fundCurrentStages(fundJson.json.payload),
     qaStageVerbose: fundJson.json.payload.communityQualityAssuranceStage ? "yes" : "no",
+    genesis: fundJson.json.payload,
     ...fundJson.json.payload,
   };
 }
