@@ -3,6 +3,7 @@
     <h1 class="title">
       Fund Genesis JSON
     </h1>
+
     <nav
       class="breadcrumb"
       aria-label="breadcrumbs"
@@ -28,8 +29,9 @@
         </li>
       </ul>
     </nav>
+
     <progress
-      v-if="fundsStore.loadFundsRequest.isLoading"
+      v-if="fundsStore.loadFundsRequest.request?.isLoading"
       class="progress is-small is-primary"
       max="100"
     />

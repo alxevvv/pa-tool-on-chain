@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { readonly, ref, watch } from "vue";
 import { useRequestsStore } from "@/stores/requestsStore";
 import { useNotificationsStore } from "@/stores/notificationsStore";
 
@@ -20,7 +20,11 @@ export default function useRequest(rq, options = {}) {
   const request = ref(null);
   const url = ref(rq(...opts.requestArguments));
 
-  watch(
+  function remove() {
+    requestsStore.removeRequest(request.value);
+  }
+
+  const unwatch = watch(
     () => requestsStore.requests[url.value]?.isLoading,
     () => {
       const storedRequest = requestsStore.requests[url.value];
@@ -32,16 +36,19 @@ export default function useRequest(rq, options = {}) {
             type: "is-danger",
             text: `Request error: ${request.value.error?.data?.message}` || "Unknown request error",
           });
+          unwatch();
         }
         if (request.value.isSuccess) {
           opts.onSuccess(request.value.data);
+          unwatch();
         }
       }
     },
-    {
-      immediate: true,
-    },
   );
 
-  return request;
+  return {
+    request: readonly(request),
+
+    remove,
+  };
 }

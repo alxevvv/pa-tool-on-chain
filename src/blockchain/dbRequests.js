@@ -7,7 +7,7 @@ const URLS = {
 
 const ACTIONS = {
   fundGenesis: "fundGenesis",
-  registerPA: "registerPA",
+  paRegistration: "paRegistration",
   assessmentsSubmission: "assessmentsSubmission",
   assessmentsPublication: "assessmentsPublication",
   reviewsSubmission: "reviewsSubmission",
@@ -32,12 +32,12 @@ function apiSelectMetadataUrl(action, params = {}) {
   });
 }
 
-// function apiSelectFundMetadataUrl(action, fundHash, params = {}) {
-//   return apiSelectMetadataUrl(action, {
-//     "json->>fundHash": `eq.${fundHash}`,
-//     ...params,
-//   });
-// }
+function apiSelectMetadataFundUrl(action, fundHash, params = {}) {
+  return apiSelectMetadataUrl(action, {
+    "json->payload->>fundHash": `eq.${fundHash}`,
+    ...params,
+  });
+}
 
 export function fundsList() {
   const url = apiSelectMetadataUrl(ACTIONS.fundGenesis);
@@ -45,7 +45,9 @@ export function fundsList() {
   return url;
 }
 
-// async function paRegistrations(fundHash) {
-//   const url = this.apiUrlFundMetadata(URLS.paRegistrations, ACTIONS.registerPA, fundHash);
-//   return await await this.fetch(url);
-// }
+export function paRegistrationsList(fundHash, stakeAddress) {
+  const params = stakeAddress ? { "json->>creator": `eq.${stakeAddress}` } : {};
+  const url = apiSelectMetadataFundUrl(ACTIONS.paRegistration, fundHash, params);
+  useRequestsStore().sendRequest(url);
+  return url;
+}

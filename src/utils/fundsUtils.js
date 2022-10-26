@@ -34,3 +34,14 @@ export function fundCurrentStages(fund) {
 
   return stages;
 }
+
+export function fundQaStageIsDisabled(fund) {
+  return !fund.communityQualityAssuranceStage;
+}
+
+export function fundPaRegistrationIsOpened(fund) {
+  const now = dayjs();
+  const startDate = dayjs(fund.qaRegistrationStartDate);
+  const endDate = dayjs(fund.qaRegistrationEndDate);
+  return startDate.isBefore(now) && endDate.isAfter(now);
+}

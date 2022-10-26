@@ -8,6 +8,7 @@ export const useRequestsStore = defineStore(
 
     function onBeforeRequest(url) {
       requests[url] = {
+        url,
         requestedAt: Date.now(),
         isLoading: true,
       };
@@ -76,9 +77,17 @@ export const useRequestsStore = defineStore(
       onAfterResponse(url, error, data);
     }
 
+    function removeRequest(request) {
+      if (requests[request.url]) {
+        delete requests[request.url];
+      }
+    }
+
     return {
       requests: readonly(requests),
+
       sendRequest,
+      removeRequest,
     };
   },
   { persist: false },

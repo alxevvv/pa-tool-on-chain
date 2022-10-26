@@ -1,20 +1,32 @@
 import compactString from "@/utils/compactString";
 import { fundActivityPeriod, fundCurrentStages } from "@/utils/fundsUtils";
 
-export function fundFromBlockchain(fundJson) {
+function metadataFromBlockchain(metadata) {
   return {
-    metadataId: fundJson.id,
-    metadataBytes: fundJson.bytes,
-    creator: fundJson.json.creator,
-    blockTime: fundJson.tx.block.time,
-    txId: fundJson.tx_id,
-    txHash: fundJson.tx.hash,
-    txHashCompact: compactString(fundJson.tx.hash),
-    fundHashCompact: compactString(fundJson.json.payload.fundHash),
-    activityPeriod: fundActivityPeriod(fundJson.json.payload),
-    currentStages: fundCurrentStages(fundJson.json.payload),
-    qaStageVerbose: fundJson.json.payload.communityQualityAssuranceStage ? "yes" : "no",
-    genesis: fundJson.json.payload,
-    ...fundJson.json.payload,
+    metadataId: metadata.id,
+    metadataBytes: metadata.bytes,
+    creator: metadata.json.creator,
+    blockTime: metadata.tx.block.time,
+    txId: metadata.tx_id,
+    txHash: metadata.tx.hash,
+    txHashCompact: compactString(metadata.tx.hash),
+    ...metadata.json.payload,
+  };
+}
+
+export function fundFromBlockchain(metadata) {
+  return {
+    ...metadataFromBlockchain(metadata),
+    fundHashCompact: compactString(metadata.json.payload.fundHash),
+    activityPeriod: fundActivityPeriod(metadata.json.payload),
+    currentStages: fundCurrentStages(metadata.json.payload),
+    qaStageVerbose: metadata.json.payload.communityQualityAssuranceStage ? "yes" : "no",
+    genesis: metadata.json.payload,
+  };
+}
+
+export function paRegistrationFromBlockchain(metadata) {
+  return {
+    ...metadataFromBlockchain(metadata),
   };
 }
