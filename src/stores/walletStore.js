@@ -1,8 +1,10 @@
 import pick from "lodash/pick";
+import { v4 as uuidv4 } from "uuid";
 import { Buffer } from "buffer";
-import { ref, readonly, watch } from "vue";
+import { ref, readonly, watch, reactive, computed } from "vue";
 import { defineStore } from "pinia";
 import { Address } from "@emurgo/cardano-serialization-lib-asmjs";
+import { metadataByTxId, txByHash } from "@/blockchain/submissionConfirm";
 import { useNotificationsStore } from "@/stores/notificationsStore";
 import { createMetadataValue } from "@/utils/metadataUtils";
 import * as utils from "@/utils/walletUtils";
@@ -108,6 +110,10 @@ export const useWalletStore = defineStore(
       }
     }
 
+    const isProcessing = computed(() => {
+      return isConnecting.value || isTxSubmitting.value || isTxConfirming.value;
+    });
+
     /* map utils */
 
     async function getWalletUtxos() {
@@ -130,12 +136,145 @@ export const useWalletStore = defineStore(
       return await utils.submitTx(walletApi, txCbor);
     }
 
-    /* transaction sending */
+    /* transaction submission */
 
-    async function submitMetadataTx(action, payload) {
+    const submissions = reactive({});
+    const isTxSubmitting = ref(false);
+    const isTxConfirming = ref(false);
+
+    function onBeforeSubmission(uuid) {
+      isTxSubmitting.value = true;
+      submissions[uuid] = {
+        uuid,
+        startedAt: Date.now(),
+        isProcessing: true,
+        isConfirmed: false,
+      };
+    }
+
+    function onAfterSubmission(uuid, errorMessage, txHash) {
+      Object.assign(submissions[uuid], {
+        finishedAt: Date.now(),
+        isProcessing: false,
+        isSuccess: !errorMessage,
+        isFailed: !!errorMessage,
+        errorMessage,
+        txHash,
+      });
+      isTxSubmitting.value = false;
+      if (!errorMessage) {
+        notificationsStore.add({
+          type: "is-info",
+          text: `Transaction sent, hash: ${txHash}`,
+          duration: 3000,
+        });
+      }
+    }
+
+    function onAfterConfirmation(uuid, confirmedMetadata) {
+      Object.assign(submissions[uuid], {
+        confirmedAt: Date.now(),
+        isConfirmed: true,
+        confirmedMetadata,
+      });
+      isTxConfirming.value = false;
+      notificationsStore.add({
+        type: "is-success",
+        text: `Transaction ${submissions[uuid].txHash} submission confirmed`,
+        duration: 3000,
+      });
+    }
+
+    function onConfirmationTimeout(uuid) {
+      isTxConfirming.value = false;
+      notificationsStore.add({
+        type: "is-warning",
+        text: `Unable to confirm transaction ${submissions[uuid].txHash}`,
+        duration: 5000,
+      });
+    }
+
+    function watchForSubmissionConfirmation(uuid, txHash, onSuccess) {
+      let attemptsCount = 0;
+      let txId = null;
+      let confirmedMetadata = null;
+      let isLoading = false;
+
+      isTxConfirming.value = true;
+
+      const intervalId = setInterval(async () => {
+        if (isLoading) {
+          return;
+        }
+
+        if (attemptsCount >= 15) {
+          clearInterval(intervalId);
+          onConfirmationTimeout(uuid);
+        }
+
+        isLoading = true;
+        attemptsCount += 1;
+
+        if (!txId) {
+          const txByHashResult = await txByHash(txHash);
+          if (txByHashResult && txByHashResult.length) {
+            const tx = txByHashResult[0];
+            if (tx && tx.id) {
+              txId = tx.id;
+            }
+          }
+        }
+
+        if (txId) {
+          const metadataResult = await metadataByTxId(txId);
+          if (metadataResult && metadataResult.length) {
+            const metadata = metadataResult[0];
+            if (metadata && metadata.tx_id === txId) {
+              confirmedMetadata = metadata;
+            }
+          }
+        }
+
+        if (confirmedMetadata) {
+          clearInterval(intervalId);
+          onAfterConfirmation(uuid, confirmedMetadata);
+
+          if (typeof onSuccess === "function") {
+            onSuccess({
+              confirmedMetadata,
+              txHash,
+              submissionUuid: uuid,
+            });
+          }
+        }
+
+        isLoading = false;
+      }, 3000);
+    }
+
+    async function submitMetadataTx(action, payload, onSuccess) {
+      if (!walletApi) {
+        throw new Error("No wallet API connected");
+      }
       if (!walletProps.value.stakeAddress) {
         throw new Error("No wallet stake address");
       }
+
+      function onError(err) {
+        onAfterSubmission(submissionUuid, err.toString(), null);
+        notificationsStore.add({
+          text: err.toString(),
+          type: "is-danger",
+          duration: 5000,
+        });
+      }
+
+      let signedTx;
+      let txHash;
+
+      const submissionUuid = uuidv4();
+
+      onBeforeSubmission(submissionUuid);
 
       const recipientAddress = await getWalletRecipientAddress();
       const changeAddress = await getWalletChangeAddress();
@@ -145,10 +284,27 @@ export const useWalletStore = defineStore(
       const { tx, transactionWitnessSet } = utils.buildTx(recipientAddress, changeAddress, utxos, {
         metadataValue,
       });
-      const signedTx = await signTx(tx, transactionWitnessSet);
+
+      try {
+        signedTx = await signTx(tx, transactionWitnessSet);
+      } catch (err) {
+        onError(err);
+        return;
+      }
+
       const txCbor = utils.getTxCbor(signedTx);
 
-      await submitTx(txCbor);
+      try {
+        txHash = await submitTx(txCbor);
+      } catch (err) {
+        onError(err);
+        return;
+      }
+
+      onAfterSubmission(submissionUuid, null, txHash);
+      watchForSubmissionConfirmation(submissionUuid, txHash, onSuccess);
+
+      return submissionUuid;
     }
 
     /* handle selected wallet key change */
@@ -166,6 +322,11 @@ export const useWalletStore = defineStore(
       connectionError: readonly(connectionError),
       walletProps: readonly(walletProps),
       selectedWalletKey,
+      isProcessing,
+
+      submissions: readonly(submissions),
+      isTxSubmitting: readonly(isTxSubmitting),
+      isTxConfirming: readonly(isTxConfirming),
 
       selectWallet,
       updateWalletConnection,

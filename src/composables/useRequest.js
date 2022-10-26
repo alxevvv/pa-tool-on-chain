@@ -1,4 +1,4 @@
-import { readonly, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRequestsStore } from "@/stores/requestsStore";
 import { useNotificationsStore } from "@/stores/notificationsStore";
 
@@ -17,19 +17,17 @@ export default function useRequest(rq, options = {}) {
   const requestsStore = useRequestsStore();
   const notificationsStore = useNotificationsStore();
 
-  const request = ref(null);
   const url = ref(rq(...opts.requestArguments));
+  const request = computed(() => requestsStore.requests[url.value]);
 
   function remove() {
     requestsStore.removeRequest(request.value);
   }
 
   const unwatch = watch(
-    () => requestsStore.requests[url.value]?.isLoading,
+    () => request.value?.isLoading,
     () => {
-      const storedRequest = requestsStore.requests[url.value];
-      if (storedRequest) {
-        request.value = storedRequest;
+      if (request.value) {
         if (request.value.isFailed) {
           opts.onError(request.value.error);
           notificationsStore.add({
@@ -47,7 +45,7 @@ export default function useRequest(rq, options = {}) {
   );
 
   return {
-    request: readonly(request),
+    request,
 
     remove,
   };

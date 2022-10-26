@@ -6,16 +6,13 @@
 
   <FundSelect
     v-else-if="!fundsStore.selectedFundHash"
-    size="large"
+    size="is-large"
   />
 
-  <button
+  <RegisterAsPaButton
     v-else-if="fundsStore.isOpenedForRegistration && !fundsStore.isPaRegistered"
-    class="button is-primary is-large"
-    @click="fundsStore.testTx"
-  >
-    Register as a PA
-  </button>
+    size="is-large"
+  />
 
   <button
     v-else-if="fundsStore.isPaRegistered && fundsStore.isOpenedForAssessmentCreation"
@@ -34,10 +31,11 @@
 </template>
 
 <script setup>
+import FundSelect from "@/components/FundSelect.vue";
+import RegisterAsPaButton from "@/components/RegisterAsPaButton.vue";
+import WalletConnectButton from "@/components/WalletConnectButton.vue";
 import { useWalletStore } from "@/stores/walletStore";
 import { useFundsStore } from "@/stores/fundsStore";
-import FundSelect from "@/components/FundSelect.vue";
-import WalletConnectButton from "@/components/WalletConnectButton.vue";
 
 const walletStore = useWalletStore();
 const fundsStore = useFundsStore();

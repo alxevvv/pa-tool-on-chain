@@ -136,7 +136,7 @@ export async function signTx(walletApi, tx, transactionWitnessSet) {
 }
 
 export async function submitTx(walletApi, txCbor) {
-  await walletApi.submitTx(txCbor);
+  return await walletApi.submitTx(txCbor);
 }
 
 export function extractStakeAddress(addressBech32, networkId = 1) {

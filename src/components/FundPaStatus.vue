@@ -7,20 +7,20 @@
     Wallet not connected
   </span>
 
-  <span v-else-if="loadPaRegistrationsRequest?.request?.isLoading">
+  <span v-else-if="!fundsStore.openedForPaRegistrationFundHashes.includes(props.fundHash)">
+    Registration is closed
+  </span>
+
+  <span v-else-if="loadPaRegistrationsRequest?.isLoading">
     Loading...
   </span>
 
-  <span v-else-if="loadPaRegistrationsRequest?.request?.isFailed">
+  <span v-else-if="loadPaRegistrationsRequest?.isFailed">
     Error
   </span>
 
   <span v-else-if="fundsStore.paRegisteredFundHashes.includes(props.fundHash)">
     Registered
-  </span>
-
-  <span v-else-if="!fundsStore.openedForPaRegistrationFundHashes.includes(props.fundHash)">
-    Registration is closed
   </span>
 
   <span v-else>

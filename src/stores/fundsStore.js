@@ -90,44 +90,41 @@ export const useFundsStore = defineStore(
     function loadFunds() {
       loadFundsRequest.value = useRequest(fundsList, {
         onSuccess: (data) => (all.value = data.map(fundFromBlockchain)),
-      });
+      }).request;
     }
 
     function getByHash(hash) {
       return all.value.find(({ fundHash }) => fundHash === hash);
     }
 
-    function loadPaRegistrations(fundHash, stakeAddress) {
-      if (fundHash && stakeAddress) {
+    function loadPaRegistrations(stakeAddress) {
+      if (stakeAddress) {
         loadPaRegistrationsRequest.value?.remove();
         loadPaRegistrationsRequest.value = useRequest(paRegistrationsList, {
-          requestArguments: [fundHash, stakeAddress],
-          onSuccess: (data) => (paRegistrations.value = data.map(paRegistrationFromBlockchain)),
-        });
-      } else {
-        paRegistrations.value = [];
-        loadPaRegistrationsRequest.value?.remove();
+          requestArguments: [stakeAddress],
+          onSuccess: (data) => paRegistrations.value.push(...data.map(paRegistrationFromBlockchain)),
+        }).request;
       }
-    }
-
-    async function testTx() {
-      await walletStore.submitMetadataTx("test", {
-        now: Date.now(),
-      });
     }
 
     async function registerAsPa() {
       if (!selectedFundHash.value) {
         throw new Error("Fund not selected");
       }
-      await walletStore.submitMetadataTx(BLOCKCHAIN_ACTIONS.paRegistration, {
-        fundHash: selectedFundHash.value,
-      });
+      return await walletStore.submitMetadataTx(
+        BLOCKCHAIN_ACTIONS.paRegistration,
+        {
+          fundHash: selectedFundHash.value,
+        },
+        ({ confirmedMetadata }) => {
+          paRegistrations.value.push(paRegistrationFromBlockchain(confirmedMetadata));
+        },
+      );
     }
 
     watch(
-      () => [selectedFundHash.value, walletProps.value?.stakeAddress],
-      ([fundHash, stakeAddress]) => loadPaRegistrations(fundHash, stakeAddress),
+      () => walletProps.value?.stakeAddress,
+      (stakeAddress) => loadPaRegistrations(stakeAddress),
     );
 
     return {
@@ -148,7 +145,6 @@ export const useFundsStore = defineStore(
 
       loadFunds,
       getByHash,
-      testTx,
       registerAsPa,
     };
   },

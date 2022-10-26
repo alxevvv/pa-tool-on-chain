@@ -163,7 +163,7 @@ const buttonClasses = computed(() => {
   if (props.isLight) {
     classes.push("is-light");
   }
-  if (walletStore.isConnecting) {
+  if (walletStore.isProcessing) {
     classes.push("is-loading");
   }
   if (walletStore.isConnected) {

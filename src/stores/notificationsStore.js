@@ -8,6 +8,7 @@ const defaultOptions = {
   duration: 3000,
 };
 
+// TODO: notifications shortcuts (info, success, warning, danger, error)
 export const useNotificationsStore = defineStore(
   "notifications",
   () => {
@@ -57,7 +58,5 @@ export const useNotificationsStore = defineStore(
       unsetClosingDelay,
     };
   },
-  {
-    persist: false,
-  },
+  { persist: false },
 );

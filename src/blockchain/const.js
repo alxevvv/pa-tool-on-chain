@@ -1,6 +1,7 @@
 export const POSTGREST_API_PATHS = {
-  metadata: "tx_metadata",
+  tx: "tx",
   txOut: "tx_out",
+  metadata: "tx_metadata",
 };
 
 export const BLOCKCHAIN_ACTIONS = {
