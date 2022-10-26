@@ -1,8 +1,8 @@
 <template>
-  <div class="select">
+  <div :class="`select is-${props.size}`">
     <select v-model="fundsStore.selectedFundHash">
       <option value="">
-        [not selected]
+        [please select a fund...]
       </option>
       <option
         v-for="fund in fundsStore.selectable"
@@ -17,6 +17,13 @@
 
 <script setup>
 import { useFundsStore } from "@/stores/fundsStore";
+
+const props = defineProps({
+  size: {
+    type: String,
+    default: "normal",
+  },
+});
 
 const fundsStore = useFundsStore();
 </script>

@@ -4,13 +4,10 @@
     size="is-large"
   />
 
-  <RouterLink
+  <FundSelect
     v-else-if="!fundsStore.selectedFundHash"
-    class="button is-primary is-large"
-    :to="{name: 'Funds'}"
-  >
-    Select Fund
-  </RouterLink>
+    size="large"
+  />
 
   <button
     v-else-if="fundsStore.isOpenedForRegistration && !fundsStore.isPaRegistered"
@@ -38,6 +35,7 @@
 <script setup>
 import { useWalletStore } from "@/stores/walletStore";
 import { useFundsStore } from "@/stores/fundsStore";
+import FundSelect from "@/components/FundSelect.vue";
 import WalletConnectButton from "@/components/WalletConnectButton.vue";
 
 const walletStore = useWalletStore();
