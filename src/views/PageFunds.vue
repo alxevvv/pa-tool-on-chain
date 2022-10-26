@@ -6,7 +6,7 @@
 
     <div class="block">
       <progress
-        v-if="fundsStore.loadFundsRequest?.isLoading"
+        v-if="fundsStore.loadFundsRequest?.request?.isLoading"
         class="progress is-small is-primary"
         max="100"
       />

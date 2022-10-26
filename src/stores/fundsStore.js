@@ -90,7 +90,7 @@ export const useFundsStore = defineStore(
     function loadFunds() {
       loadFundsRequest.value = useRequest(fundsList, {
         onSuccess: (data) => (all.value = data.map(fundFromBlockchain)),
-      }).request;
+      });
     }
 
     function getByHash(hash) {
@@ -103,7 +103,7 @@ export const useFundsStore = defineStore(
         loadPaRegistrationsRequest.value = useRequest(paRegistrationsList, {
           requestArguments: [stakeAddress],
           onSuccess: (data) => paRegistrations.value.push(...data.map(paRegistrationFromBlockchain)),
-        }).request;
+        });
       }
     }
 

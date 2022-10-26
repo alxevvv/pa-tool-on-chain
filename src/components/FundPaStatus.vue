@@ -11,11 +11,11 @@
     Registration is closed
   </span>
 
-  <span v-else-if="loadPaRegistrationsRequest?.isLoading">
+  <span v-else-if="loadPaRegistrationsRequest?.request?.isLoading">
     Loading...
   </span>
 
-  <span v-else-if="loadPaRegistrationsRequest?.isFailed">
+  <span v-else-if="loadPaRegistrationsRequest?.request?.isFailed">
     Error
   </span>
 

@@ -27,7 +27,7 @@ const buttonClasses = computed(() => {
   if (
     walletStore.isTxSubmitting
     || walletStore.isTxConfirming
-    || fundsStore.loadPaRegistrationsRequest?.isLoading
+    || fundsStore.loadPaRegistrationsRequest?.request?.isLoading
   ) {
     classes.push("is-loading");
   }
