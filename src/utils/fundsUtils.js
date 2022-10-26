@@ -1,6 +1,19 @@
 import dayjs from "dayjs";
 import camelToWords from "./camelToWords";
 
+function isActiveStage(fund, stageName) {
+  const now = dayjs();
+  const startDate = dayjs(fund[`${stageName}StartDate`]);
+  const endDate = dayjs(fund[`${stageName}EndDate`]);
+  return startDate.isBefore(now) && endDate.isAfter(now);
+}
+
+function isUpcomingStage(fund, stageName) {
+  const now = dayjs();
+  const endDate = dayjs(fund[`${stageName}EndDate`]);
+  return endDate.isAfter(now);
+}
+
 export function fundActivityPeriod(fund) {
   const now = dayjs();
   const startDate = dayjs(fund.startDate);
@@ -40,8 +53,9 @@ export function fundQaStageIsDisabled(fund) {
 }
 
 export function fundPaRegistrationIsOpened(fund) {
-  const now = dayjs();
-  const startDate = dayjs(fund.qaRegistrationStartDate);
-  const endDate = dayjs(fund.qaRegistrationEndDate);
-  return startDate.isBefore(now) && endDate.isAfter(now);
+  return !fundQaStageIsDisabled(fund) && isActiveStage(fund, "qaRegistration");
+}
+
+export function assessmentCreationIsOpened(fund) {
+  return !fundQaStageIsDisabled(fund) && isUpcomingStage(fund, "assessmentSubmission");
 }

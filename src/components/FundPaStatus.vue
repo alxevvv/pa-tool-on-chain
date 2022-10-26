@@ -3,10 +3,6 @@
     No QA Fund
   </span>
 
-  <span v-else-if="!fundsStore.openedForPaRegistrationFundHashes.includes(props.fundHash)">
-    Registration is closed
-  </span>
-
   <span v-else-if="!isConnected">
     Wallet not connected
   </span>
@@ -21,6 +17,10 @@
 
   <span v-else-if="fundsStore.paRegisteredFundHashes.includes(props.fundHash)">
     Registered
+  </span>
+
+  <span v-else-if="!fundsStore.openedForPaRegistrationFundHashes.includes(props.fundHash)">
+    Registration is closed
   </span>
 
   <span v-else>

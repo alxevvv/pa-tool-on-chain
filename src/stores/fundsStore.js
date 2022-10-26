@@ -3,7 +3,11 @@ import { computed, readonly, ref, watch } from "vue";
 import { fundsList, paRegistrationsList } from "@/blockchain/dbRequests";
 import { fundFromBlockchain, paRegistrationFromBlockchain } from "@/blockchain/converters";
 import useRequest from "@/composables/useRequest";
-import { fundPaRegistrationIsOpened, fundQaStageIsDisabled } from "@/utils/fundsUtils";
+import {
+  assessmentCreationIsOpened,
+  fundPaRegistrationIsOpened,
+  fundQaStageIsDisabled,
+} from "@/utils/fundsUtils";
 import { useWalletStore } from "./walletStore";
 
 export const useFundsStore = defineStore(
@@ -48,10 +52,6 @@ export const useFundsStore = defineStore(
       }, []);
     });
 
-    const paRegisteredFundHashes = computed(() => {
-      return paRegistrations.value.map(({ fundHash }) => fundHash);
-    });
-
     const openedForPaRegistrationFundHashes = computed(() => {
       return all.value.reduce((hashes, fund) => {
         if (fundPaRegistrationIsOpened(fund)) {
@@ -59,6 +59,31 @@ export const useFundsStore = defineStore(
         }
         return hashes;
       }, []);
+    });
+
+    const isOpenedForRegistration = computed(() => {
+      return openedForPaRegistrationFundHashes.value.includes(selectedFundHash.value);
+    });
+
+    const paRegisteredFundHashes = computed(() => {
+      return paRegistrations.value.map(({ fundHash }) => fundHash);
+    });
+
+    const isPaRegistered = computed(() => {
+      return paRegisteredFundHashes.value.includes(selectedFundHash.value);
+    });
+
+    const openedForAssessmentCreationFundHashes = computed(() => {
+      return all.value.reduce((hashes, fund) => {
+        if (assessmentCreationIsOpened(fund)) {
+          hashes.push(fund.fundHash);
+        }
+        return hashes;
+      }, []);
+    });
+
+    const isOpenedForAssessmentCreation = computed(() => {
+      return openedForAssessmentCreationFundHashes.value.includes(selectedFundHash.value);
     });
 
     function loadFunds() {
@@ -98,8 +123,12 @@ export const useFundsStore = defineStore(
       selectable,
       selectedFund,
       qaDisabledFundHashes,
-      paRegisteredFundHashes,
       openedForPaRegistrationFundHashes,
+      isOpenedForRegistration,
+      paRegisteredFundHashes,
+      isPaRegistered,
+      openedForAssessmentCreationFundHashes,
+      isOpenedForAssessmentCreation,
 
       loadFunds,
       getByHash,
