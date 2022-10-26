@@ -12,6 +12,7 @@
   <button
     v-else-if="fundsStore.isOpenedForRegistration && !fundsStore.isPaRegistered"
     class="button is-primary is-large"
+    @click="fundsStore.testTx"
   >
     Register as a PA
   </button>

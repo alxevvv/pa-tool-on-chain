@@ -1,29 +1,18 @@
 import { useRequestsStore } from "@/stores/requestsStore";
-
-const URLS = {
-  metadata: "tx_metadata",
-  txOut: "tx_out",
-};
-
-const ACTIONS = {
-  fundGenesis: "fundGenesis",
-  paRegistration: "paRegistration",
-  assessmentsSubmission: "assessmentsSubmission",
-  assessmentsPublication: "assessmentsPublication",
-  reviewsSubmission: "reviewsSubmission",
-  reviewsPublication: "reviewsPublication",
-};
-
-const POSTGREST_API_URL = import.meta.env.VITE_CARDANO_POSTGREST_API_URL;
-const TX_METADATA_KEY = import.meta.env.VITE_CARDANO_TX_METADATA_KEY;
-const TX_METADATA_VERSION = import.meta.env.VITE_CARDANO_TX_METADATA_VERSION;
+import {
+  BLOCKCHAIN_ACTIONS,
+  POSTGREST_API_PATHS,
+  POSTGREST_API_URL,
+  TX_METADATA_KEY,
+  TX_METADATA_VERSION,
+} from "./const";
 
 function apiRequestUrl(path, params = {}) {
   return `${POSTGREST_API_URL}/${path}?${new URLSearchParams(params)}`;
 }
 
 function apiSelectMetadataUrl(action, params = {}) {
-  return apiRequestUrl(URLS.metadata, {
+  return apiRequestUrl(POSTGREST_API_PATHS.metadata, {
     key: `eq.${TX_METADATA_KEY}`,
     "json->>version": `eq.${TX_METADATA_VERSION}`,
     "json->>action": `eq.${action}`,
@@ -40,14 +29,14 @@ function apiSelectMetadataFundUrl(action, fundHash, params = {}) {
 }
 
 export function fundsList() {
-  const url = apiSelectMetadataUrl(ACTIONS.fundGenesis);
+  const url = apiSelectMetadataUrl(BLOCKCHAIN_ACTIONS.fundGenesis);
   useRequestsStore().sendRequest(url);
   return url;
 }
 
 export function paRegistrationsList(fundHash, stakeAddress) {
   const params = stakeAddress ? { "json->>creator": `eq.${stakeAddress}` } : {};
-  const url = apiSelectMetadataFundUrl(ACTIONS.paRegistration, fundHash, params);
+  const url = apiSelectMetadataFundUrl(BLOCKCHAIN_ACTIONS.paRegistration, fundHash, params);
   useRequestsStore().sendRequest(url);
   return url;
 }

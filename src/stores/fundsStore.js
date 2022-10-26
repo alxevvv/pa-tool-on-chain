@@ -1,5 +1,6 @@
 import { defineStore, storeToRefs } from "pinia";
 import { computed, readonly, ref, watch } from "vue";
+import { BLOCKCHAIN_ACTIONS } from "@/blockchain/const";
 import { fundsList, paRegistrationsList } from "@/blockchain/dbRequests";
 import { fundFromBlockchain, paRegistrationFromBlockchain } from "@/blockchain/converters";
 import useRequest from "@/composables/useRequest";
@@ -92,6 +93,10 @@ export const useFundsStore = defineStore(
       });
     }
 
+    function getByHash(hash) {
+      return all.value.find(({ fundHash }) => fundHash === hash);
+    }
+
     function loadPaRegistrations(fundHash, stakeAddress) {
       if (fundHash && stakeAddress) {
         loadPaRegistrationsRequest.value?.remove();
@@ -105,8 +110,19 @@ export const useFundsStore = defineStore(
       }
     }
 
-    function getByHash(hash) {
-      return all.value.find(({ fundHash }) => fundHash === hash);
+    async function testTx() {
+      await walletStore.submitMetadataTx("test", {
+        now: Date.now(),
+      });
+    }
+
+    async function registerAsPa() {
+      if (!selectedFundHash.value) {
+        throw new Error("Fund not selected");
+      }
+      await walletStore.submitMetadataTx(BLOCKCHAIN_ACTIONS.paRegistration, {
+        fundHash: selectedFundHash.value,
+      });
     }
 
     watch(
@@ -132,6 +148,8 @@ export const useFundsStore = defineStore(
 
       loadFunds,
       getByHash,
+      testTx,
+      registerAsPa,
     };
   },
   {
