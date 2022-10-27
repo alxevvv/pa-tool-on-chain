@@ -58,6 +58,18 @@
         </div>
 
         <div class="navbar-item has-dropdown is-hoverable">
+          <span class="navbar-link">Proposals</span>
+          <div class="navbar-dropdown is-right is-boxed">
+            <RouterLink
+              :to="{ name: 'Proposals' }"
+              :class="navbarItemClasses('Proposals')"
+            >
+              Proposals
+            </RouterLink>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable">
           <span class="navbar-link">PA Resources</span>
           <div class="navbar-dropdown is-right is-boxed">
             <a

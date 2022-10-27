@@ -32,9 +32,10 @@
         >
       </div>
       <span
-        v-if="props.icon"
-        class="icon is-small is-right"
-      ><i :class="props.icon" /></span>
+        v-if="clearable"
+        class="icon is-small is-right clear-items-icon"
+        @click="clearItems"
+      ><i class="fas fa-times" /></span>
     </div>
     <div
       class="dropdown-menu"
@@ -73,9 +74,9 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  icon: {
-    type: String,
-    default: "",
+  clearable: {
+    type: Boolean,
+    default: false,
   },
   fullWidth: {
     type: Boolean,
@@ -118,7 +119,7 @@ const dropdownClasses = computed(() => {
 
 const controlClasses = computed(() => {
   const classes = ["control", "is-expanded"];
-  if (props.icon) {
+  if (clearable.value) {
     classes.push("has-icons-right");
   }
   return classes;
@@ -133,6 +134,8 @@ const inputClasses = computed(() => {
 });
 
 const selectedItemIds = computed(() => selectedItems.value.map(({ id }) => id));
+
+const clearable = computed(() => props.clearable && selectedItems.value.length);
 
 const filteredItems = computed(() => {
   if (!filterItems.value) {
@@ -177,6 +180,10 @@ function removeItem(id) {
   if (indexToRemove !== -1) {
     selectedItems.value.splice(indexToRemove, 1);
   }
+}
+
+function clearItems() {
+  selectedItems.value = [];
 }
 
 function onFilterItemsKeydown(e) {
@@ -225,5 +232,10 @@ watch(selectedItems.value, (items) => {
 
 .no-items {
   cursor: default;
+}
+
+.multi-select .control.has-icons-right .clear-items-icon {
+  pointer-events: all;
+  cursor: pointer;
 }
 </style>

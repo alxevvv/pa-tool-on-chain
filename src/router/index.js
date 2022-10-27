@@ -3,6 +3,7 @@ import PageHome from "@/views/PageHome.vue";
 import PagePAStatus from "@/views/PagePAStatus.vue";
 import PageFunds from "@/views/PageFunds.vue";
 import PageFundGenesis from "@/views/PageFundGenesis.vue";
+import PageProposalsList from "@/views/PageProposalsList.vue";
 import PageNotFound from "@/views/PageNotFound.vue";
 
 const routes = [
@@ -26,6 +27,12 @@ const routes = [
     path: "/fund/:hash",
     name: "FundGenesis",
     component: PageFundGenesis,
+  },
+
+  {
+    path: "/proposals",
+    name: "Proposals",
+    component: PageProposalsList,
   },
 
   {
