@@ -228,6 +228,10 @@ watch(selectedItems.value, (items) => {
 .multi-select .input input {
   flex-grow: 1;
   height: 1.7em;
+  font-size: 1rem;
+}
+.multi-select .input input::placeholder {
+  color: hsl(0, 0%, 77%);
 }
 
 .no-items {

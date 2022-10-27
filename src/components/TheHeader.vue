@@ -64,7 +64,7 @@
               :to="{ name: 'Proposals' }"
               :class="navbarItemClasses('Proposals')"
             >
-              Proposals
+              List
             </RouterLink>
           </div>
         </div>

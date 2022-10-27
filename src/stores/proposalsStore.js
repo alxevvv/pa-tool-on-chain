@@ -2,7 +2,6 @@ import { reactive, readonly, ref, watch } from "vue";
 import { defineStore } from "pinia";
 import { useFundsStore } from "./fundsStore";
 import proposals from "@/assets/data/f9/proposals.json";
-import tags from "@/assets/data/f9/tags.json";
 
 export const useProposalsStore = defineStore(
   "proposals",
@@ -14,7 +13,7 @@ export const useProposalsStore = defineStore(
       challenges: [],
       tags: [],
       minPrice: 0,
-      maxPrice: Infinity,
+      maxPrice: Number.MAX_SAFE_INTEGER,
     });
 
     function loadProposals(/* fundHash */) {

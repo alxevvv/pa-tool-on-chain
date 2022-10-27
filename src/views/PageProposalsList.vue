@@ -35,13 +35,13 @@
 <script setup>
 import { computed } from "vue";
 import { useFundsStore } from "@/stores/fundsStore";
-import { useChallengesStore } from "@/stores/challengesStore";
-import { useProposalsStore } from "@/stores/proposalsStore";
+// import { useChallengesStore } from "@/stores/challengesStore";
+// import { useProposalsStore } from "@/stores/proposalsStore";
 import ProposalsFilter from "@/components/ProposalsFilter.vue";
 
 const fundsStore = useFundsStore();
-const challengesStore = useChallengesStore();
-const proposalsStore = useProposalsStore();
+// const challengesStore = useChallengesStore();
+// const proposalsStore = useProposalsStore();
 
 const isPageLoading = computed(() => {
   return fundsStore.loadFundsRequest?.request?.isLoading;
