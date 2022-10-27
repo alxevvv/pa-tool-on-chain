@@ -6,14 +6,22 @@
         :class="inputClasses"
         @click="showDropdown"
       >
+        <template v-if="selectedItems.length">
+          <span
+            v-for="item in selectedItems"
+            :key="item.id"
+            class="tag is-primary"
+          >{{ item.title }} <button
+            class="delete is-small"
+            @click="removeItem(item.id)"
+          /></span>
+        </template>
         <span
-          v-for="item in selectedItems"
-          :key="item.id"
+          v-else-if="emptyItem"
           class="tag is-primary"
-        >{{ item.title }} <button
-          class="delete is-small"
-          @click="removeItem(item.id)"
-        /></span>
+        >
+          {{ emptyItem }}
+        </span>
         <input
           ref="filterInputRef"
           v-model="filterItems"
@@ -74,6 +82,10 @@ const props = defineProps({
     default: false,
   },
   placeholder: {
+    type: String,
+    default: "",
+  },
+  emptyItem: {
     type: String,
     default: "",
   },
