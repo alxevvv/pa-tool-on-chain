@@ -4,12 +4,12 @@ import { fundActivityPeriod, fundCurrentStages } from "@/utils/fundsUtils";
 function metadataFromBlockchain(metadata) {
   return {
     metadataId: metadata.id,
-    metadataBytes: metadata.bytes,
+    metadataBytes: metadata.bytes.slice(2),
     creator: metadata.json.creator,
     blockTime: metadata.tx.block.time,
     txId: metadata.tx_id,
-    txHash: metadata.tx.hash,
-    txHashCompact: compactString(metadata.tx.hash),
+    txHash: metadata.tx.hash.slice(2),
+    txHashCompact: compactString(metadata.tx.hash.slice(2)),
     ...metadata.json.payload,
   };
 }

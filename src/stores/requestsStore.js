@@ -48,7 +48,9 @@ export const useRequestsStore = defineStore(
       onBeforeRequest(url);
 
       try {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
         response = await fetch(url);
+        await new Promise((resolve) => setTimeout(resolve, 1500));
       } catch (err) {
         error = createError(null, { message: `Data fetching error: ${err.toString()}` });
       }

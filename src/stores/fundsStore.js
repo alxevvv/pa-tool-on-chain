@@ -71,7 +71,19 @@ export const useFundsStore = defineStore(
     });
 
     const isPaRegistered = computed(() => {
-      return paRegisteredFundHashes.value.includes(selectedFundHash.value);
+      return (
+        walletStore.walletProps.stakeAddress && paRegisteredFundHashes.value.includes(selectedFundHash.value)
+      );
+    });
+
+    const paRegistration = computed(() => {
+      if (!walletStore.walletProps.stakeAddress || !isPaRegistered.value) {
+        return null;
+      }
+      return paRegistrations.value.find(
+        ({ creator, fundHash }) =>
+          creator === walletStore.walletProps.stakeAddress && fundHash === selectedFundHash.value,
+      );
     });
 
     const openedForAssessmentCreationFundHashes = computed(() => {
@@ -104,6 +116,8 @@ export const useFundsStore = defineStore(
           requestArguments: [stakeAddress],
           onSuccess: (data) => paRegistrations.value.push(...data.map(paRegistrationFromBlockchain)),
         });
+      } else {
+        paRegistrations.value = [];
       }
     }
 
@@ -129,6 +143,7 @@ export const useFundsStore = defineStore(
 
     return {
       all: readonly(all),
+      paRegistrations: readonly(paRegistrations),
       loadFundsRequest: readonly(loadFundsRequest),
       loadPaRegistrationsRequest: readonly(loadPaRegistrationsRequest),
       selectedFundHash,
@@ -140,6 +155,7 @@ export const useFundsStore = defineStore(
       isOpenedForRegistration,
       paRegisteredFundHashes,
       isPaRegistered,
+      paRegistration,
       openedForAssessmentCreationFundHashes,
       isOpenedForAssessmentCreation,
 

@@ -4,7 +4,10 @@
   </span>
 
   <span v-else-if="!isConnected">
-    Wallet not connected
+    <span class="tag is-warning">
+      Wallet not connected
+
+    </span>
   </span>
 
   <span v-else-if="!fundsStore.openedForPaRegistrationFundHashes.includes(props.fundHash)">
@@ -20,7 +23,9 @@
   </span>
 
   <span v-else-if="fundsStore.paRegisteredFundHashes.includes(props.fundHash)">
-    Registered
+    <span class="tag is-success">
+      Registered <span v-if="props.withTime">at {{ registeredAt }}</span>
+    </span>
   </span>
 
   <span v-else>
@@ -29,6 +34,8 @@
 </template>
 
 <script setup>
+import dayjs from "dayjs";
+import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useFundsStore } from "@/stores/fundsStore";
 import { useWalletStore } from "@/stores/walletStore";
@@ -38,6 +45,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  withTime: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const fundsStore = useFundsStore();
@@ -45,4 +56,12 @@ const walletStore = useWalletStore();
 
 const { loadPaRegistrationsRequest } = storeToRefs(fundsStore);
 const { isConnected } = storeToRefs(walletStore);
+
+const registeredAt = computed(() => {
+  if (!fundsStore.paRegistration) {
+    return "";
+  } else {
+    return dayjs(fundsStore.paRegistration.blockTime).format("DD.MM.YYYY, HH:mm");
+  }
+});
 </script>
