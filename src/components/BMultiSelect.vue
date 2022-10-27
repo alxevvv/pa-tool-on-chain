@@ -1,24 +1,25 @@
 <template>
   <div :class="dropdownClasses">
-    <div class="control is-expanded has-icons-right">
+    <div :class="controlClasses">
       <div
         ref="inputRef"
-        :value="modelValue"
         :class="inputClasses"
         @click="showDropdown"
       >
         <span
           v-for="item in selectedItems"
           :key="item.id"
-          class="tag is-primary mr-2"
+          class="tag is-primary"
         >{{ item.title }} <button
           class="delete is-small"
           @click="removeItem(item.id)"
         /></span>
         <input
+          ref="filterInputRef"
           v-model="filterItems"
           type="text"
           class="filter-items-input"
+          :placeholder="placeholder"
           @keydown="onFilterItemsKeydown"
         >
       </div>
@@ -28,11 +29,13 @@
       ><i :class="props.icon" /></span>
     </div>
     <div
-      id="dropdown-menu"
       class="dropdown-menu"
       role="menu"
     >
-      <div class="dropdown-content">
+      <div
+        v-if="filteredItems.length"
+        class="dropdown-content"
+      >
         <a
           v-for="item in filteredItems"
           :key="item.id"
@@ -40,6 +43,15 @@
           :class="`dropdown-item${selectedItemIds.includes(item.id) ? ' is-active' : ''}`"
           @click="addItem(item.id)"
         >{{ item.title }}</a>
+      </div>
+      <div
+        v-else
+        class="dropdown-content"
+      >
+        <span
+          class="dropdown-item no-items"
+          @click="filterItems = ''"
+        >There are no items</span>
       </div>
     </div>
   </div>
@@ -57,6 +69,14 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  fullWidth: {
+    type: Boolean,
+    default: false,
+  },
+  placeholder: {
+    type: String,
+    default: "",
+  },
   modelValue: {
     type: Array,
     default: () => [],
@@ -70,12 +90,24 @@ const selectedItems = ref([]);
 const filterItems = ref("");
 
 const inputRef = ref(null);
+const filterInputRef = ref(null);
 const dropdownItemRefs = ref([]);
 
 const dropdownClasses = computed(() => {
-  const classes = ["dropdown"];
+  const classes = ["multi-select dropdown"];
   if (isDropdownActive.value) {
     classes.push("is-active");
+  }
+  if (props.fullWidth) {
+    classes.push("full-width");
+  }
+  return classes;
+});
+
+const controlClasses = computed(() => {
+  const classes = ["control", "is-expanded"];
+  if (props.icon) {
+    classes.push("has-icons-right");
   }
   return classes;
 });
@@ -100,6 +132,7 @@ const filteredItems = computed(() => {
 
 function showDropdown() {
   isDropdownActive.value = true;
+  filterInputRef.value.focus();
   document.addEventListener("click", hideDropdown);
 }
 
@@ -151,5 +184,34 @@ watch(selectedItems.value, (items) => {
 .filter-items-input {
   border: none;
   outline: none;
+}
+
+.multi-select.full-width,
+
+.multi-select.full-width > .control,
+
+.multi-select.full-width > .dropdown-menu {
+  width: 100%;
+}
+
+.multi-select .input {
+  display: flex;
+  flex-flow: row wrap;
+  height: auto;
+  padding: .4em;
+  gap: .4em;
+}
+
+.multi-select .has-icons-right .input {
+  padding-right: .2.5em;
+}
+
+.multi-select .input input {
+  flex-grow: 1;
+  height: 1.7em;
+}
+
+.no-items {
+  cursor: default;
 }
 </style>
