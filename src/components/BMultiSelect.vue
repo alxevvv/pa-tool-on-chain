@@ -171,32 +171,32 @@ function addItem(id) {
   }
   const itemToAdd = props.items.find(item => item.id === id);
   if (itemToAdd) {
-    selectedItems.value.push(itemToAdd);
+    const newSelectedItems = [...selectedItems.value, itemToAdd];
+    emit("update:modelValue", newSelectedItems);
   }
 }
 
 function removeItem(id) {
-  const indexToRemove = selectedItems.value.findIndex(item => item.id === id);
-  if (indexToRemove !== -1) {
-    selectedItems.value.splice(indexToRemove, 1);
+  if (!selectedItemIds.value.includes(id)) {
+    return;
   }
+  const newSelectedItems = selectedItems.value.filter(item => item.id !== id);
+  emit("update:modelValue", newSelectedItems);
 }
 
 function clearItems() {
-  selectedItems.value = [];
+  emit("update:modelValue", []);
 }
 
 function onFilterItemsKeydown(e) {
   if (e.key === "Escape") {
     hideDropdown();
   } else if (e.key === "Backspace" && filterItems.value === "" && selectedItems.value.length) {
-    selectedItems.value.pop();
+    emit("update:modelValue", selectedItems.value.slice(0, -1));
   }
 }
 
-watch(selectedItems.value, (items) => {
-  emit("update:modelValue", items);
-});
+watch(() => props.modelValue, (value) => selectedItems.value = value);
 </script>
 
 <style scoped>
