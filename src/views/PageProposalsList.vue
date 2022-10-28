@@ -26,10 +26,6 @@
         <ProposalsFilter />
       </div>
 
-      <div class="block">
-        <pre>{{ proposalsStore.filters }}</pre>
-      </div>
-
       <div class="block box">
         <ProposalPreview
           v-for="proposal in proposalsStore.filteredProposals"
