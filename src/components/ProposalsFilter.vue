@@ -3,11 +3,11 @@
     <span class="has-text-weight-bold mr-3">Filter proposals by challenge:</span>
     <button
       class="button is-small is-warning is-light"
-      @click="clearFilters"
+      @click="proposalsStore.clearFilters"
     >Clear filters</button>
   </label>
   <BMultiSelect
-    v-model="challengeFilter"
+    v-model="proposalsStore.filters.challenges"
     full-width
     clearable
     :empty-item="challengeFilterItems[0].title"
@@ -20,7 +20,7 @@
   <div class="field">
     <p class="control has-icons-left">
       <input
-        v-model="titleFilter"
+        v-model="proposalsStore.filters.title"
         class="input"
         type="text"
         placeholder="Search for (min 3 char)..."
@@ -34,7 +34,7 @@
     <span class="has-text-weight-bold mr-3">Filter proposals by tag:</span>
   </label>
   <BMultiSelect
-    v-model="tagFilter"
+    v-model="proposalsStore.filters.tags"
     full-width
     clearable
     placeholder="Select a tag"
@@ -48,7 +48,7 @@
       <div class="field">
         <p class="control">
           <input
-            v-model="maxPrice"
+            v-model="proposalsStore.filters.minPrice"
             class="input has-text-centered"
             type="number"
             :min="0"
@@ -65,7 +65,7 @@
       <div class="field">
         <p class="control">
           <input
-            v-model="minPrice"
+            v-model="proposalsStore.filters.maxPrice"
             class="input has-text-centered"
             type="number"
             :min="0"
@@ -79,39 +79,19 @@
 </template>
 
 <script setup>
-import { computed, ref/* , watch */ } from "vue";
+import { computed } from "vue";
 import { useChallengesStore } from "@/stores/challengesStore";
+import { useProposalsStore } from "@/stores/proposalsStore";
 import BMultiSelect from "./BMultiSelect.vue";
 
 const challengesStore = useChallengesStore();
-
-const challengeFilter = ref([]);
-const titleFilter = ref("");
-const tagFilter = ref([]);
-const maxPrice = ref("0");
-const minPrice = ref("0");
+const proposalsStore = useProposalsStore();
 
 const challengeFilterItems = computed(() => {
   return challengesStore.all.map(({ id, title, count }) => ({ id, title: `${title} (${count})` }));
 });
 
 const tagFilterItems = computed(() => {
-  return challengesStore.tagsList.map((tag) => ({ id: tag, title: tag }));
+  return proposalsStore.tagsList.map((tag) => ({ id: tag, title: tag }));
 });
-
-function clearFilters() {
-  challengeFilter.value = [];
-  titleFilter.value = "";
-  tagFilter.value = [];
-  maxPrice.value = "0";
-  minPrice.value = "0";
-}
-
-// watch(() => challengeFilter.value.map(({ id }) => id).join(":"), (items) => {
-//   console.log(items);
-// });
-
-// watch(() => tagFilter.value.map(({ id }) => id).join(":"), (items) => {
-//   console.log(items);
-// });
 </script>
