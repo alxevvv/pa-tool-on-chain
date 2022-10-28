@@ -25,9 +25,24 @@
       <div class="block">
         <ProposalsFilter />
       </div>
-      <!-- <div class="block">
-        LIST
-      </div> -->
+
+      <div class="block">
+        <pre>{{ proposalsStore.filters }}</pre>
+      </div>
+
+      <div class="block box">
+        <ProposalPreview
+          v-for="proposal in proposalsStore.filteredProposals"
+          :key="proposal.id"
+          :proposal="proposal"
+        />
+        <p
+          v-if="proposalsStore.filteredProposals.length === 0"
+          class="is-size-4"
+        >
+          No results for current selection. Please adjust the filter criteria.
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -35,15 +50,25 @@
 <script setup>
 import { computed } from "vue";
 import { useFundsStore } from "@/stores/fundsStore";
-// import { useChallengesStore } from "@/stores/challengesStore";
-// import { useProposalsStore } from "@/stores/proposalsStore";
+import { useProposalsStore } from "@/stores/proposalsStore";
 import ProposalsFilter from "@/components/ProposalsFilter.vue";
+import ProposalPreview from "@/components/ProposalPreview.vue";
 
 const fundsStore = useFundsStore();
-// const challengesStore = useChallengesStore();
-// const proposalsStore = useProposalsStore();
+const proposalsStore = useProposalsStore();
 
 const isPageLoading = computed(() => {
   return fundsStore.loadFundsRequest?.request?.isLoading;
 });
 </script>
+
+<style>
+.proposal-preview {
+  padding: 10px 20px;
+  width: 100%;
+}
+
+.proposal-preview:nth-child(odd) {
+  background: #f1f1f1;
+}
+</style>

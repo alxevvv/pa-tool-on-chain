@@ -1,4 +1,4 @@
-import { reactive, readonly, ref, watch } from "vue";
+import { computed, reactive, readonly, ref, watch } from "vue";
 import { defineStore } from "pinia";
 import { useFundsStore } from "./fundsStore";
 import proposals from "@/assets/data/f9/proposals.json";
@@ -17,6 +17,10 @@ export const useProposalsStore = defineStore(
       tags: [],
       minPrice: "0",
       maxPrice: "0",
+    });
+
+    const filteredProposals = computed(() => {
+      return all.value.slice(0, 10);
     });
 
     function loadProposals(/* fundHash */) {
@@ -63,6 +67,7 @@ export const useProposalsStore = defineStore(
       all: readonly(all),
       tagsList: readonly(tagsList),
       filters: filters,
+      filteredProposals,
 
       clearFilters,
     };
