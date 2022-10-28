@@ -196,7 +196,7 @@ function onFilterItemsKeydown(e) {
   }
 }
 
-watch(() => props.modelValue, (value) => selectedItems.value = value);
+watch(() => props.modelValue, (value) => selectedItems.value = value, { immediate: true });
 </script>
 
 <style scoped>
