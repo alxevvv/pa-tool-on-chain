@@ -5,17 +5,14 @@
         <div class="is-size-6 has-text-weight-bold">
           {{ challenge.title }}
         </div>
-        <!-- <RouterLink
+        <RouterLink
           class="is-size-5"
           :to="{ name: 'Proposal', params: { id: proposal.id} }"
         >
           {{ proposal.title }}
-        </RouterLink> -->
-        <span>
-          {{ proposal.title }}
-        </span>
+        </RouterLink>
         <div class="no">
-          No. assessments: {{ numAssessments }}
+          No. assessments: {{ proposal.assessmentsCount || 'Loading...' }}
         </div>
       </div>
       <div class="column is-2">
@@ -27,10 +24,12 @@
             type="is-link"
             target="_blank"
           >
-            <span class="icon mr-1">
+            <span class="icon">
               <i class="fas fa-link" />
             </span>
-            Open in IdeaScale
+            <span>
+              Open in IdeaScale
+            </span>
           </a>
         </div>
       </div>
@@ -55,9 +54,5 @@ const challenge = computed(() => {
     return categories[0];
   }
   return "";
-});
-
-const numAssessments = computed(() => {
-  return props.proposal.no_assessments || 0;
 });
 </script>
