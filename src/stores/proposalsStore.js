@@ -53,29 +53,76 @@ export const useProposalsStore = defineStore(
     /* Filters */
 
     const filters = reactive({
+      fundHash: "",
       challenges: [],
       title: "",
       tags: [],
-      minPrice: "0",
-      maxPrice: "0",
+      minPrice: 0,
+      maxPrice: 0,
     });
 
     const filteredProposals = computed(() => {
-      return all.value.slice(0, 10);
+      let proposals = all.value;
+
+      if (filters.challenges.length > 0) {
+        const challengeIds = filters.challenges.map(({ id }) => id);
+        proposals = proposals.filter(({ category }) => challengeIds.includes(category));
+      }
+
+      if (filters.tags.length > 0) {
+        proposals = proposals.filter(({ tags }) =>
+          tags ? filters.tags.every((tag) => tags.includes(tag.id)) : false,
+        );
+      }
+
+      const minPrice = filters.minPrice || 0;
+      const maxPrice = filters.maxPrice || Number.MAX_SAFE_INTEGER;
+      if ((minPrice > 0 || maxPrice < Number.MAX_SAFE_INTEGER) && minPrice <= maxPrice) {
+        proposals = proposals.filter(
+          ({ requested_funds }) => minPrice <= requested_funds && maxPrice >= requested_funds,
+        );
+      }
+
+      // TODO: filter out assessed proposals
+
+      if (filters.title.trim().length >= 3) {
+        proposals = proposals.filter(({ title }) =>
+          title.toLowerCase().includes(filters.title.trim().toLowerCase()),
+        );
+      }
+
+      const sortedProposals = proposals.sort((a, b) =>
+        a.assessmentsCount > b.assessmentsCount ? 1 : b.assessmentsCount > a.assessmentsCount ? -1 : 0,
+      );
+
+      return sortedProposals;
     });
 
     function clearFilters() {
       filters.challenges = [];
       filters.title = "";
       filters.tags = [];
-      filters.minPrice = "0";
-      filters.maxPrice = "0";
+      filters.minPrice = 0;
+      filters.maxPrice = 0;
     }
 
-    watch(() => fundsStore.selectedFund, clearFilters);
+    watch(
+      () => fundsStore.selectedFund,
+      (fund) => {
+        if (!fund || filters.fundHash !== fund.fundHash) {
+          clearFilters();
+        }
+        if (fund) {
+          filters.fundHash = fund.fundHash;
+        } else {
+          filters.fundHash = "";
+        }
+      },
+    );
 
     /* Proposals metadata: Assessments count */
 
+    const all = ref([]);
     const assessmentsCount = ref([]);
     const assessmentsCountRequest = ref(null);
 
@@ -96,22 +143,6 @@ export const useProposalsStore = defineStore(
       assessmentsCount.value = [];
     }
 
-    const all = computed(() => {
-      if (!initial.value.length) {
-        return [];
-      } else if (!assessmentsCount.value.length) {
-        return initial.value;
-      } else {
-        return initial.value.map((proposal) => {
-          const count = assessmentsCount.value.find(({ id }) => proposal.id === id)?.assessments_count || 0;
-          return {
-            ...proposal,
-            assessmentsCount: count,
-          };
-        });
-      }
-    });
-
     watch(
       () => fundsStore.selectedFund,
       (fund) => {
@@ -126,6 +157,20 @@ export const useProposalsStore = defineStore(
       {
         immediate: true,
       },
+    );
+
+    watch(
+      () => [initial.value, assessmentsCount.value],
+      ([initial, assessmentsCount]) => {
+        if (initial.length && assessmentsCount.length) {
+          const updatedProposals = initial.map((proposal) => ({
+            ...proposal,
+            assessmentsCount: assessmentsCount.find(({ id }) => proposal.id === id)?.assessments_count,
+          }));
+          all.value = updatedProposals;
+        }
+      },
+      { immediate: true },
     );
 
     /* Proposals metadata: Last update */
@@ -189,7 +234,7 @@ export const useProposalsStore = defineStore(
       all,
       tagsList: readonly(tagsList),
 
-      filters: filters,
+      filters,
       filteredProposals,
 
       lastUpdate: readonly(lastUpdate),
@@ -202,5 +247,9 @@ export const useProposalsStore = defineStore(
       clearFilters,
     };
   },
-  { persist: false },
+  {
+    persist: {
+      paths: ["filters"],
+    },
+  },
 );

@@ -9,13 +9,19 @@ export const useChallengesStore = defineStore(
     const fundsStore = useFundsStore();
 
     const all = ref([]);
+    const titlesById = ref({});
 
     function loadChallenges(/* fundHash */) {
       all.value = challenges;
+      titlesById.value = challenges.reduce((titles, challenge) => {
+        titles[challenge.id] = challenge.title;
+        return titles;
+      }, {});
     }
 
     function unloadChallenges() {
       all.value = [];
+      titlesById.value = {};
     }
 
     watch(
@@ -34,6 +40,7 @@ export const useChallengesStore = defineStore(
 
     return {
       all: readonly(all),
+      titlesById: readonly(titlesById),
     };
   },
   { persist: false },

@@ -14,6 +14,7 @@
     placeholder="Select a challenge"
     :items="challengeFilterItems.slice(1)"
   />
+
   <label class="mt-3 mb-2 is-flex is-flex-wrap-wrap">
     <span class="has-text-weight-bold mr-3">Filter by title:</span>
   </label>
@@ -30,6 +31,7 @@
       </span>
     </p>
   </div>
+
   <label class="mt-3 mb-2 is-flex is-flex-wrap-wrap">
     <span class="has-text-weight-bold mr-3">Filter proposals by tag:</span>
   </label>
@@ -40,6 +42,7 @@
     placeholder="Select a tag"
     :items="tagFilterItems"
   />
+
   <div class="columns mt-1">
     <div class="column is-half">
       <label class="mb-2 is-flex is-flex-wrap-wrap">
@@ -58,6 +61,7 @@
         </p>
       </div>
     </div>
+
     <div class="column is-half">
       <label class="mb-2 is-flex is-flex-wrap-wrap">
         <span class="has-text-weight-bold mr-3">Filter proposals budget is less than:</span>

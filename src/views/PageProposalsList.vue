@@ -27,17 +27,22 @@
       </div>
 
       <div class="block box">
-        <ProposalPreview
-          v-for="proposal in proposalsStore.filteredProposals"
-          :key="proposal.id"
-          :proposal="proposal"
-        />
         <p
           v-if="proposalsStore.filteredProposals.length === 0"
           class="is-size-4"
         >
-          No results for current selection. Please adjust the filter criteria.
+          <span>
+            No results for current selection. Please adjust the filter criteria.
+          </span>
         </p>
+
+        <template v-else>
+          <ProposalPreview
+            v-for="proposal in proposalsStore.filteredProposals"
+            :key="`proposal-${proposal.id}`"
+            :proposal="proposal"
+          />
+        </template>
       </div>
     </div>
   </div>
@@ -57,14 +62,3 @@ const isPageLoading = computed(() => {
   return fundsStore.loadFundsRequest?.request?.isLoading;
 });
 </script>
-
-<style>
-.proposal-preview {
-  padding: 10px 20px;
-  width: 100%;
-}
-
-.proposal-preview:nth-child(odd) {
-  background: #f1f1f1;
-}
-</style>

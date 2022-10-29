@@ -1,25 +1,38 @@
 <template>
-  <div class="proposal-preview">
+  <div
+    v-once
+    class="proposal-preview"
+  >
     <div class="columns is-multiline is-vcentered">
       <div class="column is-10">
         <div class="is-size-6 has-text-weight-bold">
-          {{ challenge.title }}
+          {{ challengesStore.titlesById[proposal.category] }}
         </div>
+
         <RouterLink
           class="is-size-5"
-          :to="{ name: 'Proposal', params: { id: proposal.id} }"
+          :to="{ name: 'Proposal', params: { id: props.proposal.id } }"
         >
-          {{ proposal.title }}
+          {{ props.proposal.title }}
         </RouterLink>
+
         <div class="no">
-          No. assessments: {{ proposal.assessmentsCount || 'Loading...' }}
+          No. assessments:
+          <span v-if="props.proposal.assessmentsCount !== undefined">
+            {{ props.proposal.assessmentsCount }}
+          </span>
+          <span v-else>
+            <i class="fas fa-spinner fa-pulse" />
+            Loading...
+          </span>
         </div>
       </div>
+
       <div class="column is-2">
         <div class="buttons">
           <a
             class="button is-link is-small"
-            :href="proposal.url"
+            :href="props.proposal.url"
             icon-left="link"
             type="is-link"
             target="_blank"
@@ -38,8 +51,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import challenges from "@/assets/data/f9/categories.json";
+import { useChallengesStore } from "@/stores/challengesStore";
 
 const props = defineProps({
   proposal: {
@@ -48,11 +60,16 @@ const props = defineProps({
   },
 });
 
-const challenge = computed(() => {
-  const categories = challenges.filter((c) => c.id === parseInt(props.proposal.category));
-  if (categories.length) {
-    return categories[0];
-  }
-  return "";
-});
+const challengesStore = useChallengesStore();
 </script>
+
+<style>
+.proposal-preview {
+  padding: 10px 20px;
+  width: 100%;
+}
+
+.proposal-preview:nth-child(odd) {
+  background: #f1f1f1;
+}
+</style>

@@ -113,7 +113,7 @@
             <span class="mr-1">
               No. assessments:
             </span>
-            <b v-if="proposal.assessmentsCount">
+            <b v-if="proposal.assessmentsCount !== undefined">
               {{ proposal.assessmentsCount }}
             </b>
             <span v-else-if="proposalsStore.assessmentsCountRequest.request.isLoading">
@@ -190,11 +190,7 @@ const challenge = computed(() => {
   if (!proposal.value) {
     return null;
   }
-  const categories = challenges.filter((c) => c.id === proposal.value.category);
-  if (categories.length) {
-    return categories[0];
-  }
-  return null;
+  return challenges.find((c) => c.id === proposal.value.category);
 });
 
 const isChallengeSetting = computed(() => {
