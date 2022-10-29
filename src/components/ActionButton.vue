@@ -14,12 +14,10 @@
     size="is-large"
   />
 
-  <button
+  <SuggestProposalButton
     v-else-if="fundsStore.isPaRegistered && fundsStore.isOpenedForAssessmentCreation"
-    class="button is-primary is-large"
-  >
-    Suggest Proposal
-  </button>
+    size="is-large"
+  />
 
   <button
     v-else
@@ -33,6 +31,7 @@
 <script setup>
 import FundSelect from "@/components/FundSelect.vue";
 import RegisterAsPaButton from "@/components/RegisterAsPaButton.vue";
+import SuggestProposalButton from "@/components/SuggestProposalButton.vue";
 import WalletConnectButton from "@/components/WalletConnectButton.vue";
 import { useWalletStore } from "@/stores/walletStore";
 import { useFundsStore } from "@/stores/fundsStore";

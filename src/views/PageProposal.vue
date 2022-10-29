@@ -158,9 +158,8 @@
             </span>
             <span>Go to proposal</span>
           </a>
-          <button class="button is-medium is-primary">
-            <span>Suggest another proposal</span>
-          </button>
+
+          <SuggestProposalButton size="is-medium" />
         </div>
       </div>
 
@@ -174,6 +173,7 @@
 <script setup>
 import { computed } from "vue";
 import { useRoute } from "vue-router";
+import SuggestProposalButton from "@/components/SuggestProposalButton.vue";
 import { useProposalsStore } from "@/stores/proposalsStore";
 import challenges from "@/assets/data/f9/categories.json";
 
