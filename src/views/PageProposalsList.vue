@@ -27,14 +27,24 @@
       </div>
 
       <div class="block box">
-        <p
+        <div
           v-if="proposalsStore.filteredProposals.length === 0"
-          class="is-size-4"
+          class="is-size-4 is-flex is-justify-content-center"
         >
-          <span>
+          <p
+            v-if="proposalsStore.isNotFiltered"
+            class="icon-text"
+          >
+            <span class="icon">
+              <i class="fas fa-spinner fa-pulse mr-1" />
+              <span>Loading...</span>
+            </span>
+          </p>
+
+          <p v-else>
             No results for current selection. Please adjust the filter criteria.
-          </span>
-        </p>
+          </p>
+        </div>
 
         <template v-else>
           <ProposalPreview

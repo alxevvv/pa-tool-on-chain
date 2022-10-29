@@ -98,6 +98,16 @@ export const useProposalsStore = defineStore(
       return sortedProposals;
     });
 
+    const isNotFiltered = computed(() => {
+      return (
+        filters.challenges.length === 0 &&
+        filters.title === "" &&
+        filters.tags.length === 0 &&
+        filters.minPrice === 0 &&
+        filters.maxPrice === 0
+      );
+    });
+
     function clearFilters() {
       filters.challenges = [];
       filters.title = "";
@@ -236,6 +246,7 @@ export const useProposalsStore = defineStore(
 
       filters,
       filteredProposals,
+      isNotFiltered,
 
       lastUpdate: readonly(lastUpdate),
       lastUpdateVerbose,
