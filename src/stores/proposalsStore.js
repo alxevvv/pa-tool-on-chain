@@ -39,6 +39,12 @@ export const useProposalsStore = defineStore(
       tagsList.value = [];
     }
 
+    function getById(proposalId) {
+      return all.value.find(({ id }) => id === proposalId);
+    }
+
+    const count = computed(() => initial.value.length);
+
     watch(
       () => fundsStore.selectedFund,
       (fund) => {
@@ -290,7 +296,9 @@ export const useProposalsStore = defineStore(
 
     return {
       all,
+      count,
       tagsList: readonly(tagsList),
+      getById,
 
       lastUpdate: readonly(lastUpdate),
       lastUpdateVerbose,

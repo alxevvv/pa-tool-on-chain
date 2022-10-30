@@ -33,8 +33,6 @@
           <a
             class="button is-link is-small"
             :href="props.proposal.url"
-            icon-left="link"
-            type="is-link"
             target="_blank"
           >
             <span class="icon">

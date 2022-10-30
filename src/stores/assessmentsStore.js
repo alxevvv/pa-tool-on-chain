@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 export const useAssessmentsStore = defineStore(
   "assessments",
@@ -18,6 +18,8 @@ export const useAssessmentsStore = defineStore(
         lastUpdate: 0,
       };
     }
+
+    const count = computed(() => all.value.length);
 
     function getByProposalId(proposalId) {
       return all.value.find((assessment) => assessment.proposalId === proposalId);
@@ -49,6 +51,7 @@ export const useAssessmentsStore = defineStore(
 
     return {
       all,
+      count,
 
       getByProposalId,
       add,
