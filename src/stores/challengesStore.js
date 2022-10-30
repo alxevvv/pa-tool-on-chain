@@ -1,6 +1,7 @@
 import { readonly, ref, watch } from "vue";
 import { defineStore } from "pinia";
 import { useFundsStore } from "./fundsStore";
+import criteria from "@/assets/data/criteria.json";
 import challenges from "@/assets/data/f9/categories.json";
 
 export const useChallengesStore = defineStore(
@@ -24,6 +25,14 @@ export const useChallengesStore = defineStore(
       titlesById.value = {};
     }
 
+    function getById(challengeId) {
+      return all.value.find(({ id }) => id === challengeId);
+    }
+
+    function getCriteria(challengeId) {
+      return criteria.filter(({ challenges }) => challenges.includes(challengeId));
+    }
+
     watch(
       () => fundsStore.selectedFund,
       (fund) => {
@@ -41,6 +50,9 @@ export const useChallengesStore = defineStore(
     return {
       all: readonly(all),
       titlesById: readonly(titlesById),
+
+      getById,
+      getCriteria,
     };
   },
   { persist: false },

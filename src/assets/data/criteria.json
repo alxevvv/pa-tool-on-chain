@@ -1,0 +1,92 @@
+[
+  {
+    "c_id": 1,
+    "challenges": [26593,26594,26595,26596,26597,26598,26599,26600,26601,26602,26603,26605],
+    "question": "This proposal effectively addresses the challenge",
+    "title": "Impact",
+    "help": "Lorem ipsum",
+    "questions": [
+      "Has the proposer provided a clear and concise description an issue or deficiency in their Problem Statement?",
+      "Have you checked if the problem statement defines a problem within the challenge which needs to be solved?",
+      "Have you checked if the proposal has a positive impact on the Cardano/Catalyst ecosystem?",
+      "Have you checked if the proposal clearly articulates how it will add value to the Cardano/Catalyst ecosystem?",
+      "Do the KPIs indicated in the proposal match the ones indicated in the challenge? If not, how relevant are the indicated KPIs to this particular challenge?",
+      "Is the proposal able to scale to address future challenges?"
+    ]
+  },
+  {
+    "c_id": 2,
+    "challenges": [26593,26594,26595,26596,26597,26598,26599,26600,26601,26602,26603,26605],
+    "question": "Given experience and plan presented it is highly likely this proposal will be implemented successfully",
+    "title": "Feasibility",
+    "help": "Lorem ipsum",
+    "questions": [
+      "Does the proposer give account of what experience/skill sets will be necessary to deliver on the proposal?",
+      "Have you checked if the proposer provided evidence (references, links, etc.) of relevant skills and experience needed to implement the proposal?",
+      "Does the proposer knows, in an identifiable manner, the type and number of team members required to implement the proposal?",
+      "Is the budget outlined clearly, understandable and broken down into identifiable items?",
+      "Is the budget reasonable to achieve the set goals?",
+      "If additional funding is required to implement the proposal, has the proposer provided a verifiable plan in this regard?",
+      "Have you checked if there is a detailed implementable plan?",
+      "Have details of actionable tasks and order of execution been communicated?",
+      "Does the proposal offer a realistic timetable to complete the work?",
+      "Does the plan describe the resources necessary to implement the proposal?",
+      "Does the proposal clearly explains technical aspects like architecture, language and technologies if they are crucial for implementation?",
+      "Have you checked that the proposers have indicated some awareness of the risks to the project and have given some indication of how they will mitigate them?"
+    ]
+  },
+  {
+    "c_id": 3,
+    "challenges": [26593,26594,26595,26596,26597,26598,26599,26600,26601,26602,26603,26605],
+    "question": "The information provided is sufficient to audit the progress and the success of the proposal.",
+    "title": "Clarity/Auditability",
+    "help": "Lorem ipsum",
+    "questions": [
+      "Does the proposal provide a roadmap with milestones and a time horizon for achievement?",
+      "Have you checked if metrics / KPIs (Key Performance Indicators) that define the success of the proposal are presented and make sense?",
+      "Can the KPIs provided be used to quantify success of the project?",
+      "Have you checked if the community can track the progress of the proposal?"
+    ]
+  },
+  {
+    "c_id": 1,
+    "challenges": [26604],
+    "question": "This challenge is critical to achieve Cardano's mission.",
+    "title": "Alignment",
+    "help": "Lorem ipsum",
+    "questions": [
+      "What is the societal impact of the challenge?",
+      "Does the challenge help Cardano/Catalyst achieve its mission?"
+    ]
+  },
+  {
+    "c_id": 2,
+    "challenges": [26604],
+    "question": "The Catalyst community has the capacity to address the challenge.",
+    "title": "Feasibility",
+    "help": "Lorem ipsum",
+    "questions": [
+      "Is it a challenge that welcomes a wide variety of solutions?",
+      "Is it reasonable to expect proposals that show results in the next six months or so?",
+      "Is the Challenge Team in place or is there a plan to create one?"
+    ]
+  },
+  {
+    "c_id": 3,
+    "challenges": [26604],
+    "question": "Success criteria and suggested metrics are set correctly to measure progress in addressing the challenge.",
+    "title": "Verifiability",
+    "help": "Lorem ipsum",
+    "questions": [
+      "Are the metrics measuring outcomes (correct) or outlining means to an end (incorrect)?"
+    ]
+  },
+  {
+    "c_id": 1,
+    "challenges": [26249],
+    "questions": [
+      "To what extent does the proposal address the problems identified in the challenge brief?",
+      "Does the proposal present relevant use cases already implemented using any technology suite?"
+    ]
+  }
+]

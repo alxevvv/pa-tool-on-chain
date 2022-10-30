@@ -164,7 +164,7 @@
       </div>
 
       <div class="block box">
-        ASSESSMENT
+        <ProposalAssessment :proposal="proposal" />
       </div>
     </template>
   </div>
@@ -173,6 +173,7 @@
 <script setup>
 import { computed } from "vue";
 import { useRoute } from "vue-router";
+import ProposalAssessment from "@/components/ProposalAssessment.vue";
 import SuggestProposalButton from "@/components/SuggestProposalButton.vue";
 import { useProposalsStore } from "@/stores/proposalsStore";
 import challenges from "@/assets/data/f9/categories.json";
