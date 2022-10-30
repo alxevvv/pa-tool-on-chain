@@ -20,7 +20,7 @@
           <span class="icon">
             <i class="fas fa-save" />
           </span>
-          <span>{{ savedAt }}</span>
+          <span>{{ assessment.savedAtVerbose.value }}</span>
         </span>
       </div>
 
@@ -55,11 +55,11 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
+import { computed } from "vue";
+import useAssessment from "@/composables/useAssessment";
 import { useAssessmentsStore } from "@/stores/assessmentsStore";
 import { useChallengesStore } from "@/stores/challengesStore";
 import ProposalAssessmentCriterium from "./ProposalAssessmentCriterium.vue";
-import { computed } from "vue";
 
 const props = defineProps({
   proposal: {
@@ -71,29 +71,15 @@ const props = defineProps({
 const assessmentsStore = useAssessmentsStore();
 const challengesStore = useChallengesStore();
 
-const assessment = computed(() => {
-  return assessmentsStore.getByProposalId(props.proposal.id);
-});
+const assessment = useAssessment(props.proposal.id);
 
-const challenge = computed(() => {
-  return challengesStore.getById(props.proposal.category);
-});
+const challenge = computed(() => challengesStore.getById(props.proposal.category));
 
 const criteria = computed(() => {
   return challengesStore.getCriteria(challenge.value.id).reduce((acc, cur) => {
     acc[cur.c_id] = cur;
     return acc;
   }, {});
-});
-
-const savedAt = computed(() => {
-  const lastUpdate = assessment.value.lastUpdate;
-  if (!lastUpdate) {
-    return "Not saved";
-  } else {
-    const diff = dayjs(lastUpdate).unix() - dayjs.utc().unix();
-    return `Saved ${dayjs.duration(diff, "seconds").humanize(true)}`;
-  }
 });
 </script>
 

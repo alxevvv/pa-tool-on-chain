@@ -24,7 +24,7 @@
       <AssessmentPreview
         v-for="assessment in assessmentsStore.all"
         :key="assessment.proposalId"
-        :assessment="assessment"
+        :proposal-id="assessment.proposalId"
       />
     </div>
 
