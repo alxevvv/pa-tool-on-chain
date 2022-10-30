@@ -76,6 +76,24 @@
         </div>
 
         <div class="navbar-item has-dropdown is-hoverable">
+          <span class="navbar-link">Assessments</span>
+          <div class="navbar-dropdown is-right is-boxed">
+            <RouterLink
+              :to="{ name: 'AssessmentsMy' }"
+              :class="navbarItemClasses('AssessmentsMy')"
+            >
+              My Assessments
+            </RouterLink>
+            <RouterLink
+              :to="{ name: 'AssessmentsExample' }"
+              :class="navbarItemClasses('AssessmentsExample')"
+            >
+              Example Assessments
+            </RouterLink>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable">
           <span class="navbar-link">PA Resources</span>
           <div class="navbar-dropdown is-right is-boxed">
             <a

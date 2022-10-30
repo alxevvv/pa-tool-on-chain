@@ -5,6 +5,8 @@ import PageFunds from "@/views/PageFunds.vue";
 import PageFundGenesis from "@/views/PageFundGenesis.vue";
 import PageProposal from "@/views/PageProposal.vue";
 import PageProposalsList from "@/views/PageProposalsList.vue";
+import PageAssessmentsMy from "@/views/PageAssessmentsMy.vue";
+import PageAssessmentsExample from "@/views/PageAssessmentsExample.vue";
 import PageNotFound from "@/views/PageNotFound.vue";
 
 const routes = [
@@ -39,6 +41,17 @@ const routes = [
     path: "/proposal/:id",
     name: "Proposal",
     component: PageProposal,
+  },
+
+  {
+    path: "/assessments/my",
+    name: "AssessmentsMy",
+    component: PageAssessmentsMy,
+  },
+  {
+    path: "/assessments/example",
+    name: "AssessmentsExample",
+    component: PageAssessmentsExample,
   },
 
   {
