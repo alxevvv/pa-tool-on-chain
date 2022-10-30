@@ -8,6 +8,8 @@ import useRequest from "@/composables/useRequest";
 import { useFundsStore } from "./fundsStore";
 import { useRequestsStore } from "./requestsStore";
 
+const ENDLESS_PAGINATION_MIN_CHUNK_SIZE = 25;
+
 export const useProposalsStore = defineStore(
   "proposals",
   () => {
@@ -111,23 +113,6 @@ export const useProposalsStore = defineStore(
     const lastUpdate = ref(null);
     const lastUpdateRequest = ref(null);
 
-    function loadLastUpdate() {
-      lastUpdateRequest.value = useRequest(
-        () => {
-          const url = `${import.meta.env.VITE_GITHUB_BACKEND_API_URL}/commits?per_page=1`;
-          requestsStore.sendRequest(url);
-          return url;
-        },
-        {
-          onSuccess: (data) => (lastUpdate.value = data[0]?.commit.author.date || null),
-        },
-      );
-    }
-
-    function unloadLastUpdate() {
-      lastUpdate.value = null;
-    }
-
     const lastUpdateVerbose = computed(() => {
       if (!lastUpdate.value) {
         return "";
@@ -144,6 +129,23 @@ export const useProposalsStore = defineStore(
       const diff = last - now;
       return dayjs.duration(diff, "seconds").humanize(true);
     });
+
+    function loadLastUpdate() {
+      lastUpdateRequest.value = useRequest(
+        () => {
+          const url = `${import.meta.env.VITE_GITHUB_BACKEND_API_URL}/commits?per_page=1`;
+          requestsStore.sendRequest(url);
+          return url;
+        },
+        {
+          onSuccess: (data) => (lastUpdate.value = data[0]?.commit.author.date || null),
+        },
+      );
+    }
+
+    function unloadLastUpdate() {
+      lastUpdate.value = null;
+    }
 
     watch(
       () => fundsStore.selectedFund,
@@ -220,11 +222,13 @@ export const useProposalsStore = defineStore(
     });
 
     function clearFilters() {
-      filters.challenges = [];
-      filters.title = "";
-      filters.tags = [];
-      filters.minPrice = 0;
-      filters.maxPrice = 0;
+      if (!isNotFiltered.value) {
+        filters.challenges = [];
+        filters.title = "";
+        filters.tags = [];
+        filters.minPrice = 0;
+        filters.maxPrice = 0;
+      }
     }
 
     watch(
@@ -240,6 +244,27 @@ export const useProposalsStore = defineStore(
         }
       },
     );
+
+    watch(filters, endlessPaginationReset);
+
+    /* Pagination */
+
+    const lastProposalInListIndex = ref(ENDLESS_PAGINATION_MIN_CHUNK_SIZE);
+
+    const paginatedProposals = computed(() => {
+      return filteredProposals.value.slice(0, lastProposalInListIndex.value);
+    });
+
+    function endlessPaginationShowNextChunk(chunkSize = ENDLESS_PAGINATION_MIN_CHUNK_SIZE) {
+      lastProposalInListIndex.value = Math.min(
+        filteredProposals.value.length,
+        lastProposalInListIndex.value + Math.max(chunkSize, ENDLESS_PAGINATION_MIN_CHUNK_SIZE),
+      );
+    }
+
+    function endlessPaginationReset() {
+      lastProposalInListIndex.value = ENDLESS_PAGINATION_MIN_CHUNK_SIZE;
+    }
 
     /* Proposal suggesting */
 
@@ -277,16 +302,20 @@ export const useProposalsStore = defineStore(
       filters,
       filteredProposals,
       isNotFiltered,
+      clearFilters,
+
+      lastProposalInListIndex,
+      paginatedProposals,
+      endlessPaginationShowNextChunk,
+      endlessPaginationReset,
 
       currentIndex,
-
-      clearFilters,
       suggestNext,
     };
   },
   {
     persist: {
-      paths: ["filters", "currentIndex"],
+      paths: ["filters", "lastProposalInListIndex", "currentIndex"],
     },
   },
 );
