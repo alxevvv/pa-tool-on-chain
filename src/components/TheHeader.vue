@@ -66,6 +66,12 @@
             >
               List
             </RouterLink>
+            <a
+              class="navbar-item"
+              @click.prevent="proposalsStore.suggestNext(false)"
+            >
+              Suggest next proposal
+            </a>
           </div>
         </div>
 
@@ -97,9 +103,11 @@
 
 <script setup>
 import { useRoute } from "vue-router";
+import { useProposalsStore } from "@/stores/proposalsStore";
 import WalletConnectButton from "@/components/WalletConnectButton.vue";
 
 const route = useRoute();
+const proposalsStore = useProposalsStore();
 
 function navbarItemClasses(routeName) {
   return `navbar-item${route.name === routeName ? " is-active" : ""}`;
