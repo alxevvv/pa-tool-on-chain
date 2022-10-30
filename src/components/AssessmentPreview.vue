@@ -28,6 +28,19 @@
             </span>
           </button>
 
+          <button
+            class="button is-small is-primary"
+            :disabled="!isCompleted"
+            @click="assessmentSubmissionsStore.upcomingToggle(props.proposalId)"
+          >
+            <span class="icon">
+              <i :class="`fas fa-${isInUpcomingSubmissions ? 'minus' : 'plus'}`" />
+            </span>
+            <span>
+              {{ isInUpcomingSubmissions ? 'Remove from' : 'Add to' }} submissions
+            </span>
+          </button>
+
           <a
             class="button is-small is-link"
             :href="proposal.url"
@@ -69,8 +82,9 @@
 </template>
 
 <script setup>
-import { ref, toRefs } from "vue";
+import { computed, ref } from "vue";
 import useAssessment from "@/composables/useAssessment";
+import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import ProposalAssessment from "./ProposalAssessment.vue";
 
 const props = defineProps({
@@ -80,9 +94,15 @@ const props = defineProps({
   },
 });
 
-const { proposal, completion } = toRefs(useAssessment(props.proposalId));
+const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
+
+const { proposal, completion, isCompleted } = useAssessment(props.proposalId);
 
 const isOpened = ref(false);
+
+const isInUpcomingSubmissions = computed(
+  () => assessmentSubmissionsStore.upcoming.includes(props.proposalId),
+);
 </script>
 
 <style>
