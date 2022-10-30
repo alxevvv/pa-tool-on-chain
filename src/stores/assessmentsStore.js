@@ -25,6 +25,10 @@ export const useAssessmentsStore = defineStore(
       return all.value.find((assessment) => assessment.proposalId === proposalId);
     }
 
+    function has(proposalId) {
+      return !!getByProposalId(proposalId);
+    }
+
     function add(proposalId) {
       const assessment = createAssessment(proposalId);
       all.value.push(assessment);
@@ -54,6 +58,7 @@ export const useAssessmentsStore = defineStore(
       count,
 
       getByProposalId,
+      has,
       add,
       set,
       remove,

@@ -27,14 +27,18 @@ export default function useAssessment(proposalId) {
     }
   });
 
-  return {
-    proposalId,
+  function setField(key, value) {
+    assessmentsStore.set(proposalId, key, value);
+  }
 
+  return {
     proposal,
     assessment,
 
     completion,
     isCompleted,
     savedAtVerbose,
+
+    setField,
   };
 }

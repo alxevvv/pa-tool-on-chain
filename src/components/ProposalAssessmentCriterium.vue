@@ -30,7 +30,7 @@
 <script setup>
 import debounce from "lodash/debounce";
 import { computed } from "vue";
-import { useAssessmentsStore } from "@/stores/assessmentsStore";
+import useAssessment from "@/composables/useAssessment";
 import BRate from "./BRate.vue";
 
 const props = defineProps({
@@ -44,9 +44,7 @@ const props = defineProps({
   },
 });
 
-const assessmentsStore = useAssessmentsStore();
-
-const assessment = computed(() => assessmentsStore.getByProposalId(props.proposal.id));
+const { assessment, setField } = useAssessment(props.proposal.id);
 
 const rateKey = computed(() => `rate${props.criterium.c_id}`);
 
@@ -55,7 +53,7 @@ const rateValue = computed({
     return assessment.value[rateKey.value];
   },
   set(value) {
-    assessmentsStore.set(props.proposal.id, rateKey.value, value);
+    setField(rateKey.value, value);
   },
 });
 
@@ -66,7 +64,7 @@ const noteValue = computed({
     return assessment.value[noteKey.value];
   },
   set: debounce((value) => {
-    assessmentsStore.set(props.proposal.id, noteKey.value, value);
+    setField(noteKey.value, value);
   }, 500),
 });
 </script>

@@ -20,7 +20,7 @@
           <span class="icon">
             <i class="fas fa-save" />
           </span>
-          <span>{{ assessment.savedAtVerbose.value }}</span>
+          <span>{{ savedAtVerbose }}</span>
         </span>
       </div>
 
@@ -71,7 +71,7 @@ const props = defineProps({
 const assessmentsStore = useAssessmentsStore();
 const challengesStore = useChallengesStore();
 
-const assessment = useAssessment(props.proposal.id);
+const { assessment, savedAtVerbose } = useAssessment(props.proposal.id);
 
 const challenge = computed(() => challengesStore.getById(props.proposal.category));
 
