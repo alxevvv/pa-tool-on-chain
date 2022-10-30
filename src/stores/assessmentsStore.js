@@ -28,9 +28,10 @@ export const useAssessmentsStore = defineStore(
       all.value.push(assessment);
     }
 
-    function touch(proposalId) {
+    function set(proposalId, key, value) {
       const assessment = getByProposalId(proposalId);
-      if (assessment) {
+      if (assessment && assessment[key] !== undefined) {
+        assessment[key] = value;
         assessment.lastUpdate = Date.now();
       }
     }
@@ -51,7 +52,7 @@ export const useAssessmentsStore = defineStore(
 
       getByProposalId,
       add,
-      touch,
+      set,
       remove,
       clearAll,
     };

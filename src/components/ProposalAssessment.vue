@@ -25,10 +25,20 @@
       </div>
 
       <div class="block">
-        <ProposalAssessmentCriterium :criterium="criteria[1]" />
-        <ProposalAssessmentCriterium :criterium="criteria[2]" />
-        <ProposalAssessmentCriterium :criterium="criteria[3]" />
+        <ProposalAssessmentCriterium
+          :proposal="proposal"
+          :criterium="criteria[1]"
+        />
+        <ProposalAssessmentCriterium
+          :proposal="proposal"
+          :criterium="criteria[2]"
+        />
+        <ProposalAssessmentCriterium
+          :proposal="proposal"
+          :criterium="criteria[3]"
+        />
 
+        <!-- TODO: removing confirmation -->
         <button
           v-if="assessment"
           class="button is-danger"
@@ -40,20 +50,6 @@
           <span>Delete Assessment</span>
         </button>
       </div>
-
-      <!-- <div class="block">
-        <pre>{{ assessment }}</pre>
-        <br>
-        <pre>{{ proposal }}</pre>
-        <br>
-        <pre>{{ challenge }}</pre>
-        <br>
-        <pre>{{ criteria[1] }}</pre>
-        <br>
-        <pre>{{ criteria[2] }}</pre>
-        <br>
-        <pre>{{ criteria[3] }}</pre>
-      </div> -->
     </div>
   </div>
 </template>
@@ -95,7 +91,7 @@ const savedAt = computed(() => {
   if (!lastUpdate) {
     return "Not saved";
   } else {
-    const diff = lastUpdate - dayjs.utc().unix();
+    const diff = dayjs(lastUpdate).unix() - dayjs.utc().unix();
     return `Saved ${dayjs.duration(diff, "seconds").humanize(true)}`;
   }
 });
