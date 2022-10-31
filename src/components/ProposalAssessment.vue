@@ -55,9 +55,10 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import useAssessment from "@/composables/useAssessment";
 import { useAssessmentsStore } from "@/stores/assessmentsStore";
+import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import { useChallengesStore } from "@/stores/challengesStore";
 import ProposalAssessmentCriterium from "./ProposalAssessmentCriterium.vue";
 
@@ -69,9 +70,10 @@ const props = defineProps({
 });
 
 const assessmentsStore = useAssessmentsStore();
+const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 const challengesStore = useChallengesStore();
 
-const { assessment, savedAtVerbose } = useAssessment(props.proposal.id);
+const { assessment, savedAtVerbose, isCompleted } = useAssessment(props.proposal.id);
 
 const challenge = computed(() => challengesStore.getById(props.proposal.category));
 
@@ -80,6 +82,14 @@ const criteria = computed(() => {
     acc[cur.c_id] = cur;
     return acc;
   }, {});
+});
+
+watch(isCompleted, (isCompleted) => {
+  if (isCompleted) {
+    assessmentSubmissionsStore.upcomingAdd(props.proposal.id);
+  } else {
+    assessmentSubmissionsStore.upcomingRemove(props.proposal.id);
+  }
 });
 </script>
 
