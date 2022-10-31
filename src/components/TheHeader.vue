@@ -82,7 +82,7 @@
               :to="{ name: 'AssessmentsMy' }"
               :class="navbarItemClasses('AssessmentsMy')"
             >
-              My Assessments
+              My Assessments ({{ assessmentsStore.countVerbose }})
             </RouterLink>
             <RouterLink
               :to="{ name: 'AssessmentsExample' }"
@@ -121,11 +121,13 @@
 
 <script setup>
 import { useRoute } from "vue-router";
+import { useAssessmentsStore } from "@/stores/assessmentsStore";
 import { useProposalsStore } from "@/stores/proposalsStore";
 import WalletConnectButton from "@/components/WalletConnectButton.vue";
 
 const route = useRoute();
 const proposalsStore = useProposalsStore();
+const assessmentsStore = useAssessmentsStore();
 
 function navbarItemClasses(routeName) {
   return `navbar-item${route.name === routeName ? " is-active" : ""}`;

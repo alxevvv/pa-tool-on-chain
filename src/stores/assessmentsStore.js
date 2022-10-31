@@ -1,9 +1,12 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { useProposalsStore } from "./proposalsStore";
 
 export const useAssessmentsStore = defineStore(
   "assessments",
   () => {
+    const proposalsStore = useProposalsStore();
+
     const all = ref([]);
 
     function createAssessment(proposalId) {
@@ -20,6 +23,8 @@ export const useAssessmentsStore = defineStore(
     }
 
     const count = computed(() => all.value.length);
+
+    const countVerbose = computed(() => `${count.value}/${proposalsStore.count}`);
 
     function getByProposalId(proposalId) {
       return all.value.find((assessment) => assessment.proposalId === proposalId);
@@ -56,6 +61,7 @@ export const useAssessmentsStore = defineStore(
     return {
       all,
       count,
+      countVerbose,
 
       getByProposalId,
       has,

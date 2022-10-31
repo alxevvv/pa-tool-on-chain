@@ -1,7 +1,7 @@
 <template>
   <div class="section container">
     <h1 class="title">
-      My Assessments {{ count }}
+      My Assessments ({{ assessmentsStore.countVerbose }})
     </h1>
 
     <article class="message">
@@ -62,21 +62,8 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
 import AssessmentPreview from "@/components/AssessmentPreview.vue";
 import { useAssessmentsStore } from "@/stores/assessmentsStore";
-import { useProposalsStore } from "@/stores/proposalsStore";
 
 const assessmentsStore = useAssessmentsStore();
-const proposalsStore = useProposalsStore();
-
-const count = computed(() => {
-  const assessmentsCount = assessmentsStore.count;
-  const proposalsCount = proposalsStore.count;
-  if (assessmentsCount && proposalsCount) {
-    return `(${assessmentsCount}/${proposalsCount})`;
-  } else {
-    return "";
-  }
-});
 </script>
