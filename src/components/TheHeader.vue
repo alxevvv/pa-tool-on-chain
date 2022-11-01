@@ -82,8 +82,17 @@
               :to="{ name: 'AssessmentsMy' }"
               :class="navbarItemClasses('AssessmentsMy')"
             >
-              My Assessments ({{ assessmentsStore.countVerbose }})
+              My Assessments&nbsp;
+              <span v-if="fundsStore.selectedFund">({{ assessmentsStore.countVerbose }})</span>
             </RouterLink>
+
+            <RouterLink
+              :to="{ name: 'AssessmentSubmissions' }"
+              :class="navbarItemClasses('AssessmentSubmissions')"
+            >
+              Assessment Submissions
+            </RouterLink>
+
             <RouterLink
               :to="{ name: 'AssessmentsExample' }"
               :class="navbarItemClasses('AssessmentsExample')"
@@ -123,9 +132,11 @@
 import { useRoute } from "vue-router";
 import { useAssessmentsStore } from "@/stores/assessmentsStore";
 import { useProposalsStore } from "@/stores/proposalsStore";
+import { useFundsStore } from "@/stores/fundsStore";
 import WalletConnectButton from "@/components/WalletConnectButton.vue";
 
 const route = useRoute();
+const fundsStore = useFundsStore();
 const proposalsStore = useProposalsStore();
 const assessmentsStore = useAssessmentsStore();
 

@@ -21,7 +21,7 @@
             @click="isOpened = !isOpened"
           >
             <span class="icon">
-              <i class="fas fa-pen" />
+              <i :class="`fas fa-${isOpened ? 'times' : isSubmitted ? 'eye' : 'pen'}`" />
             </span>
             <span>
               {{ isOpened ? 'Close' : 'Access assessment' }}
@@ -29,6 +29,7 @@
           </button>
 
           <button
+            v-if="!isSubmitted"
             class="button is-small is-primary"
             :disabled="!isCompleted"
             @click="assessmentSubmissionsStore.upcomingToggle(props.proposalId)"
@@ -63,12 +64,19 @@
         </span>
 
         <progress
-          class="progress is-success"
+          class="progress is-primary is-small"
           :value="completion"
           max="100"
         >
           {{ completion }}%
         </progress>
+
+        <div class="tags are-small is-flex is-justify-content-end">
+          <span
+            v-if="isSubmitted"
+            class="tag is-success"
+          >Submitted</span>
+        </div>
       </div>
     </div>
 
@@ -102,6 +110,10 @@ const isOpened = ref(false);
 
 const isInUpcomingSubmissions = computed(
   () => assessmentSubmissionsStore.upcoming.includes(props.proposalId),
+);
+
+const isSubmitted = computed(
+  () => assessmentSubmissionsStore.submittedProposalIds.includes(props.proposalId),
 );
 </script>
 

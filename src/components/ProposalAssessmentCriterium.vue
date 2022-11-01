@@ -10,6 +10,7 @@
       <BRate
         v-model="rateValue"
         :label-text="`Rating for ${props.criterium.title}`"
+        :readonly="isSubmitted"
       />
     </div>
 
@@ -19,6 +20,7 @@
         <div class="control">
           <textarea
             v-model="noteValue"
+            :readonly="isSubmitted"
             class="textarea"
           />
         </div>
@@ -31,6 +33,7 @@
 import debounce from "lodash/debounce";
 import { computed } from "vue";
 import useAssessment from "@/composables/useAssessment";
+import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import BRate from "./BRate.vue";
 
 const props = defineProps({
@@ -44,7 +47,13 @@ const props = defineProps({
   },
 });
 
+const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
+
 const { assessment, setField } = useAssessment(props.proposal.id);
+
+const isSubmitted = computed(
+  () => assessmentSubmissionsStore.submittedProposalIds.includes(props.proposal.id),
+);
 
 const rateKey = computed(() => `rate${props.criterium.c_id}`);
 

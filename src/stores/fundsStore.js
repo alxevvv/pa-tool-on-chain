@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { defineStore, storeToRefs } from "pinia";
 import { computed, readonly, ref, watch } from "vue";
 import { BLOCKCHAIN_ACTIONS } from "@/blockchain/const";
@@ -6,6 +7,8 @@ import { fundFromBlockchain, paRegistrationFromBlockchain } from "@/blockchain/c
 import useRequest from "@/composables/useRequest";
 import {
   assessmentCreationIsOpened,
+  assessmentSubmissionIsOpened,
+  assessmentPublishingIsOpened,
   fundPaRegistrationIsOpened,
   fundQaStageIsDisabled,
 } from "@/utils/fundsUtils";
@@ -53,6 +56,10 @@ export const useFundsStore = defineStore(
       }, []);
     });
 
+    const isQaDisabled = computed(() => {
+      return qaDisabledFundHashes.value.includes(selectedFundHash.value);
+    });
+
     const openedForPaRegistrationFundHashes = computed(() => {
       return all.value.reduce((hashes, fund) => {
         if (fundPaRegistrationIsOpened(fund)) {
@@ -97,6 +104,38 @@ export const useFundsStore = defineStore(
 
     const isOpenedForAssessmentCreation = computed(() => {
       return openedForAssessmentCreationFundHashes.value.includes(selectedFundHash.value);
+    });
+
+    const openedForAssessmentSubmissionFundHashes = computed(() => {
+      return all.value.reduce((hashes, fund) => {
+        if (assessmentSubmissionIsOpened(fund)) {
+          hashes.push(fund.fundHash);
+        }
+        return hashes;
+      }, []);
+    });
+
+    const isOpenedForAssessmentSubmission = computed(() => {
+      return openedForAssessmentSubmissionFundHashes.value.includes(selectedFundHash.value);
+    });
+
+    const assessmentSubmissionStagePeriodVerbose = computed(() => {
+      const startDate = dayjs(selectedFund.value.assessmentSubmissionStartDate).format("DD-MM-YYYY HH:mm");
+      const endDate = dayjs(selectedFund.value.assessmentSubmissionEndDate).format("DD-MM-YYYY HH:mm");
+      return `${startDate} – ${endDate}`;
+    });
+
+    const openedForAssessmentPublishingFundHashes = computed(() => {
+      return all.value.reduce((hashes, fund) => {
+        if (assessmentPublishingIsOpened(fund)) {
+          hashes.push(fund.fundHash);
+        }
+        return hashes;
+      }, []);
+    });
+
+    const isOpenedForAssessmentPublishing = computed(() => {
+      return openedForAssessmentPublishingFundHashes.value.includes(selectedFundHash.value);
     });
 
     function loadFunds() {
@@ -150,14 +189,26 @@ export const useFundsStore = defineStore(
 
       selectable,
       selectedFund,
+
       qaDisabledFundHashes,
+      isQaDisabled,
+
       openedForPaRegistrationFundHashes,
       isOpenedForRegistration,
       paRegisteredFundHashes,
+
       isPaRegistered,
       paRegistration,
+
       openedForAssessmentCreationFundHashes,
       isOpenedForAssessmentCreation,
+
+      openedForAssessmentSubmissionFundHashes,
+      isOpenedForAssessmentSubmission,
+      assessmentSubmissionStagePeriodVerbose,
+
+      openedForAssessmentPublishingFundHashes,
+      isOpenedForAssessmentPublishing,
 
       loadFunds,
       getByHash,

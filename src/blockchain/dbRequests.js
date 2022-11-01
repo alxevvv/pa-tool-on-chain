@@ -40,3 +40,10 @@ export function paRegistrationsList(stakeAddress) {
   useRequestsStore().sendRequest(url);
   return url;
 }
+
+export function assessmentSubmissionsList(stakeAddress) {
+  const params = stakeAddress ? { "json->>creator": `eq.${stakeAddress}` } : {};
+  const url = apiSelectMetadataUrl(BLOCKCHAIN_ACTIONS.assessmentsSubmission, params);
+  useRequestsStore().sendRequest(url);
+  return url;
+}

@@ -12,6 +12,7 @@ export const useAssessmentsStore = defineStore(
     function createAssessment(proposalId) {
       return {
         proposalId,
+        proposalTitle: proposalsStore.getById(proposalId).title,
         rate1: 0,
         note1: "",
         rate2: 0,

@@ -6,6 +6,7 @@ import proposals from "@/assets/data/f9/proposals.json";
 import tags from "@/assets/data/f9/tags.json";
 import useRequest from "@/composables/useRequest";
 import { useFundsStore } from "./fundsStore";
+import { useNotificationsStore } from "./notificationsStore";
 import { useRequestsStore } from "./requestsStore";
 
 const ENDLESS_PAGINATION_MIN_CHUNK_SIZE = 25;
@@ -16,6 +17,7 @@ export const useProposalsStore = defineStore(
     const router = useRouter();
 
     const fundsStore = useFundsStore();
+    const notificationsStore = useNotificationsStore();
     const requestsStore = useRequestsStore();
 
     /* Lists */
@@ -277,18 +279,27 @@ export const useProposalsStore = defineStore(
     const currentIndex = ref(0);
 
     function suggestNext(fromFilter = false) {
-      const suggestedProposal = filteredProposals.value[currentIndex.value];
-      if (suggestedProposal) {
-        const newId = suggestedProposal.id.toString();
-        if (router.currentRoute.value.name === "Proposal" || !fromFilter) {
-          const currentId = router.currentRoute.value.params.id;
-          if (newId !== currentId) {
-            router.push({ name: "Proposal", params: { id: newId } });
-          }
-        }
-        currentIndex.value += 1;
+      if (!fundsStore.selectedFundHash) {
+        notificationsStore.add({
+          text: "Please select a fund",
+          type: "is-warning",
+          duration: 5000,
+        });
+        router.push({ name: "Funds" });
       } else {
-        currentIndex.value = 0;
+        const suggestedProposal = filteredProposals.value[currentIndex.value];
+        if (suggestedProposal) {
+          const newId = suggestedProposal.id.toString();
+          if (router.currentRoute.value.name === "Proposal" || !fromFilter) {
+            const currentId = router.currentRoute.value.params.id;
+            if (newId !== currentId) {
+              router.push({ name: "Proposal", params: { id: newId } });
+            }
+          }
+          currentIndex.value += 1;
+        } else {
+          currentIndex.value = 0;
+        }
       }
     }
 

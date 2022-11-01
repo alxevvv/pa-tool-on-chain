@@ -6,9 +6,9 @@
         v-for="(_, i) in Array(props.maxValue)"
         :key="i"
         :class="iconClasses"
-        @mouseenter="displayedValue = i + 1"
-        @mouseleave="displayedValue = props.modelValue"
-        @click="setValue(i + 1)"
+        @mouseenter="onMouseEnter(i)"
+        @mouseleave="onMouseLeave()"
+        @click="setValue(i)"
       >
         <i
           :class="displayedValue <= i ? props.iconEmpty : props.iconFilled"
@@ -29,6 +29,10 @@ const props = defineProps({
   labelText: {
     type: String,
     default: "",
+  },
+  readonly: {
+    type: Boolean,
+    default: false,
   },
   iconClass: {
     type: String,
@@ -55,22 +59,39 @@ const iconClasses = computed(() => {
   if (props.iconClass) {
     classes.push(props.iconClass);
   }
+  if (props.readonly) {
+    classes.push("read-only");
+  }
   return classes;
 });
 
 const displayedValue = ref(props.modelValue);
 
-function setValue(value) {
-  if (props.modelValue === value) {
-    emit("update:modelValue", 0);
-  } else {
-    emit("update:modelValue", value);
+function onMouseEnter(i) {
+  if (!props.readonly) {
+    displayedValue.value = i + 1;
+  }
+}
+
+function onMouseLeave() {
+  if (!props.readonly) {
+    displayedValue.value = props.modelValue;
+  }
+}
+
+function setValue(i) {
+  if (!props.readonly) {
+    if (props.modelValue === i + 1) {
+      emit("update:modelValue", 0);
+    } else {
+      emit("update:modelValue", i + 1);
+    }
   }
 }
 </script>
 
 <style scoped>
-.icon {
+.icon:not(.read-only) {
   cursor: pointer;
 }
 </style>

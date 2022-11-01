@@ -25,6 +25,18 @@
       </div>
 
       <div class="block">
+        <article
+          v-if="isSubmitted"
+          class="message is-warning"
+        >
+          <div class="message-header">
+            <p>Read Only</p>
+          </div>
+          <div class="message-body">
+            Your assessment is submitted to the chain. It is no longer editable.
+          </div>
+        </article>
+
         <ProposalAssessmentCriterium
           :proposal="proposal"
           :criterium="criteria[1]"
@@ -40,7 +52,7 @@
 
         <!-- TODO: removing confirmation -->
         <button
-          v-if="assessment"
+          v-if="assessment && !isSubmitted"
           class="button is-danger"
           @click="assessmentsStore.remove(props.proposal.id)"
         >
@@ -83,6 +95,10 @@ const criteria = computed(() => {
     return acc;
   }, {});
 });
+
+const isSubmitted = computed(
+  () => assessmentSubmissionsStore.submittedProposalIds.includes(props.proposal.id),
+);
 
 watch(isCompleted, (isCompleted) => {
   if (isCompleted) {

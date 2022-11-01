@@ -1,17 +1,29 @@
 import dayjs from "dayjs";
 import camelToWords from "./camelToWords";
 
-function isActiveStage(fund, stageName) {
+export function isCurrentStage(fund, stageName) {
   const now = dayjs();
   const startDate = dayjs(fund[`${stageName}StartDate`]);
   const endDate = dayjs(fund[`${stageName}EndDate`]);
   return startDate.isBefore(now) && endDate.isAfter(now);
 }
 
-function isUpcomingStage(fund, stageName) {
+export function isCurrentOrUpcomingStage(fund, stageName) {
   const now = dayjs();
   const endDate = dayjs(fund[`${stageName}EndDate`]);
   return endDate.isAfter(now);
+}
+
+export function isUpcomingStage(fund, stageName) {
+  const now = dayjs();
+  const startDate = dayjs(fund[`${stageName}StartDate`]);
+  return startDate.isAfter(now);
+}
+
+export function isPastStage(fund, stageName) {
+  const now = dayjs();
+  const endDate = dayjs(fund[`${stageName}EndDate`]);
+  return endDate.isBefore(now);
 }
 
 export function fundActivityPeriod(fund) {
@@ -29,7 +41,6 @@ export function fundActivityPeriod(fund) {
 }
 
 export function fundCurrentStages(fund) {
-  const now = dayjs();
   const stages = [];
 
   const stageNames = Object.keys(fund)
@@ -37,10 +48,7 @@ export function fundCurrentStages(fund) {
     .map((key) => key.replace("StartDate", ""));
 
   stageNames.forEach((stageName) => {
-    const startDate = dayjs(fund[stageName + "StartDate"]);
-    const endDate = dayjs(fund[stageName + "EndDate"]);
-
-    if (startDate.isBefore(now) && endDate.isAfter(now)) {
+    if (isCurrentStage(fund, stageName)) {
       stages.push(camelToWords(stageName));
     }
   });
@@ -53,9 +61,17 @@ export function fundQaStageIsDisabled(fund) {
 }
 
 export function fundPaRegistrationIsOpened(fund) {
-  return !fundQaStageIsDisabled(fund) && isActiveStage(fund, "qaRegistration");
+  return !fundQaStageIsDisabled(fund) && isCurrentStage(fund, "qaRegistration");
 }
 
 export function assessmentCreationIsOpened(fund) {
-  return !fundQaStageIsDisabled(fund) && isUpcomingStage(fund, "assessmentSubmission");
+  return !fundQaStageIsDisabled(fund) && isCurrentOrUpcomingStage(fund, "assessmentSubmission");
+}
+
+export function assessmentSubmissionIsOpened(fund) {
+  return !fundQaStageIsDisabled(fund) && isCurrentStage(fund, "assessmentSubmission");
+}
+
+export function assessmentPublishingIsOpened(fund) {
+  return !fundQaStageIsDisabled(fund) && isCurrentStage(fund, "assessmentPublishing");
 }

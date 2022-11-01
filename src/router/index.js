@@ -7,6 +7,7 @@ import PageProposal from "@/views/PageProposal.vue";
 import PageProposalsList from "@/views/PageProposalsList.vue";
 import PageAssessmentsMy from "@/views/PageAssessmentsMy.vue";
 import PageAssessmentsExample from "@/views/PageAssessmentsExample.vue";
+import PageAssessmentSubmissions from "@/views/PageAssessmentSubmissions.vue";
 import PageNotFound from "@/views/PageNotFound.vue";
 
 const routes = [
@@ -47,6 +48,11 @@ const routes = [
     path: "/assessments/my",
     name: "AssessmentsMy",
     component: PageAssessmentsMy,
+  },
+  {
+    path: "/assessments/submissions",
+    name: "AssessmentSubmissions",
+    component: PageAssessmentSubmissions,
   },
   {
     path: "/assessments/example",

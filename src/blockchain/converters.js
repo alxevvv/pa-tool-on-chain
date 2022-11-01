@@ -30,3 +30,12 @@ export function paRegistrationFromBlockchain(metadata) {
     ...metadataFromBlockchain(metadata),
   };
 }
+
+export function assessmentsSubmissionFromBlockchain(metadata, assessments) {
+  const { proposalIds } = metadata.json.payload;
+  return proposalIds.map((proposalId) => ({
+    proposalId,
+    proposalTitle: assessments.find((assessment) => assessment.proposalId === proposalId)?.proposalTitle,
+    ...metadataFromBlockchain(metadata),
+  }));
+}

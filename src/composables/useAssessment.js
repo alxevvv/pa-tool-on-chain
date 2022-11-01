@@ -11,6 +11,9 @@ export default function useAssessment(proposalId) {
   const assessment = computed(() => assessmentsStore.getByProposalId(proposalId));
 
   const completion = computed(() => {
+    if (!assessment.value) {
+      return 0;
+    }
     const fieldsNames = ["rate1", "rate2", "rate3", "note1", "note2", "note3"];
     const filledFieldsCount = fieldsNames.reduce((acc, cur) => (assessment.value[cur] ? acc + 1 : acc), 0);
     return Math.floor((100 * filledFieldsCount) / fieldsNames.length);
