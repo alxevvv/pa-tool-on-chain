@@ -94,6 +94,13 @@
             </RouterLink>
 
             <RouterLink
+              :to="{ name: 'AssessmentPublications' }"
+              :class="navbarItemClasses('AssessmentPublications')"
+            >
+              Assessment Publications
+            </RouterLink>
+
+            <RouterLink
               :to="{ name: 'AssessmentsExample' }"
               :class="navbarItemClasses('AssessmentsExample')"
             >

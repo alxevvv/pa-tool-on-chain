@@ -138,6 +138,12 @@ export const useFundsStore = defineStore(
       return openedForAssessmentPublishingFundHashes.value.includes(selectedFundHash.value);
     });
 
+    const assessmentPublishingStagePeriodVerbose = computed(() => {
+      const startDate = dayjs(selectedFund.value.assessmentPublishingStartDate).format("DD-MM-YYYY HH:mm");
+      const endDate = dayjs(selectedFund.value.assessmentPublishingEndDate).format("DD-MM-YYYY HH:mm");
+      return `${startDate} – ${endDate}`;
+    });
+
     function loadFunds() {
       loadFundsRequest.value = useRequest(fundsList, {
         onSuccess: (data) => (all.value = data.map(fundFromBlockchain)),
@@ -209,6 +215,7 @@ export const useFundsStore = defineStore(
 
       openedForAssessmentPublishingFundHashes,
       isOpenedForAssessmentPublishing,
+      assessmentPublishingStagePeriodVerbose,
 
       loadFunds,
       getByHash,

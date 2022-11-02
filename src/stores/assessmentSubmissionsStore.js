@@ -47,6 +47,10 @@ export const useAssessmentSubmissionsStore = defineStore(
       }
     }
 
+    function isSubmitted(proposalId) {
+      return !!submitted.value.find((submission) => submission.proposalId === proposalId);
+    }
+
     async function submit() {
       if (!fundsStore.selectedFundHash) {
         throw new Error("Fund not selected");
@@ -126,6 +130,7 @@ export const useAssessmentSubmissionsStore = defineStore(
       upcomingAdd,
       upcomingRemove,
       upcomingToggle,
+      isSubmitted,
       submit,
 
       submittedAssessments: submitted,

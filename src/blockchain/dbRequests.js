@@ -47,3 +47,10 @@ export function assessmentSubmissionsList(stakeAddress) {
   useRequestsStore().sendRequest(url);
   return url;
 }
+
+export function assessmentPublicationsList(stakeAddress) {
+  const params = stakeAddress ? { "json->>creator": `eq.${stakeAddress}` } : {};
+  const url = apiSelectMetadataUrl(BLOCKCHAIN_ACTIONS.assessmentsPublication, params);
+  useRequestsStore().sendRequest(url);
+  return url;
+}
