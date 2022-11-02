@@ -96,12 +96,18 @@
 import { computed } from "vue";
 import AssessmentPreview from "@/components/AssessmentPreview.vue";
 import { useAssessmentsStore } from "@/stores/assessmentsStore";
+import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import { useFundsStore } from "@/stores/fundsStore";
 
 const assessmentsStore = useAssessmentsStore();
+const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 const fundsStore = useFundsStore();
 
 const isPageLoading = computed(() => {
-  return fundsStore.loadFundsRequest?.request?.isLoading;
+  return (
+    fundsStore.loadFundsRequest?.request?.isLoading ||
+    !assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request ||
+    assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request?.isLoading
+  );
 });
 </script>

@@ -82,12 +82,6 @@
       v-if="fundsStore.selectedFund && !fundsStore.isQaDisabled && !isPageLoading"
       class="block box"
     >
-      <progress
-        v-if="assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request?.isLoading"
-        class="progress is-small is-primary"
-        max="100"
-      />
-
       <div class="tabs">
         <ul>
           <li :class="currentTab === 'upcoming' && 'is-active'">
@@ -102,6 +96,7 @@
           </li>
         </ul>
       </div>
+
       <div v-if="currentTab === 'upcoming'">
         <div
           v-if="assessmentSubmissionsStore.upcomingAssessments.length"
@@ -146,8 +141,6 @@
             </tbody>
           </table>
         </div>
-
-        <!-- <pre>{{ assessmentSubmissionsStore.upcomingAssessments }}</pre> -->
 
         <div
           v-if="assessmentSubmissionsStore.upcomingAssessments.length"
@@ -205,8 +198,6 @@
         >
           No submitted assessments
         </div>
-
-        <!-- <pre>{{ assessmentSubmissionsStore.submittedAssessments }}</pre> -->
       </div>
     </div>
   </div>
@@ -226,7 +217,11 @@ const walletStore = useWalletStore();
 const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 
 const isPageLoading = computed(() => {
-  return fundsStore.loadFundsRequest?.request?.isLoading;
+  return (
+    fundsStore.loadFundsRequest?.request?.isLoading ||
+    !assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request ||
+    assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request?.isLoading
+  );
 });
 
 const startDate = computed(() => dayjs(fundsStore.selectedFund?.assessmentSubmissionStartDate));

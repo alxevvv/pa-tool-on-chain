@@ -162,10 +162,12 @@ import { useRoute } from "vue-router";
 import ProposalAssessment from "@/components/ProposalAssessment.vue";
 import SuggestProposalButton from "@/components/SuggestProposalButton.vue";
 import { useProposalsStore } from "@/stores/proposalsStore";
+import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import challenges from "@/assets/data/f9/categories.json";
 
 const route = useRoute();
 const proposalsStore = useProposalsStore();
+const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 
 const proposalId = parseInt(route.params.id);
 
@@ -185,6 +187,11 @@ const isChallengeSetting = computed(() => {
 });
 
 const isPageLoading = computed(() => {
-  return !proposal.value || !challenge.value;
+  return (
+    !proposal.value ||
+    !challenge.value ||
+    !assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request ||
+    assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request?.isLoading
+  );
 });
 </script>
