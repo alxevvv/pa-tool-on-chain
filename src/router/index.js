@@ -84,7 +84,7 @@ const routes = [
         name: "AssessmentPublicationsUpcoming",
       },
       {
-        path: "submitted",
+        path: "published",
         component: AssessmentPublicationsPublished,
         name: "AssessmentPublicationsPublished",
       },

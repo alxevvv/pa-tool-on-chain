@@ -88,7 +88,11 @@
 
             <RouterLink
               :to="{ name: 'AssessmentSubmissions' }"
-              :class="navbarItemClasses('AssessmentSubmissions')"
+              :class="navbarItemClasses([
+                'AssessmentSubmissions',
+                'AssessmentSubmissionsUpcoming',
+                'AssessmentSubmissionsSubmitted',
+              ])"
             >
               Assessment Submissions&nbsp;
               <span v-if="fundsStore.selectedFund">({{ assessmentSubmissionsStore.countVerbose }})</span>
@@ -96,7 +100,11 @@
 
             <RouterLink
               :to="{ name: 'AssessmentPublications' }"
-              :class="navbarItemClasses('AssessmentPublications')"
+              :class="navbarItemClasses([
+                'AssessmentPublications',
+                'AssessmentPublicationsUpcoming',
+                'AssessmentPublicationsPublished',
+              ])"
             >
               Assessment Publications&nbsp;
               <span v-if="fundsStore.selectedFund">({{ assessmentPublicationsStore.countVerbose }})</span>
@@ -154,7 +162,11 @@ const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 const assessmentPublicationsStore = useAssessmentPublicationsStore();
 
 function navbarItemClasses(routeName) {
-  return `navbar-item${route.name === routeName ? " is-active" : ""}`;
+  const classes = ["navbar-item"];
+  if ((Array.isArray(routeName) && routeName.includes(route.name)) || routeName === route.name) {
+    classes.push("is-active");
+  }
+  return classes;
 }
 </script>
 
