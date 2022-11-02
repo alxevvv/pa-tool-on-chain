@@ -85,120 +85,21 @@
     >
       <div class="tabs">
         <ul>
-          <li :class="currentTab === 'upcoming' && 'is-active'">
-            <a @click="currentTab = 'upcoming'">
+          <li :class="route.name === 'AssessmentPublicationsUpcoming' && 'is-active'">
+            <RouterLink :to="{name: 'AssessmentPublicationsUpcoming'}">
               Upcoming ({{ assessmentPublicationsStore.upcomingAssessments.length }})
-            </a>
+            </RouterLink>
           </li>
-          <li :class="currentTab === 'submitted' && 'is-active'">
-            <a @click="currentTab = 'submitted'">
+          <li :class="route.name === 'AssessmentPublicationsPublished' && 'is-active'">
+            <RouterLink :to="{name: 'AssessmentPublicationsPublished'}">
               Published ({{ assessmentPublicationsStore.publishedAssessments.length }})
-            </a>
+            </RouterLink>
           </li>
         </ul>
       </div>
 
-      <div v-if="currentTab === 'upcoming'">
-        <div
-          v-if="assessmentPublicationsStore.upcomingAssessments.length"
-          class="table-container"
-        >
-          <table class="table is-fullwidth">
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Proposal</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="assessment in assessmentPublicationsStore.upcomingAssessments"
-                :key="assessment.proposalId"
-              >
-                <td>
-                  {{ assessment.txId }}.{{ assessment.proposalId }}
-                </td>
-                <td>
-                  <RouterLink :to="{ name: 'Proposal', params: { id: assessment.proposalId }}">
-                    {{ assessment.proposalTitle }}
-                  </RouterLink>
-                </td>
-                <td class="is-flex is-justify-content-end">
-                  <button
-                    class="button is-small is-danger is-outlined"
-                    :disabled="walletStore.isTxSubmitting || walletStore.isTxConfirming"
-                    @click="assessmentPublicationsStore.upcomingRemove(assessment.proposalId)"
-                  >
-                    <span class="icon">
-                      <i class="fas fa-minus" />
-                    </span>
-                    <span>
-                      Remove
-                    </span>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div
-          v-if="!assessmentPublicationsStore.upcoming.length"
-          class="has-text-centered"
-        >
-          No assessments for publication
-        </div>
-
-        <div
-          v-if="fundsStore.isOpenedForAssessmentPublishing"
-          class="buttons"
-        >
-          <WalletConnectButton v-if="!walletStore.isConnected" />
-          <ButtonAssessmentsPublish v-else />
-        </div>
-      </div>
-
-      <div v-else-if="currentTab === 'submitted'">
-        <div
-          v-if="assessmentPublicationsStore.publishedAssessments.length"
-          class="table-container"
-        >
-          <table class="table is-fullwidth">
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Proposal</th>
-                <th>Published At (UTC)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="assessment in assessmentPublicationsStore.publishedAssessments"
-                :key="assessment.proposalId"
-              >
-                <td>
-                  {{ assessment.txId }}.{{ assessment.proposalId }}
-                </td>
-                <td>
-                  <RouterLink :to="{ name: 'Proposal', params: { id: assessment.proposalId }}">
-                    {{ assessment.proposalTitle }}
-                  </RouterLink>
-                </td>
-                <td>
-                  {{ dayjs(assessment.blockTime).format('DD-MM-YYYY, HH:mm') }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div
-          v-else
-          class="has-text-centered"
-        >
-          No published assessments
-        </div>
+      <div>
+        <RouterView />
       </div>
     </div>
   </div>
@@ -206,16 +107,15 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { computed, ref } from "vue";
-import WalletConnectButton from "@/components/WalletConnectButton.vue";
-import ButtonAssessmentsPublish from "@/components/ButtonAssessmentsPublish.vue";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { useFundsStore } from "@/stores/fundsStore";
-import { useWalletStore } from "@/stores/walletStore";
 import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
 
+const route = useRoute();
+
 const fundsStore = useFundsStore();
-const walletStore = useWalletStore();
 const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 const assessmentPublicationsStore = useAssessmentPublicationsStore();
 
@@ -235,5 +135,4 @@ const startDateFormatted = computed(() => startDate.value.format("DD-MM-YYYY HH:
 const endDateFormatted = computed(() => endDate.value.format("DD-MM-YYYY HH:mm"));
 const periodFormatted = computed(() => `${startDateFormatted.value} – ${endDateFormatted.value}`);
 
-const currentTab = ref("upcoming");
 </script>

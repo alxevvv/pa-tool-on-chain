@@ -10,6 +10,10 @@ import PageAssessmentsExample from "@/views/PageAssessmentsExample.vue";
 import PageAssessmentSubmissions from "@/views/PageAssessmentSubmissions.vue";
 import PageAssessmentPublications from "@/views/PageAssessmentPublications.vue";
 import PageNotFound from "@/views/PageNotFound.vue";
+import AssessmentSubmissionsUpcoming from "@/components/AssessmentSubmissionsUpcoming.vue";
+import AssessmentSubmissionsSubmitted from "@/components/AssessmentSubmissionsSubmitted.vue";
+import AssessmentPublicationsUpcoming from "@/components/AssessmentPublicationsUpcoming.vue";
+import AssessmentPublicationsPublished from "@/components/AssessmentPublicationsPublished.vue";
 
 const routes = [
   {
@@ -54,11 +58,37 @@ const routes = [
     path: "/assessments/submissions",
     name: "AssessmentSubmissions",
     component: PageAssessmentSubmissions,
+    redirect: { name: "AssessmentSubmissionsUpcoming" },
+    children: [
+      {
+        path: "upcoming",
+        component: AssessmentSubmissionsUpcoming,
+        name: "AssessmentSubmissionsUpcoming",
+      },
+      {
+        path: "submitted",
+        component: AssessmentSubmissionsSubmitted,
+        name: "AssessmentSubmissionsSubmitted",
+      },
+    ],
   },
   {
     path: "/assessments/publications",
     name: "AssessmentPublications",
     component: PageAssessmentPublications,
+    redirect: { name: "AssessmentPublicationsUpcoming" },
+    children: [
+      {
+        path: "upcoming",
+        component: AssessmentPublicationsUpcoming,
+        name: "AssessmentPublicationsUpcoming",
+      },
+      {
+        path: "submitted",
+        component: AssessmentPublicationsPublished,
+        name: "AssessmentPublicationsPublished",
+      },
+    ],
   },
   {
     path: "/assessments/example",
