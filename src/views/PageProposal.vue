@@ -113,16 +113,9 @@
             <span class="mr-1">
               No. assessments:
             </span>
-            <b v-if="proposal.assessmentsCount !== undefined">
-              {{ proposal.assessmentsCount }}
+            <b>
+              {{ proposal.assessments_count }}
             </b>
-            <span v-else-if="proposalsStore.assessmentsCountRequest.request.isLoading">
-              <i class="fas fa-spinner fa-pulse" />
-              Loading...
-            </span>
-            <span v-else>
-              0
-            </span>
           </span>
 
           <br>
@@ -131,16 +124,9 @@
             <span class="mr-1">
               Stats last update:
             </span>
-            <span v-if="proposalsStore.lastUpdate">
+            <span>
               {{ proposalsStore.lastUpdateDuration }}
               [{{ proposalsStore.lastUpdateVerbose }}]
-            </span>
-            <span v-else-if="proposalsStore.lastUpdateRequest.request.isLoading">
-              <i class="fas fa-spinner fa-pulse" />
-              Loading...
-            </span>
-            <span v-else>
-              Unknown
             </span>
           </span>
         </div>

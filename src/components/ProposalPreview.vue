@@ -18,12 +18,8 @@
 
         <div class="no">
           No. assessments:
-          <span v-if="props.proposal.assessmentsCount !== undefined">
-            {{ props.proposal.assessmentsCount }}
-          </span>
-          <span v-else>
-            <i class="fas fa-spinner fa-pulse" />
-            Loading...
+          <span>
+            {{ props.proposal.assessments_count }}
           </span>
         </div>
       </div>

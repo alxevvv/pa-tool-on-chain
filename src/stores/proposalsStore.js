@@ -4,10 +4,8 @@ import { useRouter } from "vue-router";
 import { defineStore } from "pinia";
 import proposals from "@/assets/data/f9/proposals.json";
 import tags from "@/assets/data/f9/tags.json";
-import useRequest from "@/composables/useRequest";
 import { useFundsStore } from "./fundsStore";
 import { useNotificationsStore } from "./notificationsStore";
-import { useRequestsStore } from "./requestsStore";
 
 const ENDLESS_PAGINATION_MIN_CHUNK_SIZE = 25;
 
@@ -18,19 +16,18 @@ export const useProposalsStore = defineStore(
 
     const fundsStore = useFundsStore();
     const notificationsStore = useNotificationsStore();
-    const requestsStore = useRequestsStore();
 
     /* Lists */
 
-    const initial = ref([]);
+    const all = ref([]);
     const tagsList = ref([]);
 
     function loadProposals(/* fundHash */) {
-      initial.value = proposals;
+      all.value = proposals;
     }
 
     function unloadProposals() {
-      initial.value = [];
+      all.value = [];
     }
 
     function loadTags(/* fundHash */) {
@@ -45,7 +42,7 @@ export const useProposalsStore = defineStore(
       return all.value.find(({ id }) => id === proposalId);
     }
 
-    const count = computed(() => initial.value.length);
+    const count = computed(() => all.value.length);
 
     watch(
       () => fundsStore.selectedFund,
@@ -63,113 +60,20 @@ export const useProposalsStore = defineStore(
       },
     );
 
-    /* Proposals metadata: Assessments count */
-
-    const all = ref([]);
-    const assessmentsCount = ref([]);
-    const assessmentsCountRequest = ref(null);
-
-    function loadAssessmentsCount() {
-      assessmentsCountRequest.value = useRequest(
-        () => {
-          const url = `${import.meta.env.VITE_BACKEND_API_URL}/proposals.json`;
-          requestsStore.sendRequest(url);
-          return url;
-        },
-        {
-          onSuccess: (data) => (assessmentsCount.value = data),
-        },
-      );
-    }
-
-    function unloadAssessmentsCount() {
-      assessmentsCount.value = [];
-    }
-
-    watch(
-      () => fundsStore.selectedFund,
-      (fund) => {
-        if (fund) {
-          loadAssessmentsCount();
-        } else {
-          unloadAssessmentsCount();
-          assessmentsCountRequest.value?.remove();
-          assessmentsCountRequest.value = null;
-        }
-      },
-      {
-        immediate: true,
-      },
-    );
-
-    watch(
-      () => [initial.value, assessmentsCount.value],
-      ([initial, assessmentsCount]) => {
-        if (initial.length && assessmentsCount.length) {
-          const updatedProposals = initial.map((proposal) => ({
-            ...proposal,
-            assessmentsCount: assessmentsCount.find(({ id }) => proposal.id === id)?.assessments_count,
-          }));
-          all.value = updatedProposals;
-        }
-      },
-      { immediate: true },
-    );
-
     /* Proposals metadata: Last update */
 
-    const lastUpdate = ref(null);
-    const lastUpdateRequest = ref(null);
+    const lastUpdate = ref("2022-07-14T14:10:12Z");
 
     const lastUpdateVerbose = computed(() => {
-      if (!lastUpdate.value) {
-        return "";
-      }
       return dayjs(lastUpdate.value).format("DD MMM YYYY HH:mm");
     });
 
     const lastUpdateDuration = computed(() => {
-      if (!lastUpdate.value) {
-        return "";
-      }
       const now = dayjs().unix();
       const last = dayjs(lastUpdate.value).utc().unix();
       const diff = last - now;
       return dayjs.duration(diff, "seconds").humanize(true);
     });
-
-    function loadLastUpdate() {
-      lastUpdateRequest.value = useRequest(
-        () => {
-          const url = `${import.meta.env.VITE_GITHUB_BACKEND_API_URL}/commits?per_page=1`;
-          requestsStore.sendRequest(url);
-          return url;
-        },
-        {
-          onSuccess: (data) => (lastUpdate.value = data[0]?.commit.author.date || null),
-        },
-      );
-    }
-
-    function unloadLastUpdate() {
-      lastUpdate.value = null;
-    }
-
-    watch(
-      () => fundsStore.selectedFund,
-      (fund) => {
-        if (fund) {
-          loadLastUpdate();
-        } else {
-          unloadLastUpdate();
-          lastUpdateRequest.value?.remove();
-          lastUpdateRequest.value = null;
-        }
-      },
-      {
-        immediate: true,
-      },
-    );
 
     /* Filters */
 
@@ -213,7 +117,7 @@ export const useProposalsStore = defineStore(
       }
 
       const sortedProposals = proposals.sort((a, b) =>
-        a.assessmentsCount > b.assessmentsCount ? 1 : b.assessmentsCount > a.assessmentsCount ? -1 : 0,
+        a.assessments_count > b.assessments_count ? 1 : b.assessments_count > a.assessments_count ? -1 : 0,
       );
 
       return sortedProposals;
@@ -314,9 +218,6 @@ export const useProposalsStore = defineStore(
       lastUpdate: readonly(lastUpdate),
       lastUpdateVerbose,
       lastUpdateDuration,
-
-      assessmentsCountRequest: readonly(assessmentsCountRequest),
-      lastUpdateRequest: readonly(lastUpdateRequest),
 
       filters,
       filteredProposals,
