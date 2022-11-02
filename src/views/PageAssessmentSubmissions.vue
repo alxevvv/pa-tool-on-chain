@@ -2,6 +2,7 @@
   <div class="section container">
     <h1 class="title">
       Assessment submissions
+      <span v-if="fundsStore.selectedFund">({{ assessmentSubmissionsStore.countVerbose }})</span>
     </h1>
 
     <progress
@@ -143,18 +144,18 @@
         </div>
 
         <div
-          v-if="assessmentSubmissionsStore.upcomingAssessments.length"
+          v-if="!assessmentSubmissionsStore.upcoming.length"
+          class="has-text-centered"
+        >
+          No assessments for submission
+        </div>
+
+        <div
+          v-if="fundsStore.isOpenedForAssessmentSubmission"
           class="buttons"
         >
           <WalletConnectButton v-if="!walletStore.isConnected" />
           <ButtonAssessmentsSubmit v-else />
-        </div>
-
-        <div
-          v-else
-          class="has-text-centered"
-        >
-          No assessments for submission
         </div>
       </div>
 
@@ -169,6 +170,7 @@
                 <th>Id</th>
                 <th>Proposal</th>
                 <th>Submitted At (UTC)</th>
+                <th />
               </tr>
             </thead>
             <tbody>
@@ -177,7 +179,7 @@
                 :key="assessment.proposalId"
               >
                 <td>
-                  {{ assessment.proposalId }}
+                  {{ assessment.txId }}.{{ assessment.proposalId }}
                 </td>
                 <td>
                   <RouterLink :to="{ name: 'Proposal', params: { id: assessment.proposalId }}">
@@ -186,6 +188,46 @@
                 </td>
                 <td>
                   {{ dayjs(assessment.blockTime).format('DD-MM-YYYY, HH:mm') }}
+                </td>
+                <td class="is-flex is-justify-content-end">
+                  <template v-if="!assessmentPublicationsStore.isPublished(assessment.proposalId)">
+                    <button
+                      v-if="assessmentPublicationsStore.upcoming.includes(assessment.proposalId)"
+                      class="button is-small is-primary"
+                      :disabled="walletStore.isTxSubmitting || walletStore.isTxConfirming"
+                      @click="assessmentPublicationsStore.upcomingRemove(assessment.proposalId)"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-minus" />
+                      </span>
+                      <span>
+                        Remove from publications
+                      </span>
+                    </button>
+
+                    <button
+                      v-else
+                      class="button is-small is-primary"
+                      :disabled="walletStore.isTxSubmitting || walletStore.isTxConfirming"
+                      @click="assessmentPublicationsStore.upcomingAdd(assessment.proposalId)"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-plus" />
+                      </span>
+                      <span>
+                        Add to publications
+                      </span>
+                    </button>
+                  </template>
+
+                  <div
+                    v-else
+                    class="tags are-small is-flex is-justify-content-end"
+                  >
+                    <span
+                      class="tag is-success"
+                    >Published</span>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -211,16 +253,20 @@ import ButtonAssessmentsSubmit from "@/components/ButtonAssessmentsSubmit.vue";
 import { useFundsStore } from "@/stores/fundsStore";
 import { useWalletStore } from "@/stores/walletStore";
 import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
+import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
 
 const fundsStore = useFundsStore();
 const walletStore = useWalletStore();
 const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
+const assessmentPublicationsStore = useAssessmentPublicationsStore();
 
 const isPageLoading = computed(() => {
   return (
     fundsStore.loadFundsRequest?.request?.isLoading ||
     !assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request ||
-    assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request?.isLoading
+    assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request?.isLoading ||
+    !assessmentPublicationsStore.loadAssessmentPublicationsRequest?.request ||
+    assessmentPublicationsStore.loadAssessmentPublicationsRequest?.request?.isLoading
   );
 });
 

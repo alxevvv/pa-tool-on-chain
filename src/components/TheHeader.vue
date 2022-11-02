@@ -90,14 +90,16 @@
               :to="{ name: 'AssessmentSubmissions' }"
               :class="navbarItemClasses('AssessmentSubmissions')"
             >
-              Assessment Submissions
+              Assessment Submissions&nbsp;
+              <span v-if="fundsStore.selectedFund">({{ assessmentSubmissionsStore.countVerbose }})</span>
             </RouterLink>
 
             <RouterLink
               :to="{ name: 'AssessmentPublications' }"
               :class="navbarItemClasses('AssessmentPublications')"
             >
-              Assessment Publications
+              Assessment Publications&nbsp;
+              <span v-if="fundsStore.selectedFund">({{ assessmentPublicationsStore.countVerbose }})</span>
             </RouterLink>
 
             <RouterLink
@@ -138,6 +140,8 @@
 <script setup>
 import { useRoute } from "vue-router";
 import { useAssessmentsStore } from "@/stores/assessmentsStore";
+import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
+import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
 import { useProposalsStore } from "@/stores/proposalsStore";
 import { useFundsStore } from "@/stores/fundsStore";
 import WalletConnectButton from "@/components/WalletConnectButton.vue";
@@ -146,6 +150,8 @@ const route = useRoute();
 const fundsStore = useFundsStore();
 const proposalsStore = useProposalsStore();
 const assessmentsStore = useAssessmentsStore();
+const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
+const assessmentPublicationsStore = useAssessmentPublicationsStore();
 
 function navbarItemClasses(routeName) {
   return `navbar-item${route.name === routeName ? " is-active" : ""}`;

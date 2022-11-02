@@ -135,7 +135,9 @@ export const useFundsStore = defineStore(
     });
 
     const isOpenedForAssessmentPublishing = computed(() => {
-      return openedForAssessmentPublishingFundHashes.value.includes(selectedFundHash.value);
+      // FIXME: return real value
+      // return openedForAssessmentPublishingFundHashes.value.includes(selectedFundHash.value);
+      return true;
     });
 
     const assessmentPublishingStagePeriodVerbose = computed(() => {

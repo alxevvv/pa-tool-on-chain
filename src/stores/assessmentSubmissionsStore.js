@@ -26,6 +26,8 @@ export const useAssessmentSubmissionsStore = defineStore(
       assessmentsStore.all.filter(({ proposalId }) => upcoming.value.includes(proposalId)),
     );
 
+    const countVerbose = computed(() => `${upcomingCount.value}/${submittedCount.value}`);
+
     function upcomingAdd(proposalId) {
       if (assessmentsStore.has(proposalId)) {
         upcoming.value.push(proposalId);
@@ -126,6 +128,7 @@ export const useAssessmentSubmissionsStore = defineStore(
       upcomingAssessments,
       upcomingCount,
       upcomingCountVerbose,
+      countVerbose,
 
       upcomingAdd,
       upcomingRemove,

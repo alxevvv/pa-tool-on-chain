@@ -1,6 +1,7 @@
 <template>
   <button
     :class="buttonClasses"
+    :disabled="!assessmentsSubmissionsStore.upcoming.length"
     @click="assessmentsSubmissionsStore.submit"
   >
     Submit assessments

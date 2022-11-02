@@ -1,6 +1,7 @@
 <template>
   <button
     :class="buttonClasses"
+    :disabled="!assessmentsPublicationsStore.upcoming.length"
     @click="assessmentsPublicationsStore.publish"
   >
     Publish assessments

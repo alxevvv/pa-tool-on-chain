@@ -2,6 +2,7 @@
   <div class="section container">
     <h1 class="title">
       Assessment publications
+      <span v-if="fundsStore.selectedFund">({{ assessmentPublicationsStore.countVerbose }})</span>
     </h1>
 
     <progress
@@ -116,7 +117,7 @@
                 :key="assessment.proposalId"
               >
                 <td>
-                  {{ assessment.proposalId }}
+                  {{ assessment.txId }}.{{ assessment.proposalId }}
                 </td>
                 <td>
                   <RouterLink :to="{ name: 'Proposal', params: { id: assessment.proposalId }}">
@@ -143,18 +144,18 @@
         </div>
 
         <div
-          v-if="assessmentPublicationsStore.upcomingAssessments.length"
+          v-if="!assessmentPublicationsStore.upcoming.length"
+          class="has-text-centered"
+        >
+          No assessments for publication
+        </div>
+
+        <div
+          v-if="fundsStore.isOpenedForAssessmentPublishing"
           class="buttons"
         >
           <WalletConnectButton v-if="!walletStore.isConnected" />
           <ButtonAssessmentsPublish v-else />
-        </div>
-
-        <div
-          v-else
-          class="has-text-centered"
-        >
-          No assessments for publication
         </div>
       </div>
 
@@ -210,15 +211,19 @@ import WalletConnectButton from "@/components/WalletConnectButton.vue";
 import ButtonAssessmentsPublish from "@/components/ButtonAssessmentsPublish.vue";
 import { useFundsStore } from "@/stores/fundsStore";
 import { useWalletStore } from "@/stores/walletStore";
+import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
 
 const fundsStore = useFundsStore();
 const walletStore = useWalletStore();
+const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 const assessmentPublicationsStore = useAssessmentPublicationsStore();
 
 const isPageLoading = computed(() => {
   return (
     fundsStore.loadFundsRequest?.request?.isLoading ||
+    !assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request ||
+    assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request?.isLoading ||
     !assessmentPublicationsStore.loadAssessmentPublicationsRequest?.request ||
     assessmentPublicationsStore.loadAssessmentPublicationsRequest?.request?.isLoading
   );

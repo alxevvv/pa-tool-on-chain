@@ -22,22 +22,31 @@ export const useAssessmentPublicationsStore = defineStore(
 
     const upcomingCount = computed(() => upcoming.value.length);
     const upcomingCountVerbose = computed(
-      () => `${upcomingCount.value}/${assessmentsStore.count - publishedCount.value}`,
+      () => `${upcomingCount.value}/${assessmentSubmissionsStore.submittedCount - publishedCount.value}`,
     );
     const upcomingAssessments = computed(() =>
-      assessmentsStore.all.filter(({ proposalId }) => upcoming.value.includes(proposalId)),
+      assessmentSubmissionsStore.submittedAssessments.filter(({ proposalId }) =>
+        upcoming.value.includes(proposalId),
+      ),
     );
 
+    const countVerbose = computed(() => `${upcomingCount.value}/${publishedCount.value}`);
+
     function upcomingAdd(proposalId) {
-      if (assessmentSubmissionsStore.isSubmitted(proposalId)) {
-        upcoming.value.push(proposalId);
+      const submission = assessmentSubmissionsStore.submittedAssessments.find(
+        (assessment) => assessment.proposalId === proposalId,
+      );
+      if (submission) {
+        upcoming.value.push(...submission.proposalIds);
       }
     }
 
     function upcomingRemove(proposalId) {
-      const index = upcoming.value.indexOf(proposalId);
-      if (index !== -1) {
-        upcoming.value.splice(index, 1);
+      const submission = assessmentSubmissionsStore.submittedAssessments.find(
+        (assessment) => assessment.proposalId === proposalId,
+      );
+      if (submission) {
+        upcoming.value = upcoming.value.filter((proposalId) => !submission.proposalIds.includes(proposalId));
       }
     }
 
@@ -47,6 +56,10 @@ export const useAssessmentPublicationsStore = defineStore(
       } else {
         upcomingAdd(proposalId);
       }
+    }
+
+    function isPublished(proposalId) {
+      return !!published.value.find((submission) => submission.proposalId === proposalId);
     }
 
     async function publish() {
@@ -126,10 +139,12 @@ export const useAssessmentPublicationsStore = defineStore(
       upcomingAssessments,
       upcomingCount,
       upcomingCountVerbose,
+      countVerbose,
 
       upcomingAdd,
       upcomingRemove,
       upcomingToggle,
+      isPublished,
       publish,
 
       publishedAssessments: published,
