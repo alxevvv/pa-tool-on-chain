@@ -41,7 +41,6 @@
       class="dropdown-menu"
       role="menu"
     >
-      <!-- TODO: add scroll to large dropdown -->
       <div
         v-if="filteredItems.length"
         class="dropdown-content"
