@@ -5,6 +5,7 @@ import { defineStore } from "pinia";
 import proposals from "@/assets/data/f9/proposals.json";
 import tags from "@/assets/data/f9/tags.json";
 import { useFundsStore } from "./fundsStore";
+import { useAssessmentsStore } from "./assessmentsStore";
 import { useNotificationsStore } from "./notificationsStore";
 
 const ENDLESS_PAGINATION_MIN_CHUNK_SIZE = 25;
@@ -15,6 +16,7 @@ export const useProposalsStore = defineStore(
     const router = useRouter();
 
     const fundsStore = useFundsStore();
+    const assessmentsStore = useAssessmentsStore();
     const notificationsStore = useNotificationsStore();
 
     /* Lists */
@@ -87,7 +89,7 @@ export const useProposalsStore = defineStore(
     });
 
     const filteredProposals = computed(() => {
-      let proposals = all.value;
+      let proposals = all.value.filter(({ id }) => !assessmentsStore.proposalIds.includes(id));
 
       if (filters.challenges.length > 0) {
         const challengeIds = filters.challenges.map(({ id }) => id);
@@ -107,8 +109,6 @@ export const useProposalsStore = defineStore(
           ({ requested_funds }) => minPrice <= requested_funds && maxPrice >= requested_funds,
         );
       }
-
-      // TODO: filter out assessed proposals
 
       if (filters.title.trim().length >= 3) {
         proposals = proposals.filter(({ title }) =>

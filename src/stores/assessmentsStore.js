@@ -23,6 +23,8 @@ export const useAssessmentsStore = defineStore(
       };
     }
 
+    const proposalIds = computed(() => all.value.map(({ proposalId }) => proposalId));
+
     const count = computed(() => all.value.length);
 
     const countVerbose = computed(() => `${count.value}/${proposalsStore.count}`);
@@ -61,6 +63,7 @@ export const useAssessmentsStore = defineStore(
 
     return {
       all,
+      proposalIds,
       count,
       countVerbose,
 
