@@ -222,6 +222,11 @@ watch(() => props.modelValue, (value) => selectedItems.value = value, { immediat
   gap: .4em;
 }
 
+.multi-select .dropdown-content {
+  overflow-y: scroll;
+  max-height: max(45vh, 320px);
+}
+
 .multi-select .has-icons-right .input {
   padding-right: .2.5em;
 }
