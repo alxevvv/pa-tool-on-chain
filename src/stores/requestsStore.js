@@ -40,7 +40,16 @@ export const useRequestsStore = defineStore(
       };
     }
 
-    async function sendRequest(url, processResponse = async (response) => await response.json()) {
+    async function sendRequest(
+      url,
+      processResponse = async (response) => await response.json(),
+      requestFunction = async () => await window.fetch(url),
+      isErrorFunction = (response) => !response.ok,
+      createErrorResponseFunction = (response) => ({
+        statusCode: response.status,
+        statusText: response.statusText,
+      }),
+    ) {
       let response;
       let error = null;
       let data = null;
@@ -49,18 +58,15 @@ export const useRequestsStore = defineStore(
 
       try {
         // await new Promise((resolve) => setTimeout(resolve, 750));
-        response = await fetch(url);
+        response = await requestFunction();
         // await new Promise((resolve) => setTimeout(resolve, 750));
       } catch (err) {
         error = createError(null, { message: `Data fetching error: ${err.toString()}` });
       }
 
       if (!error) {
-        if (!response.ok) {
-          const errorResponse = {
-            statusCode: response.status,
-            statusText: response.statusText,
-          };
+        if (isErrorFunction(response)) {
+          const errorResponse = createErrorResponseFunction(response, error);
           try {
             const errorDetails = await processResponse(response);
             error = createError(errorResponse, errorDetails);
@@ -74,6 +80,10 @@ export const useRequestsStore = defineStore(
             error = createError(null, { message: `Response processing error: ${err.toString()}` });
           }
         }
+      } else {
+        const errorResponse = createErrorResponseFunction(response, error);
+        const errorDetails = await processResponse(response);
+        error = createError(errorResponse, errorDetails);
       }
 
       onAfterResponse(url, error, data);

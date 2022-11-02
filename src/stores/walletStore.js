@@ -207,7 +207,7 @@ export const useWalletStore = defineStore(
           return;
         }
 
-        if (attemptsCount >= 15) {
+        if (attemptsCount >= 100) {
           clearInterval(intervalId);
           onConfirmationTimeout(uuid);
         }
@@ -249,7 +249,7 @@ export const useWalletStore = defineStore(
         }
 
         isLoading = false;
-      }, 3000);
+      }, 5000);
     }
 
     async function submitMetadataTx(action, payload, onSuccess) {

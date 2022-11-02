@@ -52,7 +52,7 @@
 
       <div class="block">
         <AssessmentPreview
-          v-for="assessment in assessmentsStore.all"
+          v-for="assessment in assessments"
           :key="assessment.proposalId"
           :proposal-id="assessment.proposalId"
         />
@@ -110,4 +110,9 @@ const isPageLoading = computed(() => {
     assessmentSubmissionsStore.loadAssessmentSubmissionsRequest?.request?.isLoading
   );
 });
+
+const assessments = computed(() => assessmentsStore.all.reduce((acc, cur) => {
+  acc.unshift(cur);
+  return acc;
+}, []));
 </script>

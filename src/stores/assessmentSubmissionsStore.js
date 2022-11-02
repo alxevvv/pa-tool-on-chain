@@ -76,8 +76,9 @@ export const useAssessmentSubmissionsStore = defineStore(
         BLOCKCHAIN_ACTIONS.assessmentsSubmission,
         submissionPayload,
         ({ confirmedMetadata }) => {
+          upcoming.value = [];
           submitted.value.push(
-            ...assessmentsSubmissionFromBlockchain(confirmedMetadata, upcomingAssessments.value),
+            ...assessmentsSubmissionFromBlockchain(confirmedMetadata, assessmentsStore.all),
           );
         },
       );

@@ -45,6 +45,7 @@ export default function useRequest(rq, options = {}) {
   );
 
   return {
+    url,
     request,
 
     remove,

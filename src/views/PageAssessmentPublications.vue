@@ -92,7 +92,7 @@
           </li>
           <li :class="currentTab === 'submitted' && 'is-active'">
             <a @click="currentTab = 'submitted'">
-              Submitted ({{ assessmentPublicationsStore.publishedAssessments.length }})
+              Published ({{ assessmentPublicationsStore.publishedAssessments.length }})
             </a>
           </li>
         </ul>
@@ -178,7 +178,7 @@
                 :key="assessment.proposalId"
               >
                 <td>
-                  {{ assessment.proposalId }}
+                  {{ assessment.txId }}.{{ assessment.proposalId }}
                 </td>
                 <td>
                   <RouterLink :to="{ name: 'Proposal', params: { id: assessment.proposalId }}">

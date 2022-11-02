@@ -76,6 +76,11 @@
             v-if="isSubmitted"
             class="tag is-success"
           >Submitted</span>
+
+          <span
+            v-if="isPublished"
+            class="tag is-success"
+          >Published</span>
         </div>
       </div>
     </div>
@@ -93,6 +98,7 @@
 import { computed, ref } from "vue";
 import useAssessment from "@/composables/useAssessment";
 import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
+import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
 import ProposalAssessment from "./ProposalAssessment.vue";
 
 const props = defineProps({
@@ -103,6 +109,7 @@ const props = defineProps({
 });
 
 const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
+const assessmentPublicationsStore = useAssessmentPublicationsStore();
 
 const { proposal, completion, isCompleted } = useAssessment(props.proposalId);
 
@@ -114,6 +121,10 @@ const isInUpcomingSubmissions = computed(
 
 const isSubmitted = computed(
   () => assessmentSubmissionsStore.submittedProposalIds.includes(props.proposalId),
+);
+
+const isPublished = computed(
+  () => assessmentPublicationsStore.publishedProposalIds.includes(props.proposalId),
 );
 </script>
 

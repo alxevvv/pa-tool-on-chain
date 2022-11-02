@@ -4,10 +4,12 @@ import { defineStore } from "pinia";
 import { BLOCKCHAIN_ACTIONS } from "@/blockchain/const";
 import { assessmentsPublicationFromBlockchain } from "@/blockchain/converters";
 import { assessmentPublicationsList } from "@/blockchain/dbRequests";
+import { uploadToIPFS } from "@/ipfs/ipfsRequests";
 import useRequest from "@/composables/useRequest";
 import { useAssessmentsStore } from "./assessmentsStore";
 import { useAssessmentSubmissionsStore } from "./assessmentSubmissionsStore";
 import { useFundsStore } from "./fundsStore";
+import { useNotificationsStore } from "./notificationsStore";
 import { useWalletStore } from "./walletStore";
 
 export const useAssessmentPublicationsStore = defineStore(
@@ -16,6 +18,7 @@ export const useAssessmentPublicationsStore = defineStore(
     const fundsStore = useFundsStore();
     const assessmentsStore = useAssessmentsStore();
     const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
+    const notificationsStore = useNotificationsStore();
     const walletStore = useWalletStore();
 
     const upcoming = ref([]);
@@ -37,7 +40,7 @@ export const useAssessmentPublicationsStore = defineStore(
         (assessment) => assessment.proposalId === proposalId,
       );
       if (submission) {
-        upcoming.value.push(...submission.proposalIds);
+        upcoming.value = submission.proposalIds;
       }
     }
 
@@ -46,7 +49,7 @@ export const useAssessmentPublicationsStore = defineStore(
         (assessment) => assessment.proposalId === proposalId,
       );
       if (submission) {
-        upcoming.value = upcoming.value.filter((proposalId) => !submission.proposalIds.includes(proposalId));
+        upcoming.value = [];
       }
     }
 
@@ -62,36 +65,66 @@ export const useAssessmentPublicationsStore = defineStore(
       return !!published.value.find((submission) => submission.proposalId === proposalId);
     }
 
+    const uploadToIPFSRequest = ref(null);
+
     async function publish() {
       if (!fundsStore.selectedFundHash) {
         throw new Error("Fund not selected");
       }
 
-      console.log("publications publish", { assessments: upcomingAssessments.value });
+      const assessments = upcoming.value.map((proposalId) => ({
+        ...assessmentsStore.getByProposalId(proposalId),
+      }));
 
-      // const submittingAssessmentsString = JSON.stringify(upcomingAssessments.value);
-      // const submittingAssessmentsBitArray = sjcl.hash.sha256.hash(submittingAssessmentsString);
-      // const submittingAssessmentsHash = sjcl.codec.hex.fromBits(submittingAssessmentsBitArray);
-      // const submittingAssessmentsProposalIds = upcomingAssessments.value.map(({ proposalId }) => proposalId);
+      const submittedAssessmentsHash = assessmentSubmissionsStore.submittedAssessments.find(
+        ({ proposalId }) => proposalId === upcoming.value[0],
+      )?.assessmentsHash;
 
-      // // create submission payload
-      // const submissionPayload = {
-      //   fundHash: fundsStore.selectedFundHash,
-      //   hashAlg: "sha256",
-      //   assessmentsHash: submittingAssessmentsHash,
-      //   proposalIds: submittingAssessmentsProposalIds,
-      // };
+      const publishingAssessmentsString = JSON.stringify(assessments);
+      const publishingAssessmentsBitArray = sjcl.hash.sha256.hash(publishingAssessmentsString);
+      const publishingAssessmentsHash = sjcl.codec.hex.fromBits(publishingAssessmentsBitArray);
 
-      // // publish assessments
-      // return await walletStore.submitMetadataTx(
-      //   BLOCKCHAIN_ACTIONS.assessmentsPublication,
-      //   submissionPayload,
-      //   ({ confirmedMetadata }) => {
-      //     published.value.push(
-      //       ...assessmentsPublicationFromBlockchain(confirmedMetadata, upcomingAssessments.value),
-      //     );
-      //   },
-      // );
+      if (submittedAssessmentsHash !== publishingAssessmentsHash) {
+        notificationsStore.add({
+          type: "is-danger",
+          text: "Submitted assessments and assessments for publication hashes mismatch",
+          duration: 10000,
+        });
+      }
+
+      const assessmentsBlob = new Blob([publishingAssessmentsString], { type: "application/json" });
+      const assessmentsFile = new File([assessmentsBlob], "assessments.json");
+
+      uploadToIPFSRequest.value = useRequest(uploadToIPFS, {
+        requestArguments: [[assessmentsFile]],
+        onSuccess: async (cid) => {
+          notificationsStore.add({
+            type: "is-info",
+            text: "Assessments uploaded to IPFS, preparing publication transaction...",
+            duration: 5000,
+          });
+
+          // create publication payload
+          const publicationPayload = {
+            fundHash: fundsStore.selectedFundHash,
+            proposalIds: upcoming.value,
+            assessmentsHash: publishingAssessmentsHash,
+            assessmentsCID: cid,
+          };
+
+          // publish assessments
+          return await walletStore.submitMetadataTx(
+            BLOCKCHAIN_ACTIONS.assessmentsPublication,
+            publicationPayload,
+            ({ confirmedMetadata }) => {
+              upcoming.value = [];
+              published.value.push(
+                ...assessmentsPublicationFromBlockchain(confirmedMetadata, assessmentsStore.all),
+              );
+            },
+          );
+        },
+      });
     }
 
     const published = ref([]);
@@ -145,6 +178,8 @@ export const useAssessmentPublicationsStore = defineStore(
       upcomingRemove,
       upcomingToggle,
       isPublished,
+
+      uploadToIPFSRequest,
       publish,
 
       publishedAssessments: published,
