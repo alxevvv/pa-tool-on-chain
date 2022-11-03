@@ -124,7 +124,7 @@
           <span class="icon is-small">
             <i class="fas fa-clipboard" />
           </span>
-          <span>Copy to clipboard</span>
+          <span>Copy submission details</span>
         </button>
       </template>
     </BModal>
