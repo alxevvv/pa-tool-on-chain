@@ -5,7 +5,10 @@
         class="modal-background"
         @click="$emit('close')"
       />
-      <div class="modal-card">
+      <div
+        class="modal-card"
+        :style="{width: props.width + 'px'}"
+      >
         <header class="modal-card-head">
           <p class="modal-card-title">
             {{ props.title }}
@@ -46,6 +49,10 @@ const props = defineProps({
   title: {
     type: String,
     default: "Modal",
+  },
+  width: {
+    type: Number,
+    default: 640,
   },
   isActive: {
     type: Boolean,

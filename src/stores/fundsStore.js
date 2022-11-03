@@ -120,8 +120,8 @@ export const useFundsStore = defineStore(
     });
 
     const assessmentSubmissionStagePeriodVerbose = computed(() => {
-      const startDate = dayjs(selectedFund.value.assessmentSubmissionStartDate).format("DD-MM-YYYY HH:mm");
-      const endDate = dayjs(selectedFund.value.assessmentSubmissionEndDate).format("DD-MM-YYYY HH:mm");
+      const startDate = dayjs(selectedFund.value.assessmentSubmissionStartDate).format("DD.MM.YYYY HH:mm");
+      const endDate = dayjs(selectedFund.value.assessmentSubmissionEndDate).format("DD.MM.YYYY HH:mm");
       return `${startDate} – ${endDate}`;
     });
 
@@ -141,8 +141,8 @@ export const useFundsStore = defineStore(
     });
 
     const assessmentPublishingStagePeriodVerbose = computed(() => {
-      const startDate = dayjs(selectedFund.value.assessmentPublishingStartDate).format("DD-MM-YYYY HH:mm");
-      const endDate = dayjs(selectedFund.value.assessmentPublishingEndDate).format("DD-MM-YYYY HH:mm");
+      const startDate = dayjs(selectedFund.value.assessmentPublishingStartDate).format("DD.MM.YYYY HH:mm");
+      const endDate = dayjs(selectedFund.value.assessmentPublishingEndDate).format("DD.MM.YYYY HH:mm");
       return `${startDate} – ${endDate}`;
     });
 

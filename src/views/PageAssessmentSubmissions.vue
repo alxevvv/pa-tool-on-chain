@@ -131,7 +131,7 @@ const isPageLoading = computed(() => {
 
 const startDate = computed(() => dayjs(fundsStore.selectedFund?.assessmentSubmissionStartDate));
 const endDate = computed(() => dayjs(fundsStore.selectedFund?.assessmentSubmissionEndDate));
-const startDateFormatted = computed(() => startDate.value.format("DD-MM-YYYY HH:mm"));
-const endDateFormatted = computed(() => endDate.value.format("DD-MM-YYYY HH:mm"));
+const startDateFormatted = computed(() => startDate.value.format("DD.MM.YYYY HH:mm"));
+const endDateFormatted = computed(() => endDate.value.format("DD.MM.YYYY HH:mm"));
 const periodFormatted = computed(() => `${startDateFormatted.value} – ${endDateFormatted.value}`);
 </script>

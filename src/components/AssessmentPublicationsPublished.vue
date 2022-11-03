@@ -25,7 +25,7 @@
             </RouterLink>
           </td>
           <td>
-            {{ dayjs(assessment.blockTime).format('DD-MM-YYYY, HH:mm') }}
+            {{ dayjs(assessment.blockTime).format('DD.MM.YYYY, HH:mm') }}
           </td>
         </tr>
       </tbody>
