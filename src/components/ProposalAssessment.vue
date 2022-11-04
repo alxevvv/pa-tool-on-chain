@@ -26,14 +26,25 @@
 
       <div class="block">
         <article
-          v-if="isSubmitted"
+          v-if="isSubmitted || isPublished"
           class="message is-warning"
         >
           <div class="message-header">
             <p>Read Only</p>
           </div>
-          <div class="message-body">
+
+          <div
+            v-if="!isPublished"
+            class="message-body"
+          >
             Your assessment is submitted to the chain. It is no longer editable.
+          </div>
+
+          <div
+            v-else
+            class="message-body"
+          >
+            Your assessment is publish to the chain. It is public and if approved will be provided to voters.
           </div>
         </article>
 
@@ -71,6 +82,7 @@ import { computed, watch } from "vue";
 import useAssessment from "@/composables/useAssessment";
 import { useAssessmentsStore } from "@/stores/assessmentsStore";
 import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
+import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
 import { useChallengesStore } from "@/stores/challengesStore";
 import ProposalAssessmentCriterium from "./ProposalAssessmentCriterium.vue";
 
@@ -83,6 +95,7 @@ const props = defineProps({
 
 const assessmentsStore = useAssessmentsStore();
 const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
+const assessmentPublicationsStore = useAssessmentPublicationsStore();
 const challengesStore = useChallengesStore();
 
 const { assessment, savedAtVerbose, isCompleted } = useAssessment(props.proposal.id);
@@ -98,6 +111,10 @@ const criteria = computed(() => {
 
 const isSubmitted = computed(
   () => assessmentSubmissionsStore.submittedProposalIds.includes(props.proposal.id),
+);
+
+const isPublished = computed(
+  () => assessmentPublicationsStore.publishedProposalIds.includes(props.proposal.id),
 );
 
 watch(isCompleted, (isCompleted) => {
