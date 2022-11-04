@@ -44,7 +44,33 @@
             v-else
             class="message-body"
           >
-            Your assessment is publish to the chain. It is public and if approved will be provided to voters.
+            <p>
+              Your assessment is publish to the chain. It is public and
+              if approved will be provided to voters.
+            </p>
+
+            <div class="buttons mt-4">
+              <a
+                class="button is-link is-outlined"
+                :href="ipfsUrl"
+                target="_blank"
+              >
+                <span class="icon is-small">
+                  <i class="fas fa-external-link-alt" />
+                </span>
+                <span>Open assessment on IPFS</span>
+              </a>
+
+              <button
+                class="button is-info is-outlined"
+                @click="exportPublishedAssessment"
+              >
+                <span class="icon is-small">
+                  <i class="fas fa-download" />
+                </span>
+                <span>Export Assessment</span>
+              </button>
+            </div>
           </div>
         </article>
 
@@ -78,8 +104,10 @@
 </template>
 
 <script setup>
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
+import { IPFS_URL } from "@/ipfs/const";
 import useAssessment from "@/composables/useAssessment";
+import useDownload from "@/composables/useDownload";
 import { useAssessmentsStore } from "@/stores/assessmentsStore";
 import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
@@ -99,6 +127,7 @@ const assessmentPublicationsStore = useAssessmentPublicationsStore();
 const challengesStore = useChallengesStore();
 
 const { assessment, savedAtVerbose, isCompleted } = useAssessment(props.proposal.id);
+const download = useDownload();
 
 const challenge = computed(() => challengesStore.getById(props.proposal.category));
 
@@ -116,6 +145,31 @@ const isSubmitted = computed(
 const isPublished = computed(
   () => assessmentPublicationsStore.publishedProposalIds.includes(props.proposal.id),
 );
+
+// const submission = computed(() => assessmentPublicationsStore.publishedAssessments.find(
+//   ({ proposalId }) => proposalId === props.proposal.id),
+// );
+
+const publication = computed(() => assessmentPublicationsStore.publishedAssessments.find(
+  ({ proposalId }) => proposalId === props.proposal.id),
+);
+
+const ipfsUrl = computed(() => `${IPFS_URL}/${publication.value.assessmentsCID}`);
+
+const isExporting = ref(false);
+
+async function exportPublishedAssessment() {
+  isExporting.value = true;
+  try {
+    const response = await fetch(ipfsUrl.value);
+    const json = await response.json();
+    download.toJson(json, `Assessment ${publication.value.proposalTitle}.json`);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    isExporting.value = false;
+  }
+}
 
 watch(isCompleted, (isCompleted) => {
   if (isCompleted) {
