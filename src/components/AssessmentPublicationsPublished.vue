@@ -45,6 +45,18 @@
       </tbody>
     </table>
 
+    <div class="buttons">
+      <button
+        :class="`button is-info is-outlined${isExporting ? ' is-loading' : ''}`"
+        @click="exportPublications"
+      >
+        <span class="icon is-small">
+          <i class="fas fa-download" />
+        </span>
+        <span>Export list</span>
+      </button>
+    </div>
+
     <BModal
       title="Publication info"
       :width="800"
@@ -115,10 +127,12 @@ import dayjs from "dayjs";
 import { computed, ref } from "vue";
 import { IPFS_URL } from "@/ipfs/const";
 import useClipboard from "@/composables/useClipboard";
+import useDownload from "@/composables/useDownload";
 import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
 import BModal from "@/components/BModal.vue";
 
 const clipboard = useClipboard();
+const download = useDownload();
 
 const assessmentPublicationsStore = useAssessmentPublicationsStore();
 
@@ -151,5 +165,22 @@ const ipfsUrl = computed(() => `${IPFS_URL}/${publicationInModalPayload.value.as
 
 function copyToClipboard() {
   clipboard.copy(JSON.stringify(publicationInModalPayload.value, null, 2));
+}
+
+const isExporting = ref(false);
+
+async function exportPublications() {
+  isExporting.value = true;
+
+  const CIDs = Array.from(
+    new Set(assessmentPublicationsStore.publishedAssessments.map(({ assessmentsCID }) => assessmentsCID)),
+  );
+
+  const responses = await Promise.all(CIDs.map((cid) => fetch(`${IPFS_URL}/${cid}`)));
+  const jsons = await Promise.all(responses.map((response) => response.json()));
+
+  download.toJson([].concat(...jsons), "Published assessments.json");
+
+  isExporting.value = false;
 }
 </script>
