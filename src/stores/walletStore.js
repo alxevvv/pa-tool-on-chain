@@ -165,8 +165,11 @@ export const useWalletStore = defineStore(
       if (!errorMessage) {
         notificationsStore.add({
           type: "is-info",
-          text: `Transaction sent, hash: ${txHash}`,
-          duration: 3000,
+          text: [
+            `Transaction submission successfull, hash: ${txHash}.`,
+            "Awaiting blockchain confirmation. You can safely leave this page.",
+          ],
+          duration: 30000,
         });
       }
     }

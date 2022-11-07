@@ -22,7 +22,6 @@ export const useAssessmentPublicationsStore = defineStore(
     const walletStore = useWalletStore();
 
     const upcoming = ref([]);
-
     const upcomingCount = computed(() => upcoming.value.length);
     const upcomingCountVerbose = computed(
       () => `${upcomingCount.value}/${assessmentSubmissionsStore.submittedCount - publishedCount.value}`,
@@ -32,8 +31,6 @@ export const useAssessmentPublicationsStore = defineStore(
         upcoming.value.includes(proposalId),
       ),
     );
-
-    const countVerbose = computed(() => `${upcomingCount.value}/${publishedCount.value}`);
 
     function upcomingAdd(proposalId) {
       const submission = assessmentSubmissionsStore.submittedAssessments.find(
@@ -53,13 +50,53 @@ export const useAssessmentPublicationsStore = defineStore(
       }
     }
 
-    function upcomingToggle(proposalId) {
-      if (upcoming.value.includes(proposalId)) {
-        upcomingRemove(proposalId);
-      } else {
-        upcomingAdd(proposalId);
+    function moveUpcomingToPending(proposalId) {
+      upcomingRemove(proposalId);
+      pendingAdd(proposalId);
+    }
+
+    const pending = ref([]);
+    const pendingCount = computed(() => pending.value.length);
+    const pendingCountVerbose = computed(() => {
+      return `${pendingCount.value}/${
+        assessmentSubmissionsStore.submittedCount - publishedCount.value - upcomingCount.value
+      }`;
+    });
+    const pendingAssessments = computed(() =>
+      assessmentSubmissionsStore.submittedAssessments.filter(({ proposalId }) =>
+        pending.value.includes(proposalId),
+      ),
+    );
+
+    function pendingAdd(proposalId) {
+      const submission = assessmentSubmissionsStore.submittedAssessments.find(
+        (assessment) => assessment.proposalId === proposalId,
+      );
+      if (assessmentsStore.has(proposalId)) {
+        pending.value.push(...submission.proposalIds);
       }
     }
+
+    function pendingRemove(proposalId) {
+      const submission = assessmentSubmissionsStore.submittedAssessments.find(
+        (assessment) => assessment.proposalId === proposalId,
+      );
+      if (submission) {
+        pending.value = pending.value.filter((proposalId) => !submission.proposalIds.includes(proposalId));
+      }
+    }
+
+    function movePendingToUpcoming(proposalId) {
+      if (upcomingCount.value) {
+        moveUpcomingToPending(upcoming.value[0]);
+      }
+      pendingRemove(proposalId);
+      upcomingAdd(proposalId);
+    }
+
+    const countVerbose = computed(() => {
+      return `${upcomingCount.value + pendingCount.value}/${publishedCount.value}`;
+    });
 
     function isPublished(proposalId) {
       return !!published.value.find((submission) => submission.proposalId === proposalId);
@@ -117,7 +154,11 @@ export const useAssessmentPublicationsStore = defineStore(
             BLOCKCHAIN_ACTIONS.assessmentsPublication,
             publicationPayload,
             ({ confirmedMetadata }) => {
-              upcoming.value = [];
+              if (pendingCount.value) {
+                upcomingAdd(pending.value[0]);
+              } else {
+                upcoming.value = [];
+              }
               published.value.push(
                 ...assessmentsPublicationFromBlockchain(confirmedMetadata, assessmentsStore.all),
               );
@@ -172,26 +213,34 @@ export const useAssessmentPublicationsStore = defineStore(
       upcomingAssessments,
       upcomingCount,
       upcomingCountVerbose,
-      countVerbose,
 
       upcomingAdd,
-      upcomingRemove,
-      upcomingToggle,
-      isPublished,
+      moveUpcomingToPending,
 
-      uploadToIPFSRequest,
+      pending,
+      pendingAssessments,
+      pendingCount,
+      pendingCountVerbose,
+
+      pendingAdd,
+      movePendingToUpcoming,
+
+      countVerbose,
+      isPublished,
       publish,
 
       publishedAssessments: published,
       publishedCount,
       publishedCountVerbose,
       publishedProposalIds,
+
       loadAssessmentPublicationsRequest,
+      uploadToIPFSRequest,
     };
   },
   {
     persist: {
-      paths: ["upcoming", "publishedAssessments"],
+      paths: ["upcoming", "pending", "publishedAssessments"],
     },
   },
 );

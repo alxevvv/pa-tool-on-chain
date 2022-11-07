@@ -28,6 +28,7 @@ const buttonClasses = computed(() => {
   if (
     walletStore.isTxSubmitting
     || walletStore.isTxConfirming
+    || assessmentsPublicationsStore.uploadToIPFSRequest?.request?.isLoading
   ) {
     classes.push("is-loading");
   }

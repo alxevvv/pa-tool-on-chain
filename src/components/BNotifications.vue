@@ -12,7 +12,19 @@
             class="delete"
             @click="notificationsStore.close(n.uuid)"
           />
-          {{ n.text }}
+
+          <template v-if="Array.isArray(n.text)">
+            <p
+              v-for="line in n.text"
+              :key="line"
+            >
+              {{ line }}
+            </p>
+          </template>
+
+          <p v-else>
+            {{ n.text }}
+          </p>
         </div>
       </div>
     </div>

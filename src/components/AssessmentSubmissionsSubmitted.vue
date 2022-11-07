@@ -31,33 +31,33 @@
           </td>
           <td class="is-flex is-justify-content-end">
             <template v-if="!assessmentPublicationsStore.isPublished(assessment.proposalId)">
-              <button
-                v-if="assessmentPublicationsStore.upcoming.includes(assessment.proposalId)"
-                class="button is-small is-primary is-outlined"
-                :disabled="walletStore.isTxSubmitting || walletStore.isTxConfirming"
-                @click="assessmentPublicationsStore.upcomingRemove(assessment.proposalId)"
+              <div
+                class="tags are-small is-flex is-justify-content-end"
               >
-                <span class="icon">
-                  <i class="fas fa-minus" />
+                <span
+                  v-if="assessmentPublicationsStore.upcoming.includes(assessment.proposalId)"
+                  class="tag is-info"
+                >Awaiting publication
                 </span>
-                <span>
-                  Remove from publications
-                </span>
-              </button>
 
-              <button
-                v-else
-                class="button is-small is-primary is-outlined"
-                :disabled="walletStore.isTxSubmitting || walletStore.isTxConfirming"
-                @click="assessmentPublicationsStore.upcomingAdd(assessment.proposalId)"
-              >
-                <span class="icon">
-                  <i class="fas fa-plus" />
-                </span>
-                <span>
-                  Add to publications
-                </span>
-              </button>
+                <span
+                  v-else-if="assessmentPublicationsStore.pending.includes(assessment.proposalId)"
+                  class="tag is-warning"
+                >Pending publication</span>
+
+                <button
+                  v-else
+                  class="button is-small is-primary is-outlined"
+                  @click="assessmentPublicationsStore.pendingAdd(assessment.proposalId)"
+                >
+                  <span class="icon">
+                    <i class="fas fa-plus" />
+                  </span>
+                  <span>
+                    Add to publications
+                  </span>
+                </button>
+              </div>
             </template>
 
             <div
@@ -142,14 +142,12 @@
 import dayjs from "dayjs";
 import { computed, ref } from "vue";
 import useClipboard from "@/composables/useClipboard";
-import { useWalletStore } from "@/stores/walletStore";
 import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
 import BModal from "@/components/BModal.vue";
 
 const clipboard = useClipboard();
 
-const walletStore = useWalletStore();
 const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 const assessmentPublicationsStore = useAssessmentPublicationsStore();
 

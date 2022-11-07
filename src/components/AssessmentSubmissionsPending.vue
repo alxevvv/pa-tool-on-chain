@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="assessmentSubmissionsStore.upcomingAssessments.length"
+    v-if="assessmentSubmissionsStore.pendingAssessments.length"
     class="table-container"
   >
     <table class="table is-fullwidth">
@@ -13,7 +13,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="assessment in assessmentSubmissionsStore.upcomingAssessments"
+          v-for="assessment in assessmentSubmissionsStore.pendingAssessments"
           :key="assessment.proposalId"
         >
           <td>
@@ -26,15 +26,15 @@
           </td>
           <td class="is-flex is-justify-content-end">
             <button
-              class="button is-small is-danger is-outlined"
+              class="button is-small is-primary is-outlined"
               :disabled="walletStore.isTxSubmitting || walletStore.isTxConfirming"
-              @click="assessmentSubmissionsStore.moveUpcomingToPending(assessment.proposalId)"
+              @click="assessmentSubmissionsStore.movePendingToUpcoming(assessment.proposalId)"
             >
               <span class="icon">
-                <i class="fas fa-minus" />
+                <i class="fas fa-arrow-left" />
               </span>
               <span>
-                Remove
+                Move to Assessed
               </span>
             </button>
           </td>
@@ -44,29 +44,17 @@
   </div>
 
   <div
-    v-if="!assessmentSubmissionsStore.upcoming.length"
+    v-if="!assessmentSubmissionsStore.pending.length"
     class="has-text-centered"
   >
-    No assessments for submission
-  </div>
-
-  <div
-    v-if="fundsStore.isOpenedForAssessmentSubmission"
-    class="buttons"
-  >
-    <WalletConnectButton v-if="!walletStore.isConnected" />
-    <ButtonAssessmentsSubmit v-else />
+    No pending assessments
   </div>
 </template>
 
 <script setup>
-import WalletConnectButton from "@/components/WalletConnectButton.vue";
-import ButtonAssessmentsSubmit from "@/components/ButtonAssessmentsSubmit.vue";
-import { useFundsStore } from "@/stores/fundsStore";
 import { useWalletStore } from "@/stores/walletStore";
 import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 
-const fundsStore = useFundsStore();
 const walletStore = useWalletStore();
 const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 </script>

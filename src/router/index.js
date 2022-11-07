@@ -11,8 +11,10 @@ import PageAssessmentSubmissions from "@/views/PageAssessmentSubmissions.vue";
 import PageAssessmentPublications from "@/views/PageAssessmentPublications.vue";
 import PageNotFound from "@/views/PageNotFound.vue";
 import AssessmentSubmissionsUpcoming from "@/components/AssessmentSubmissionsUpcoming.vue";
+import AssessmentSubmissionsPending from "@/components/AssessmentSubmissionsPending.vue";
 import AssessmentSubmissionsSubmitted from "@/components/AssessmentSubmissionsSubmitted.vue";
 import AssessmentPublicationsUpcoming from "@/components/AssessmentPublicationsUpcoming.vue";
+import AssessmentPublicationsPending from "@/components/AssessmentPublicationsPending.vue";
 import AssessmentPublicationsPublished from "@/components/AssessmentPublicationsPublished.vue";
 
 const routes = [
@@ -66,6 +68,11 @@ const routes = [
         name: "AssessmentSubmissionsUpcoming",
       },
       {
+        path: "pending",
+        component: AssessmentSubmissionsPending,
+        name: "AssessmentSubmissionsPending",
+      },
+      {
         path: "submitted",
         component: AssessmentSubmissionsSubmitted,
         name: "AssessmentSubmissionsSubmitted",
@@ -82,6 +89,11 @@ const routes = [
         path: "upcoming",
         component: AssessmentPublicationsUpcoming,
         name: "AssessmentPublicationsUpcoming",
+      },
+      {
+        path: "pending",
+        component: AssessmentPublicationsPending,
+        name: "AssessmentPublicationsPending",
       },
       {
         path: "published",

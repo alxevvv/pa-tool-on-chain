@@ -87,7 +87,12 @@
         <ul>
           <li :class="route.name === 'AssessmentSubmissionsUpcoming' && 'is-active'">
             <RouterLink :to="{name: 'AssessmentSubmissionsUpcoming'}">
-              Upcoming ({{ assessmentSubmissionsStore.upcomingAssessments.length }})
+              Assessed ({{ assessmentSubmissionsStore.upcomingAssessments.length }})
+            </RouterLink>
+          </li>
+          <li :class="route.name === 'AssessmentSubmissionsPending' && 'is-active'">
+            <RouterLink :to="{name: 'AssessmentSubmissionsPending'}">
+              Pending ({{ assessmentSubmissionsStore.pendingAssessments.length }})
             </RouterLink>
           </li>
           <li :class="route.name === 'AssessmentSubmissionsSubmitted' && 'is-active'">

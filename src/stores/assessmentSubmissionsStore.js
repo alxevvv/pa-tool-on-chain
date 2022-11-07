@@ -6,6 +6,7 @@ import { assessmentsSubmissionFromBlockchain } from "@/blockchain/converters";
 import { assessmentSubmissionsList } from "@/blockchain/dbRequests";
 import useRequest from "@/composables/useRequest";
 import { useAssessmentsStore } from "./assessmentsStore";
+import { useAssessmentPublicationsStore } from "./assessmentPublicationsStore";
 import { useFundsStore } from "./fundsStore";
 import { useWalletStore } from "./walletStore";
 
@@ -14,10 +15,10 @@ export const useAssessmentSubmissionsStore = defineStore(
   () => {
     const fundsStore = useFundsStore();
     const assessmentsStore = useAssessmentsStore();
+    const assessmentPublicationsStore = useAssessmentPublicationsStore();
     const walletStore = useWalletStore();
 
     const upcoming = ref([]);
-
     const upcomingCount = computed(() => upcoming.value.length);
     const upcomingCountVerbose = computed(
       () => `${upcomingCount.value}/${assessmentsStore.count - submittedCount.value}`,
@@ -25,8 +26,6 @@ export const useAssessmentSubmissionsStore = defineStore(
     const upcomingAssessments = computed(() =>
       assessmentsStore.all.filter(({ proposalId }) => upcoming.value.includes(proposalId)),
     );
-
-    const countVerbose = computed(() => `${upcomingCount.value}/${submittedCount.value}`);
 
     function upcomingAdd(proposalId) {
       if (assessmentsStore.has(proposalId)) {
@@ -41,13 +40,41 @@ export const useAssessmentSubmissionsStore = defineStore(
       }
     }
 
-    function upcomingToggle(proposalId) {
-      if (upcoming.value.includes(proposalId)) {
-        upcomingRemove(proposalId);
-      } else {
-        upcomingAdd(proposalId);
+    function moveUpcomingToPending(proposalId) {
+      upcomingRemove(proposalId);
+      pendingAdd(proposalId);
+    }
+
+    const pending = ref([]);
+    const pendingCount = computed(() => pending.value.length);
+    const pendingCountVerbose = computed(
+      () => `${pendingCount.value}/${assessmentsStore.count - submittedCount.value - upcomingCount.value}`,
+    );
+    const pendingAssessments = computed(() =>
+      assessmentsStore.all.filter(({ proposalId }) => pending.value.includes(proposalId)),
+    );
+
+    function pendingAdd(proposalId) {
+      if (assessmentsStore.has(proposalId)) {
+        pending.value.push(proposalId);
       }
     }
+
+    function pendingRemove(proposalId) {
+      const index = pending.value.indexOf(proposalId);
+      if (index !== -1) {
+        pending.value.splice(index, 1);
+      }
+    }
+
+    function movePendingToUpcoming(proposalId) {
+      pendingRemove(proposalId);
+      upcomingAdd(proposalId);
+    }
+
+    const countVerbose = computed(() => {
+      return `${upcomingCount.value + pendingCount.value}/${submittedCount.value}`;
+    });
 
     function isSubmitted(proposalId) {
       return !!submitted.value.find((submission) => submission.proposalId === proposalId);
@@ -76,10 +103,19 @@ export const useAssessmentSubmissionsStore = defineStore(
         BLOCKCHAIN_ACTIONS.assessmentsSubmission,
         submissionPayload,
         ({ confirmedMetadata }) => {
-          upcoming.value = [];
+          if (pendingCount.value) {
+            upcomingAdd(pending.value[0]);
+          } else {
+            upcoming.value = [];
+          }
           submitted.value.push(
             ...assessmentsSubmissionFromBlockchain(confirmedMetadata, assessmentsStore.all),
           );
+          if (!assessmentPublicationsStore.upcomingCount) {
+            assessmentPublicationsStore.upcomingAdd(submittingAssessmentsProposalIds[0]);
+          } else {
+            assessmentPublicationsStore.pendingAdd(submittingAssessmentsProposalIds[0]);
+          }
         },
       );
     }
@@ -129,11 +165,21 @@ export const useAssessmentSubmissionsStore = defineStore(
       upcomingAssessments,
       upcomingCount,
       upcomingCountVerbose,
-      countVerbose,
 
       upcomingAdd,
       upcomingRemove,
-      upcomingToggle,
+      moveUpcomingToPending,
+
+      pending,
+      pendingAssessments,
+      pendingCount,
+      pendingCountVerbose,
+
+      pendingAdd,
+      pendingRemove,
+      movePendingToUpcoming,
+
+      countVerbose,
       isSubmitted,
       submit,
 
@@ -141,12 +187,13 @@ export const useAssessmentSubmissionsStore = defineStore(
       submittedCount,
       submittedCountVerbose,
       submittedProposalIds,
+
       loadAssessmentSubmissionsRequest,
     };
   },
   {
     persist: {
-      paths: ["upcoming", "submittedAssessments"],
+      paths: ["upcoming", "pending", "submittedAssessments"],
     },
   },
 );

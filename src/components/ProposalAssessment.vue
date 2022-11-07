@@ -165,7 +165,7 @@ async function exportPublishedAssessment() {
     const json = await response.json();
     download.toJson(json, `Assessment ${publication.value.proposalTitle}.json`);
   } catch (err) {
-    console.error(err);
+    void err;
   } finally {
     isExporting.value = false;
   }
@@ -176,6 +176,7 @@ watch(isCompleted, (isCompleted) => {
     assessmentSubmissionsStore.upcomingAdd(props.proposal.id);
   } else {
     assessmentSubmissionsStore.upcomingRemove(props.proposal.id);
+    assessmentSubmissionsStore.pendingRemove(props.proposal.id);
   }
 });
 </script>

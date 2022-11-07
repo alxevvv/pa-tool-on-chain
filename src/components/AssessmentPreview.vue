@@ -28,20 +28,6 @@
             </span>
           </button>
 
-          <button
-            v-if="!isSubmitted"
-            class="button is-small is-primary"
-            :disabled="!isCompleted"
-            @click="assessmentSubmissionsStore.upcomingToggle(props.proposalId)"
-          >
-            <span class="icon">
-              <i :class="`fas fa-${isInUpcomingSubmissions ? 'minus' : 'plus'}`" />
-            </span>
-            <span>
-              {{ isInUpcomingSubmissions ? 'Remove from' : 'Add to' }} submissions
-            </span>
-          </button>
-
           <a
             class="button is-small is-link"
             :href="proposal.url"
@@ -111,13 +97,9 @@ const props = defineProps({
 const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 const assessmentPublicationsStore = useAssessmentPublicationsStore();
 
-const { proposal, completion, isCompleted } = useAssessment(props.proposalId);
+const { proposal, completion } = useAssessment(props.proposalId);
 
 const isOpened = ref(false);
-
-const isInUpcomingSubmissions = computed(
-  () => assessmentSubmissionsStore.upcoming.includes(props.proposalId),
-);
 
 const isSubmitted = computed(
   () => assessmentSubmissionsStore.submittedProposalIds.includes(props.proposalId),
