@@ -61,12 +61,43 @@
             </template>
 
             <div
-              v-else
+              v-else-if="assessmentPublicationsStore.publishedProposalIds.includes(assessment.proposalId)"
               class="tags are-small is-flex is-justify-content-end"
             >
               <span
                 class="tag is-success"
               >Published</span>
+            </div>
+
+            <div
+              v-else-if="!fundsStore.isOpenedForAssessmentPublishing"
+              class="dropdown is-up is-hoverable"
+            >
+              <div class="dropdown-trigger">
+                <div
+                  class="tags are-small is-flex is-justify-content-end"
+                >
+                  <span
+                    class="tag is-danger"
+                  >Publishing close</span>
+                </div>
+              </div>
+
+              <div
+                class="dropdown-menu"
+                role="menu"
+              >
+                <div class="dropdown-content has-background-grey-lighter">
+                  <div class="dropdown-item">
+                    <p class="has-text-grey-darker">
+                      Publishing not current open.
+                      Click <RouterLink :to="{name: 'PAStatus'}">
+                        here
+                      </RouterLink> for more information.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </td>
           <td>
@@ -142,12 +173,14 @@
 import dayjs from "dayjs";
 import { computed, ref } from "vue";
 import useClipboard from "@/composables/useClipboard";
+import { useFundsStore } from "@/stores/fundsStore";
 import { useAssessmentSubmissionsStore } from "@/stores/assessmentSubmissionsStore";
 import { useAssessmentPublicationsStore } from "@/stores/assessmentPublicationsStore";
 import BModal from "@/components/BModal.vue";
 
 const clipboard = useClipboard();
 
+const fundsStore = useFundsStore();
 const assessmentSubmissionsStore = useAssessmentSubmissionsStore();
 const assessmentPublicationsStore = useAssessmentPublicationsStore();
 
